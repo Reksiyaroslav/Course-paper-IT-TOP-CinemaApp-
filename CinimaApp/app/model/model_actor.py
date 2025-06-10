@@ -5,8 +5,8 @@ from typing import List,Optional
 
 
 class ActorCreateRequest(BaseModel):
-    fistName:str
-    lastName:str
+    fistname:str
+    lastname:str
     birth_date: datetime.date
     patronymic:str
     star:int 
@@ -14,23 +14,23 @@ class ActorCreateRequest(BaseModel):
 
 
 class ActorUpdateRequest(BaseModel):
-    fistName:Optional[str] =None 
-    lastName:Optional[str] =None 
+    fistname:Optional[str] =None 
+    lastname:Optional[str] =None 
     patronymic:Optional[str] =None 
     star:Optional[int] = None
     birth_date:Optional[datetime.date] = None 
-    update_date:Optional[datetime.datetime] = None
+    
     
 
 class ActorResponse(BaseModel):
     id:uuid.UUID
-    fistName:Optional[str] =None 
-    lastName:Optional[str] =None 
+    fistname:Optional[str] =None 
+    lastname:Optional[str] =None 
     patronymic:Optional[str] =None 
     star:Optional[int] = None
     birth_date:Optional[datetime.date] =   None
-    create_date:Optional[datetime.datetime] = None
-    update_date:Optional[datetime.datetime] = None
+    create_at:Optional[datetime.datetime] = None
+    update_at:Optional[datetime.datetime] = None
     model_config = {
         "from_attributes": True
     }

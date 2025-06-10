@@ -14,5 +14,5 @@ pip install -r requirements.txt
 
 2.Запустите приложение:
 
-uvicorn app.main:app --host 0.0.0.0 --port 90
+uvicorn app.run:app --host 0.0.0.0 --port 90
 или litestar run .

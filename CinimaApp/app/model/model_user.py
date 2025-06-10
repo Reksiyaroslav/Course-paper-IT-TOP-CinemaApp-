@@ -1,30 +1,30 @@
 from pydantic import BaseModel,Field
-from typing import Optional
+from typing import Optional,List
 import uuid
 import datetime
-
-
+from app.model.model_coment import ComentResponse
+from app.model.model_ratingfilms import RatingFilmResponse
 class UserCreateRequest(BaseModel):
     username: str
     email: str
     password: str
-    datetimenow:datetime.datetime 
+
 
 class UserUpdateRequest(BaseModel):
     username: Optional[str] = None
     email: Optional[str] = None
     password: Optional[str] = None
-    datetimenow:Optional[datetime.datetime] = None
-    update_date:Optional[datetime.datetime] = None
+    coment_ids:List[uuid.UUID] =None
 
 class UserResponse(BaseModel):
     id: uuid.UUID
     username: str
     email: str
-    password: str
     datetimenow:Optional[datetime.datetime]  =  Field(default_factory=lambda: datetime.now(datetime.timezone.utc))
     created_at: datetime.datetime = None
-    update_date:Optional[datetime.datetime] = None
+    update_at:Optional[datetime.datetime] = None
+    coments: List[ComentResponse]= []
+    ratings:List[RatingFilmResponse] = []
     model_config = {
         "from_attributes": True
     }
