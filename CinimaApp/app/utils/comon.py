@@ -24,16 +24,16 @@ async def validate_is_data_range(value:date,type_obj:str)->bool:
             return False
     elif type_obj=="actor"or type_obj=="author":
         min_date = today - timedelta(YEARS_ACTOR*365)
-        if value > today or value < min_date:
+        if value > today or value <= min_date:
             return False
     return True
 async def validet_star_rating(dict:dict,filed_name:str):
     if  filed_name == list_serach_rating[0]:
-        if dict[filed_name] <1 or dict[filed_name] >7:
+        if dict[filed_name] <=1 or dict[filed_name] >=10:
             return False
         return True
     elif  filed_name == list_serach_rating[1] :
-        if dict[filed_name]< 1 or dict[filed_name] > 10:
+        if dict[filed_name]<= 1 or dict[filed_name] >= 10:
             return False
         return True
     return False

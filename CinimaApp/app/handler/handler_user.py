@@ -11,7 +11,7 @@ class UserControlle(Controller):
     path ="/user"
     tags =["User"]
     @post()
-    async def create_user(self,data:UserCreateRequest,async_session:AsyncSession)->UserResponse:
+    async def create_user(self,async_session:AsyncSession,data:UserCreateRequest)->UserResponse:
         user_service   = get_service(UserService,UserRepository,async_session=async_session) 
         user = await user_service.create_model(data.dict())
         return UserResponse.from_orm(user)
@@ -27,6 +27,22 @@ class UserControlle(Controller):
         if not user:
             raise HTTPException(status_code=404,detail="Not user")
         return UserResponse.from_orm(user)
+    """""
+    @post("/{user_id:uuid}/friend/{friend_id:uuid}")
+    async def add_friend(self,user_id:UUID,friend_id:UUID,async_session:AsyncSession)->UserRepository:
+        user_service   = get_service(UserService,UserRepository,async_session=async_session) 
+        user = await user_service.add_friend(user_id,friend_id)
+        if not user:
+            raise HTTPException(status_code=404,detail="Пользователь есть уде друзьях")
+        return user 
+    """""
+    @post("/{user_id:uuid}/film/{likefilm_id:uuid}")
+    async def add_likefilm(self,user_id:UUID,likefilm_id:UUID,async_session:AsyncSession)->UserRepository:
+        user_service   = get_service(UserService,UserRepository,async_session=async_session) 
+        user = await user_service.add_film(user_id,likefilm_id)
+        if not user: 
+            raise HTTPException(status_code=404,detail="Пользователь есть уде друзьях")
+        return UserResponse.from_orm(user) 
     @get("/name/{user_name:str}")
     async def get_user_name(self,user_name:str,async_session:AsyncSession)->UserResponse:
         user_service   = get_service(UserService,UserRepository,async_session=async_session) 

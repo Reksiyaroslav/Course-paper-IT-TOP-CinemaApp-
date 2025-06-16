@@ -13,5 +13,10 @@ class ActorRepository(ModelRepository):
         result = await self.session.execute(smt)
         actor = result.scalars().first()
         return actor
+    async def get_actorname_list(self,actorname:str) -> Actor:
+        smt = select(Actor).where((Actor.fistName==actorname )| (Actor.lastName ==actorname )| (Actor.patronymic == actorname))
+        result = await self.session.execute(smt)
+        actor = result.scalars().all()
+        return actor
     
         

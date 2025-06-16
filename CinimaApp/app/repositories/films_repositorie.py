@@ -98,7 +98,7 @@ class FilmRepository(ModelRepository):
         films = relutt.scalars().first()
         return films
     
-    async def get_films_title(self,film_titel)->list[Film]:
+    async def get_films_title_list(self,film_titel)->list[Film]:
         smt = select(Film).where(Film.title==film_titel)
         relutt = await self.session.execute(smt)
         films = relutt.scalars().all()

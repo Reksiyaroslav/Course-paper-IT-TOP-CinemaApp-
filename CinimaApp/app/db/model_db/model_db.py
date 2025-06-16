@@ -1,12 +1,11 @@
-from uuid import UUID
+import uuid
 import datetime
 from sqlalchemy import ForeignKey,UUID
-from sqlalchemy.orm import Mapped,mapped_column,relationship,declarative_base
+from sqlalchemy.orm import Mapped,mapped_column,relationship,declarative_base,foreign
 from litestar.plugins.sqlalchemy import base
-from sqlalchemy import Table,Column,DateTime,func,Integer,UniqueConstraint
+from sqlalchemy import Table,Column,DateTime,func,Integer,UniqueConstraint,UUID as SA_UUID
 from sqlalchemy import MetaData
 from advanced_alchemy.base import AdvancedDeclarativeBase
-
 
 film_actor = Table(
 
@@ -34,7 +33,19 @@ film_coment = Table(
     Column("film_id",ForeignKey("cinemas.id"),primary_key=True ),
     Column("coment_id",ForeignKey("coments.id"),primary_key=True )
 )
-
+user_film = Table(
+    "fans_user",
+    AdvancedDeclarativeBase.metadata,
+    Column("film_id",ForeignKey("cinemas.id"),primary_key= True),
+    Column("user_id",ForeignKey("users.id"),primary_key=True)
+)
+"""""
+user_frends = Table(
+    "user_frends",
+    AdvancedDeclarativeBase.metadata,
+   Column("friend_id",ForeignKey("users.id"),primary_key= True),
+    Column("user_id",ForeignKey("users.id"),primary_key=True)
+)"""""
 class RatingFilm(base.UUIDBase):
     __tablename__ = "ratingfilms"
     __table_args__ = (UniqueConstraint("user_id", "film_id", name="uix_user_film"),)
@@ -115,22 +126,18 @@ class Film(base.UUIDAuditBase):
     estimation:Mapped[int]
     films_comnet:Mapped[list[Coment]] = relationship(secondary=film_coment,back_populates="films")
     rating_films :Mapped[list["RatingFilm"]] = relationship("RatingFilm",back_populates="film",lazy = "selectin")
+    fans:Mapped[list["User"] ] = relationship("User",secondary=user_film,back_populates="likefilms")
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    update_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        nullable=False
-    )
+    path_image:Mapped[str] =  mapped_column(nullable=True)
 
 class User(base.UUIDBase):
     __tablename__ = "users"
-    
+
     password:Mapped[str] 
 
     username:Mapped[str] 
 
     email:Mapped[ str]
-
     datetimenow:Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now(datetime.timezone.utc))
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True),
@@ -139,5 +146,15 @@ class User(base.UUIDBase):
     )
     coment_users:Mapped[list["Coment"]] =relationship(secondary=user_coment,back_populates="users")
     rating_users:Mapped[list["RatingFilm"]] = relationship("RatingFilm",back_populates="user")
+    """friends: Mapped[list["User"]] = relationship(
+        "User",
+        secondary=user_frends,
+        primaryjoin=foreign(user_frends.c.user_id) == id,
+        secondaryjoin=foreign(user_frends.c.friend_id) == id,
+        backref="friend_of",
+        lazy="selectin"
+    )"""
+
+    likefilms:Mapped[list["Film"]] = relationship(back_populates="fans",secondary=user_film,lazy="selectin")
     update_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     

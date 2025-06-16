@@ -1,9 +1,11 @@
+from __future__ import annotations
 from pydantic import BaseModel,Field
 from typing import Optional,List
 import uuid
 import datetime
 from app.model.model_coment import ComentResponse
 from app.model.model_ratingfilms import RatingFilmResponse
+from app.model.model_film import FilmResponse
 class UserCreateRequest(BaseModel):
     username: str
     email: str
@@ -25,6 +27,13 @@ class UserResponse(BaseModel):
     update_at:Optional[datetime.datetime] = None
     coments: List[ComentResponse]= []
     ratings:List[RatingFilmResponse] = []
+    likefilms:List[FilmResponse] = None
+    #friends: List[UserResponseFrends]=[]
     model_config = {
         "from_attributes": True
     }
+#class UserResponseFrends(BaseModel):
+    #friends: List[UserResponse]=[]
+
+class AddFilmUserResponse(BaseModel):
+    film_id:uuid.UUID

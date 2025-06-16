@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="../css/reg.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.6.0/css/all.css">
+	<title>Регистрация</title>
+</head>
+<body>
+	<div class="wrapper">
+		<h1>Регестрация</h1>
+		<form action="/user" method="post" enctype= "multipart/form-data">
+			<div class="input_box">
+				<i class="fa-solid fa-user"></i>
+				<input type="text" placeholder="Ввод имя пользователя " name="username" required>
+				
+			</div>
+			<div class="input_box">
+				<i class="fa-regular fa-envelope"></i>
+				<input type="text" placeholder="Ввод почты" name="email" required>
+				
+			</div>
+			<div class="input_box">
+				<i class="fa-solid fa-key"></i>
+				<input type="password" placeholder="Пароль" name="password" required>
+			</div>
+			<button type = "submit"class="btn">Зарегистрироваться </button>
+		</form>
+	</div>
+
+</body>
+</html>

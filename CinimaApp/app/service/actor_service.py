@@ -12,7 +12,7 @@ class ActorService(Base_Service):
                 if not await is_fistname_lastname(self.repo.model,self.repo.session,data):
                     raise HTTPException(detail="Такой актёр уже есть ",status_code=400)
                 return await super().create_model(data, name_title_value)
-            raise HTTPException("Что не так с оценкой возможно не находится в дипозоне 1 от 7", status_code = 400)
+            raise HTTPException("Что не так с оценкой возможно не находится в дипозоне 1 от 10", status_code = 400)
         raise HTTPException("Что не так сдадой рождения возможно не находится дипозоне 2025  или 1945" ,status_code=404)
     async def update_model(self, model_id, data):
         if await validate_is_data_range(data[list_serach_date[1]],"actor"):

@@ -13,11 +13,12 @@ class FilmService(Base_Service):
                                     name_or_title_value=data[list_serach_name_title[3]]):
                     raise HTTPException(status_code=409, detail="Фильм с таким названием есть уже существует")
                 else:
+                    data["path_image"]= "../images/cat.jpg"
                     return await super().create_model(data, name_title_value)
             else :
-                raise HTTPException("Что не так с оценкой", status_code = 400)
+                raise HTTPException("Что не так с оценкой   возможно не находится в дипозоне 1 от 10", status_code = 400)
         else:
-            raise HTTPException("Что не так с датой", status_code = 400)
+            raise HTTPException("Что не так с датой возможно ненаходится в дипозоне 1995 от 2025", status_code = 400)
     async def update_model(self, model_id, data):
         if await validate_is_data_range(data[list_serach_date[0]],"film"):
             if await validet_star_rating(data,list_serach_rating[1]):
@@ -29,10 +30,10 @@ class FilmService(Base_Service):
             else:
                 raise HTTPException("Что не так с оценкой возможно не находится в дипозоне 1 от 10", status_code = 400)
         else:
-            raise HTTPException("Что не так с датой", status_code = 400)
+            raise HTTPException("Что не так с датой  возможно ненаходится в дипозоне 1995 от 2025", status_code = 400)
     async def add_actors_film_model(self,actor_list:list[UUID],film_id:UUID):
         return await self.repo.add_list_actor_id(actor_list,film_id)
     async def add_authors_film_model(self,author_list:list[UUID],film_id:UUID):
-        return await self.repo.add_list_author_id(author_list,film_id)
+        return await self.repo.add_list_author_id(author_list,film_id) 
     async def get_film_title(self,title:str):
-        return await self.repo.get_films_title(title)
+        return await self.repo.get_films_title_list(title)

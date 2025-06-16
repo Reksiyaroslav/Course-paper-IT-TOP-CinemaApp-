@@ -21,6 +21,7 @@ class FilmUpdateRequest(BaseModel):
     actor_ids:List[uuid.UUID] =None
     author_ids:List[uuid.UUID]=None
     coment_ids:List[uuid.UUID]=None
+    path_images:Optional[str] = None
 
 class FilmResponse(BaseModel):
     id:uuid.UUID
@@ -34,6 +35,7 @@ class FilmResponse(BaseModel):
     ratings:List[RatingFilmResponse] = []
     created_at:Optional[datetime.datetime] = None
     update_at:Optional[datetime.datetime] = None
+    path_image:Optional[str] = "../images/cat.jpg"
     model_config = {
         "from_attributes": True
     }
