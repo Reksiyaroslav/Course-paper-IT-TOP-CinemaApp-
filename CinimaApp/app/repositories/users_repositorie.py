@@ -45,7 +45,7 @@ class UserRepository(ModelRepository):
         if bcrypt.checkpw(password_send_hath,password_hath_user):
             return user
         return None
-    async def add_frinde(self,user_id:UUID,friend_id:UUID):
+    """async def add_frinde(self,user_id:UUID,friend_id:UUID):
         user = await self.get_model_id(user_id)
         friend = await self.get_model_id(friend_id)
         if not user:
@@ -58,7 +58,7 @@ class UserRepository(ModelRepository):
             await self.session.refresh(user)
         else:
             raise ValueError("Пользователь уже есть в друзьях")
-        return user
+        return user"""
     async def add_licefilm(self,user_id:UUID,film_id:UUID):
         film_repo = FilmRepository(self.session)
         user = await self.get_model_id(user_id)

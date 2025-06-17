@@ -10,16 +10,11 @@ header{
     padding: 10px 20px;
     background: linear-gradient(90deg, #bc2673,#8bbb06);
 }
-
 header a{
     padding: 10px 20px;
     text-decoration: none;
     font-size: 17px;
     color: blueviolet;
-}
-main{
-    flex-grow: 1;
-    background: 30px antiquewhite;
 }
 header h1{
     font-size: 30px;
@@ -33,25 +28,4 @@ header a:hover{
 }
 header li{
     list-style: none;
-}
-footer{
-    flex-direction: row;
-    flex-shrink: 0;
-    justify-content: center;
-    align-items: center;
-    border-radius: 40px;
-    background:   linear-gradient(90deg, #00bfff,#cbca4b) ;
-    margin-top: auto;
-   
-}
-footer i{
-    color: blue;
-    transition: 1.5s;
-    font-size: 40px;
-    padding: 10px 20px;
-}
-footer i:hover{
-    color: aquamarine;
-    transform: translateY(-10px);
-    transition: 0.5s;
 }
