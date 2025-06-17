@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DB_URL_DEV: postgresql+asyncpg://postgres:postgres@db:5432/postgres
+    ports:
+      - "90:90"
+    command: ["litestar", "run", "--host", "0.0.0.0", "--port", "90"]
+
+volumes:
+  pgdata:
