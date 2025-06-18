@@ -1,6 +1,7 @@
 from litestar import get, post, Controller, delete, put, Request
 from litestar.params import Body, Dependency
 from app.model.model_user import UserCreateRequest, UserResponse, UserUpdateRequest
+from app.model.model_film import FilmlListResponse,FilmResponse
 from app.repositories.users_repositorie import UserRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
@@ -88,7 +89,15 @@ class UserControlle(Controller):
         if not user:
             raise HTTPException(status_code=404, detail="Not user")
         return UserResponse.from_orm(user)
-
+    @get("/id/{user_id:uuid}/likefilms")
+    async def get_lickifilms(self,user_id:UUID,async_session: AsyncSession)->FilmlListResponse:
+        user_service = get_service(
+            UserService, UserRepository, async_session=async_session
+        )
+        films = await user_service.get_list_likefilm(user_id)
+        film_reposns = [FilmResponse.from_orm(film) for film in films]
+        return FilmlListResponse(films=film_reposns)
+        
     @put("/id/{user_id:uuid}", summary="Update user")
     async def update_user(
         self, user_id: UUID, data: UserUpdateRequest, async_session: AsyncSession

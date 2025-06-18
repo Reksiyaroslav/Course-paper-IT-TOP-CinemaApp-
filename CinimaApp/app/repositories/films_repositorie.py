@@ -91,7 +91,10 @@ class FilmRepository(ModelRepository):
         await self.session.commit()
         await self.session.refresh(film)
         return film   
-   
+    async def get_film_film_ids(self,film_ids:list[UUID]):
+        smt =  select(Film).where(Film.id.in_(film_ids))
+        result = await self.session.execute(smt)
+        return result.scalars().all()
     async def get_film_title(self,film_titel)->Film:
         smt = select(Film).where(Film.title==film_titel)
         relutt = await self.session.execute(smt)

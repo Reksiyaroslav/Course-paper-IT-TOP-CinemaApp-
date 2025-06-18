@@ -74,7 +74,17 @@ class UserRepository(ModelRepository):
         else:
             raise ValueError("Уже есть в списке пользователя")
         return user
-
+    
+    async def get_list_licefilm(self,user_id:UUID):
+       
+        film_repo = FilmRepository(self.session)
+        user = await self.get_model_id(user_id)
+        if not user:
+            raise ValueError("Нет такого пользователя")
+        film_ids = [likefilm.id for likefilm in user.likefilms]
+        films = await film_repo.get_film_film_ids(film_ids)
+        return films
+            
 
     async def add_coment_user(self,user_id:UUID,coment:Coment):
         user = await self.get_model_id(user_id)

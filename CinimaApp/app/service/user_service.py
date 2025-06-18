@@ -44,3 +44,5 @@ class UserService(Base_Service):
 
     async def get_password_and_username(self, username: str, password: str):
         return await self.repo.get_username_password(username, password)
+    async def get_list_likefilm(self,user_id:UUID):
+        return await self.repo.get_list_licefilm(user_id)
