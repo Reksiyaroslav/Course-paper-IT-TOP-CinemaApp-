@@ -7,6 +7,8 @@ from app.model.model_film import (
     AddAuthorFilsmResponse,
     AddActorFilsmResponse,
 )
+from app.model.model_actor import ActorResponse
+from app.model.model_author import AuthorResponse
 from app.repositories.films_repositorie import FilmRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
@@ -58,6 +60,22 @@ class FilmControlle(Controller):
         film_service = get_service(FilmService, FilmRepository, async_session)
         film = await film_service.get_model(film_id)
         return FilmResponse.from_orm(film)
+
+    @get("id/{film_id:uuid}/actors")
+    async def get_actor_list(
+        self, film_id: UUID, async_session: AsyncSession
+    ) -> list[ActorResponse]:
+        film_service = get_service(FilmService, FilmRepository, async_session)
+        actors = await film_service.get_list_actor(film_id)
+        return [ActorResponse.from_orm(actor) for actor in actors]
+
+    @get("id/{film_id:uuid}/authors")
+    async def get_author_list(
+        self, film_id: UUID, async_session: AsyncSession
+    ) -> list[AuthorResponse]:
+        film_service = get_service(FilmService, FilmRepository, async_session)
+        authors = await film_service.get_list_author(film_id)
+        return [AuthorResponse.from_orm(author) for author in authors]
 
     @get("titel/{film_titel:str}")
     async def get_filim_titel(

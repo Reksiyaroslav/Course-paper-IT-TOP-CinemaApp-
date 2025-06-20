@@ -1,24 +1,27 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.model_db.model_db import Coment
-from app.db.model_db.model_db import Film,User
-from sqlalchemy import select,delete
+from app.db.model_db.model_db import Film, User
+from sqlalchemy import select, delete
 from app.repositories.repostoried import ModelRepository
 import uuid
 from app.repositories.users_repositorie import UserRepository
 from app.repositories.films_repositorie import FilmRepository
+
+
 class ComentRepository(ModelRepository):
     def __init__(self, session: AsyncSession):
-        super().__init__(session,model=Coment)
+        super().__init__(session, model=Coment)
+
     async def create_coment(self, data):
         coment = Coment(
             description=data["description"],
             countheart=data["countheart"],
-            countdemon=data["countdemon"]
+            countdemon=data["countdemon"],
         )
-        
+
         film_repo = FilmRepository(self.session)
         user_repo = UserRepository(self.session)
-        
+
         film = await film_repo.get_model_id(data["film_id"])
         if film is None:
             raise ValueError(f"User with id {data['film_id']} not found")
@@ -27,7 +30,7 @@ class ComentRepository(ModelRepository):
             raise ValueError(f"User with id {data['user_id']} not found")
         coment.films.append(film)
         coment.users.append(user)
-        
+
         async with self.session.begin():
             self.session.add(coment)
         await self.session.commit()
