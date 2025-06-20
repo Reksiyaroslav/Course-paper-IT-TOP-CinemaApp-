@@ -17,6 +17,7 @@ docker compose build
 
 uvicorn app.run:app --host 0.0.0.0 --port 90
 или litestar run .
+После перехода по ссылке добавляете /schema , а  если нужны ручки добавте после schema swagger
 
 Если не хотите делать docker то можно изменить env:
 PG_PASSWORD=youpassword
