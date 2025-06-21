@@ -13,6 +13,8 @@ pip install -r requirements.txt
 1.Создайте файл .env на основе .env.example и укажите необходимые переменные окружения.
 2. Создание образа на в docker:
 docker compose build
+Для запуска прораммы 
+docker compose  up -d 
 3.Запустите приложение:
 
 uvicorn app.run:app --host 0.0.0.0 --port 90

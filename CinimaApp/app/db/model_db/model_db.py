@@ -18,7 +18,6 @@ from sqlalchemy import (
     UniqueConstraint,
     UUID as SA_UUID,
 )
-from sqlalchemy import MetaData
 from advanced_alchemy.base import AdvancedDeclarativeBase
 
 film_actor = Table(
