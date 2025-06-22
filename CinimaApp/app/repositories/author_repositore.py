@@ -21,8 +21,8 @@ class AuthorRepository(ModelRepository):
 
     async def get_author_fistname_latname_pat_list(self, author_name: str) -> Author:
         smt = select(Author).where(
-            (Author.fistName == author_name)
-            | (Author.lastName == author_name)
+            (Author.fistname == author_name)
+            | (Author.lastname == author_name)
             | (Author.patronymic == author_name)
         )
         relult = await self.session.execute(smt)
