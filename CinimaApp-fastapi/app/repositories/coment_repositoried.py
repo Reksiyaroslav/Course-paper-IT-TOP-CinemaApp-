@@ -1,6 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.model_db.model_db import Coment
-from app.db.model_db.model_db import Film, User
+from app.db.model.model_db import Film, User, Coment
 from sqlalchemy import select, delete
 from app.repositories.repostoried import ModelRepository
 import uuid
@@ -31,8 +30,6 @@ class ComentRepository(ModelRepository):
         coment.films.append(film)
         coment.users.append(user)
 
-        async with self.session.begin():
-            self.session.add(coment)
         await self.session.commit()
         await self.session.refresh(coment)
         return coment

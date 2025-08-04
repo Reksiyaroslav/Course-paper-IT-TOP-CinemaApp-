@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="../css/log.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.6.0/css/all.css">
+	<title>Вход </title>
+</head>
+<body>
+	<div class="wrapper">
+		<h1>Loging</h1>
+		<form action="/user/name{username}/password{password}" method="get">
+			<div class="input_box">
+				<i class="fa-solid fa-user"></i>
+				<input type="text"  name = "username"placeholder="Имя пользователя">
+				
+			</div>
+			<div class="input_box">
+				<i class="fa-solid fa-key"></i>
+				<input type="password" name ="password"placeholder="Пароль">
+				
+			</div>
+			<div class="button_a">
+				<button type ="submit" class="btn">Войти</button>
+				<a href="reg.html">Регестрация</a>
+			</div>
+			
+		</form>
+		
+	</div>	
+
+</body>
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const username = this.username.value;
+    const password = this.password.value;
+    window.location.href = `/user/name/${encodeURIComponent(username)}/password/${encodeURIComponent(password)}`;
+});
+</script>
+</html>

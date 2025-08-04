@@ -1,0 +1,31 @@
+.df{
+    display: flex;;
+}
+header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    border-radius: 40px;
+    padding: 10px 20px;
+    background: linear-gradient(90deg, #bc2673,#8bbb06);
+}
+header a{
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 17px;
+    color: blueviolet;
+}
+header h1{
+    font-size: 30px;
+    color: cadetblue;
+    transition: 1.2s;
+}
+header a:hover{
+    font-size: 18px;
+    color: chocolate;
+    transition: 1.7s;
+}
+header li{
+    list-style: none;
+}
