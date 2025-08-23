@@ -37,11 +37,9 @@ class ActorService(Base_Service):
                     if await validet_star_rating(data, "star"):
                         if not await is_fistname_lastname(
                             self.repo.model, self.repo.session, data
-                        ):
-                            raise HTTPException(
+                        ):raise HTTPException(
                                 detail="Такой актёр уже есть ", status_code=400
                             )
-
                     raise HTTPException(
                         detail="Что не так с оценкой возможно не находится в дипозоне 1 от 7",
                         status_code=400,
@@ -57,11 +55,7 @@ class ActorService(Base_Service):
             raise HTTPException(status_code=424, detail="Нет такой актера часть имени ")
         return await self.repo.get_actorname(name.strip())
 
-    async def get_serahc_name_list(self, name: str):
+    async def get_serahc_name_list(self, name: str,limint:int):
         if not name or not name.strip():
             raise HTTPException(status_code=424, detail="Нет такой актера часть имени ")
-        elif len(name) < 2:
-            raise HTTPException(
-                status_code=400, detail="Имя актера должно быть не меньше 2 сиволов  "
-            )
-        return await self.repo.get_actorname(name.strip())
+        return await self.repo.get_actorname(name.strip(),limint)

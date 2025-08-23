@@ -1,10 +1,9 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from typing import Dict, List
-from app.db.engine import get_session
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.scheme.model_user import UserCreateRequest, UserResponse, UserUpdateRequest
 from app.service.user_service import UserService
 from app.repositories.users_repositorie import UserRepository
+from app.scheme.model_film import FilmResponse
 from app.service.factory import get_service
 from uuid import UUID
 
@@ -60,3 +59,17 @@ async def delete_user(
     if not user:
         raise HTTPException(detail="Not user the db", status_code=404)
     return {"message": "Delete the db"}
+@user_router.post("/{user_id}/like_film/{film_id}")
+async def  add_likefilm(user_id:UUID,film_id:UUID,async_session: SessionDep )->UserResponse:
+    users_servers = await get_service(UserService, UserRepository, async_session)
+    user = await users_servers.add_film(user_id,film_id)
+    if not user:
+        raise HTTPException(detail="Not user the db", status_code=404)
+    return UserResponse.from_orm(user)
+@user_router.get("/likefilm/{user_id}")
+async def  get_list_likelilm(user_id:UUID,async_session: SessionDep)->List[FilmResponse]:
+    users_servers = await get_service(UserService, UserRepository, async_session)
+    films = await users_servers.get_list_likefilm(user_id)
+    if not films:
+        raise HTTPException(detail="Не ту списко фильмовы у пользователя ", status_code=404)
+    return [FilmResponse.from_orm(film) for film in films]

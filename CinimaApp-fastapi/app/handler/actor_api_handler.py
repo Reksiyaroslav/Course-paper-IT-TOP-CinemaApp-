@@ -1,5 +1,5 @@
 from typing import Dict, List
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException,Query
 from app.scheme.model_actor import ActorCreateRequest, ActorResponse, ActorUpdateRequest
 from app.repositories.actors_repositorie import ActorRepository
 from app.service.factory import get_service
@@ -12,7 +12,7 @@ actor_router = APIRouter(prefix="/actor", tags=["Actor"])
 
 
 @actor_router.post("/")
-async def create_user(
+async def create_actor(
     data: ActorCreateRequest, async_session: SessionDep 
 ) -> ActorResponse:
     actor_servers = await get_service(ActorService, ActorRepository, async_session)
@@ -63,14 +63,14 @@ async def get_name_actors(
     return ActorResponse.from_orm(actor)
 
 
-@actor_router.put("/update/{user_id}")
-async def update_user(
+@actor_router.put("/update/{actor_id}")
+async def update_actor(
     data: ActorUpdateRequest,
-    user_id: UUID,
+    actor_id: UUID,
     async_session:  SessionDep
 ) -> ActorResponse:
     actor_servers = await get_service(ActorService, ActorRepository, async_session)
-    actor = await actor_servers.update_model(user_id, data.dict())
+    actor = await actor_servers.update_model(actor_id, data.dict())
     if not actor:
         raise HTTPException(detail="Не найдено такой актёр", status_code=404)
     return ActorResponse.from_orm(actor)

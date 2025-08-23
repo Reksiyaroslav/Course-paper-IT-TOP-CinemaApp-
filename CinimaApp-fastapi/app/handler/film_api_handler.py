@@ -61,22 +61,22 @@ async def get_film_and_film_id(
     return FilmResponse.from_orm(film)
 
 
-@film_router.get("/get_actor/{film_id}")
+@film_router.get("/get_actors/{film_id}")
 async def get_actor_and_film(
     film_id: UUID, async_session: SessionDep 
-) -> ActorResponse:
+) -> List[ActorResponse]:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
-    film = await film_servise.get_list_actor(film_id)
-    return ActorResponse.from_orm(film)
+    actors = await film_servise.get_list_actor(film_id)
+    return [ActorResponse.from_orm(actor) for actor in actors ]
 
 
-@film_router.get("/get_author/{film_id}")
+@film_router.get("/get_authors/{film_id}")
 async def get_author_and_film(
     film_id: UUID, async_session: SessionDep 
-) -> AuthorResponse:
+) -> List[AuthorResponse]:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
-    film = await film_servise.get_list_author(film_id)
-    return AuthorResponse.from_orm(film)
+    authors = await film_servise.get_list_author(film_id)
+    return [AuthorResponse.from_orm(author) for  author in authors ]
 
 
 @film_router.get("/get_title_film/{film_title}")
@@ -112,7 +112,7 @@ async def update_film_film_id(
     async_session: SessionDep ,
 ) -> FilmResponse:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
-    film = await film_servise.update_model(film_id, data.dict())
+    film = await film_servise.update_model(film_id, data.actor_ids)
     if not film:
         raise HTTPException(
             detail="Нету такого фильма ", status_code=status.HTTP_404_NOT_FOUND
@@ -127,7 +127,7 @@ async def add_actor_film(
     async_session: SessionDep ,
 ) -> FilmResponse:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
-    film = await film_servise.add_actors_film_model(film_id, data.dict())
+    film = await film_servise.add_actors_film_model(film_id, data.actor_ids)
     if not film:
         raise HTTPException(
             detail="Нету такого фильма ", status_code=status.HTTP_404_NOT_FOUND

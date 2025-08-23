@@ -3,11 +3,14 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import date, timedelta
 from app.list.list_searhc import list_serach_name_title, list_serach_rating
 import bcrypt
-from fastapi import Depends
+from fastapi import Depends,Query
 from app.db.engine import get_session
 from typing_extensions import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
-
+limit =Query(10,ge=1,le=50) 
+limint_name  = Query(10,ge=8,le=30)
+limint_film_title =Query(...,min_length=3,description="Пойск фильма по названию можно только с три сиволо") 
+limint_actor_or_author_filstmane_lastname_pat =Query(...,min_length=3,description="Пойск человека  по имени , фамилий т.д  можно только с три сиволо")
 SessionDep  = Annotated[AsyncSession,Depends(get_session)]
 YEARS_FILMS = 30
 YEARS_ACTOR = 80

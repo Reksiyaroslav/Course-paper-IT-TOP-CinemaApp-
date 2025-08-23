@@ -72,11 +72,11 @@ class FilmService(Base_Service):
     async def add_authors_film_model(self, film_id: UUID, author_list: list[UUID]):
         return await self.repo.add_list_author_id(author_list, film_id)
 
-    async def get_film_titles(self, titles: str):
-        return await self.repo.get_films_title_list(titles)
+    async def get_film_titles(self, titles: str,limint:int):
+        return await self.repo.get_films_title_list(titles,limint)
 
-    async def get_film_title(self, title: str):
-        return await self.repo.get_film_title(title)
+    async def get_film_title(self, title: str,limint:int):
+        return await self.repo.get_film_title(title,limint)
 
     async def get_list_actor(self, film_id: UUID):
         return await self.repo.get_list_actor(film_id)
