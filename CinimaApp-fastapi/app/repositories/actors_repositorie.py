@@ -19,13 +19,17 @@ class ActorRepository(ModelRepository):
         actor = result.scalars().first()
         return actor
 
-    async def get_actorname_list(self, name: str,limit) -> Actor:
-        serhat_parametr =  f"%{name}%"
-        smt = select(Actor).where(
-            (Actor.fistname.ilike(serhat_parametr))
-            | (Actor.lastname.ilike(serhat_parametr))
-            | (Actor.patronymic.ilike(serhat_parametr))
-        ).limit(limit)
+    async def get_actorname_list(self, name: str, limit) -> Actor:
+        serhat_parametr = f"%{name}%"
+        smt = (
+            select(Actor)
+            .where(
+                (Actor.fistname.ilike(serhat_parametr))
+                | (Actor.lastname.ilike(serhat_parametr))
+                | (Actor.patronymic.ilike(serhat_parametr))
+            )
+            .limit(limit)
+        )
         result = await self.session.execute(smt)
         actor = result.scalars().all()
         return actor

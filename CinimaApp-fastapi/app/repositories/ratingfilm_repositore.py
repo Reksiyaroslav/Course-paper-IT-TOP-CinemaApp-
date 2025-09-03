@@ -1,46 +1,29 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.model.model_db import RatingFilm
+from app.db.model.model_db import RatingFilm, Film
 from sqlalchemy import select, delete, update
 from uuid import UUID
 from app.repositories.repostoried import ModelRepository
+from typing import Dict
 
 
 class RatingFilmRepository(ModelRepository):
     def __init__(self, session: AsyncSession):
         super().__init__(session=session, model=RatingFilm)
 
-    async def add_upadate_rating_user_and_film(
-        self, film_id: UUID, user_id: UUID, rating: int
-    ):
-        async with self.session.begin():
-            smt = select(RatingFilm).where(
-                RatingFilm.film_id == film_id, RatingFilm.user_id == user_id
-            )
-            relult = await self.session.execute(smt)
-            exitst = relult.scalars().first()
+    async def create_ratingfilm(self, data: Dict, user_id: UUID, film_id: UUID):
+        rating_film = RatingFilm(**data, user_id=user_id, film_id=film_id)
+        self.session.add(rating_film)
+        await self.session.commit()
+        await self.session.refresh(rating_film)
+        return rating_film
 
-            if exitst:
-                exitst.rating = rating
-                rating_obj = exitst.rating
-            else:
-                rating_obj = RatingFilm(user_id=user_id, film_id=film_id, rating=rating)
-                self.session.add(rating_obj)
-            await self.session.refresh(rating_obj)
-            return rating_obj
-
-    async def get_list_film_rating(self, film_id: UUID):
-        smt = select(RatingFilm).where(RatingFilm.film_id == film_id)
-        relut = await self.session.execute(smt)
-        return relut.scalars().all()
-
-    async def get_list_user_rating(self, user_id: UUID):
-        smt = select(RatingFilm).where(RatingFilm.user_id == user_id)
-        relut = await self.session.execute(smt)
-        return relut.scalars().all()
-
-    async def get_user_film_rating(self, film_id: UUID, user_id: UUID):
-        smt = select(RatingFilm).where(
-            RatingFilm.film_id == film_id, RatingFilm.user_id == user_id
-        )
-        relut = await self.session.execute(smt)
-        return relut.scalars().first()
+    async def average_rating_film(self, film_id: UUID):
+        smnt = select(Film).where(Film.id == film_id)
+        relult = await self.session.execute(smnt)
+        film = relult.scalars().one()
+        ratings_film = film.rating_films
+        average_rating = 0
+        for rating_film in ratings_film:
+            average_rating += rating_film.rating
+        average_rating /= len(film.rating_films)
+        return average_rating

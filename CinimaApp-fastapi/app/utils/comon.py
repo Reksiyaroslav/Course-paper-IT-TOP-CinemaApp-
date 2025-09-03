@@ -3,15 +3,25 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import date, timedelta
 from app.list.list_searhc import list_serach_name_title, list_serach_rating
 import bcrypt
-from fastapi import Depends,Query
+from fastapi import Depends, Query
 from app.db.engine import get_session
 from typing_extensions import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
-limit =Query(10,ge=1,le=50) 
-limint_name  = Query(10,ge=8,le=30)
-limint_film_title =Query(...,min_length=3,description="Пойск фильма по названию можно только с три сиволо") 
-limint_actor_or_author_filstmane_lastname_pat =Query(...,min_length=3,description="Пойск человека  по имени , фамилий т.д  можно только с три сиволо")
-SessionDep  = Annotated[AsyncSession,Depends(get_session)]
+from faker import Faker
+from random import randint
+
+limit = Query(10, ge=1, le=50)
+limint_name = Query(10, ge=8, le=30)
+limint_film_title = Query(
+    ..., min_length=3, description="Пойск фильма по названию можно только с три сиволо"
+)
+limint_actor_or_author_filstmane_lastname_pat = Query(
+    ...,
+    min_length=3,
+    description="Пойск человека  по имени , фамилий т.д  можно только с три сиволо",
+)
+SessionDep = Annotated[AsyncSession, Depends(get_session)]
+faker = Faker()
 YEARS_FILMS = 30
 YEARS_ACTOR = 80
 
@@ -21,6 +31,18 @@ async def is_name_title(model, session, name_filed, name_or_title_value) -> bool
     relut = await session.execute(smt)
     extit = relut.scalars().first() is None
     return extit
+
+
+def generatao_bio() -> str:
+    return faker.text(max_nb_chars=500)
+
+
+def generatao_destripsion() -> str:
+    return faker.text(max_nb_chars=200)
+
+
+def generator_star() -> int:
+    return randint(1, 5)
 
 
 async def is_fistname_lastname(mode, session, dict_data):
@@ -38,20 +60,20 @@ async def validate_is_data_range(value: date, type_obj: str) -> bool:
         min_date = today - timedelta(YEARS_FILMS * 365)
         if value > today or value < min_date:
             return False
-    elif type_obj == "actor" or type_obj == "author":
+    elif type_obj in ["actor", "author"]:
         min_date = today - timedelta(YEARS_ACTOR * 365)
-        if value > today or value <= min_date:
+        if value > today or value < min_date:
             return False
     return True
 
 
 async def validet_star_rating(dict: dict, filed_name: str):
     if filed_name == list_serach_rating[0]:
-        if dict[filed_name] <= 1 or dict[filed_name] >= 10:
+        if dict[filed_name] < 1 or dict[filed_name] > 10:
             return False
         return True
     elif filed_name == list_serach_rating[1]:
-        if dict[filed_name] <= 1 or dict[filed_name] >= 10:
+        if dict[filed_name] < 1 or dict[filed_name] > 10:
             return False
         return True
     return False

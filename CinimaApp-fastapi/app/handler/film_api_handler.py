@@ -16,6 +16,7 @@ from app.service.factory import get_service
 from typing import List, Dict
 from uuid import UUID
 from app.utils.comon import SessionDep
+
 """
 Сдесь сделано api для фильмов 
 методы:
@@ -36,7 +37,7 @@ film_router = APIRouter(prefix="/film", tags=["Film"])
 
 @film_router.post("/")
 async def create_film(
-    data: FilmCreateRequest, async_session: SessionDep 
+    data: FilmCreateRequest, async_session: SessionDep
 ) -> FilmResponse:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
     film = await film_servise.create_model(data.dict())
@@ -45,7 +46,7 @@ async def create_film(
 
 @film_router.get("s/")
 async def get_films(
-    async_session: SessionDep ,
+    async_session: SessionDep,
 ) -> List[FilmResponse]:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
     films = await film_servise.get_models()
@@ -54,7 +55,7 @@ async def get_films(
 
 @film_router.get("/{film_id}")
 async def get_film_and_film_id(
-    film_id: UUID, async_session: SessionDep 
+    film_id: UUID, async_session: SessionDep
 ) -> FilmResponse:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
     film = await film_servise.get_model(film_id)
@@ -63,26 +64,24 @@ async def get_film_and_film_id(
 
 @film_router.get("/get_actors/{film_id}")
 async def get_actor_and_film(
-    film_id: UUID, async_session: SessionDep 
+    film_id: UUID, async_session: SessionDep
 ) -> List[ActorResponse]:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
     actors = await film_servise.get_list_actor(film_id)
-    return [ActorResponse.from_orm(actor) for actor in actors ]
+    return [ActorResponse.from_orm(actor) for actor in actors]
 
 
 @film_router.get("/get_authors/{film_id}")
 async def get_author_and_film(
-    film_id: UUID, async_session: SessionDep 
+    film_id: UUID, async_session: SessionDep
 ) -> List[AuthorResponse]:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
     authors = await film_servise.get_list_author(film_id)
-    return [AuthorResponse.from_orm(author) for  author in authors ]
+    return [AuthorResponse.from_orm(author) for author in authors]
 
 
 @film_router.get("/get_title_film/{film_title}")
-async def get_film_title(
-    film_title: str, async_session: SessionDep 
-) -> FilmResponse:
+async def get_film_title(film_title: str, async_session: SessionDep) -> FilmResponse:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
     film = await film_servise.get_film_title(film_title)
     if not film:
@@ -94,7 +93,7 @@ async def get_film_title(
 
 @film_router.get("/get_titles_film/{film_titles}")
 async def get_film_titles(
-    film_titles: str, async_session: SessionDep 
+    film_titles: str, async_session: SessionDep
 ) -> List[FilmResponse]:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
     films = await film_servise.get_film_titles(film_titles)
@@ -109,7 +108,7 @@ async def get_film_titles(
 async def update_film_film_id(
     film_id: UUID,
     data: FilmUpdateRequest,
-    async_session: SessionDep ,
+    async_session: SessionDep,
 ) -> FilmResponse:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
     film = await film_servise.update_model(film_id, data.actor_ids)
@@ -124,7 +123,7 @@ async def update_film_film_id(
 async def add_actor_film(
     film_id: UUID,
     data: AddActorFilsmResponse,
-    async_session: SessionDep ,
+    async_session: SessionDep,
 ) -> FilmResponse:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
     film = await film_servise.add_actors_film_model(film_id, data.actor_ids)
@@ -139,7 +138,7 @@ async def add_actor_film(
 async def add_author_film(
     film_id: UUID,
     data: AddAuthorFilsmResponse,
-    async_session: SessionDep ,
+    async_session: SessionDep,
 ) -> FilmResponse:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
     film = await film_servise.add_author_film_model(film_id, data.dict())
@@ -152,7 +151,7 @@ async def add_author_film(
 
 @film_router.delete("/delete/{film_id}/")
 async def delete_film_film_id(
-    film_id: UUID, async_session: SessionDep 
+    film_id: UUID, async_session: SessionDep
 ) -> Dict[str, str]:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
     film = await film_servise.delete_model(film_id)

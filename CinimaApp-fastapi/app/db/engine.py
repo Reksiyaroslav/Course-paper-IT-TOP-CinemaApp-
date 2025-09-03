@@ -6,7 +6,7 @@ from app.db.model.model_db import Base
 load_dotenv()
 
 DB_URL = os.getenv("DB_URL_DEV")
-enigine = create_async_engine(url=DB_URL,echo = True)
+enigine = create_async_engine(url=DB_URL, echo=True)
 
 new_session = async_sessionmaker(enigine, expire_on_commit=False)
 

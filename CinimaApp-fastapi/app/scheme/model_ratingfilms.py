@@ -7,8 +7,6 @@ from uuid import UUID
 
 class RatingFilmCreateRequest(BaseModel):
     rating: int
-    film_id: UUID
-    user_id: UUID
 
 
 class RatingFilmUpdateRequest(BaseModel):
@@ -17,8 +15,6 @@ class RatingFilmUpdateRequest(BaseModel):
 
 class RatingFilmResponse(BaseModel):
     id: uuid.UUID
-    film_id: Optional[UUID] = None
-    user_id: Optional[UUID]
     rating: Optional[int] = None
     created_at: Optional[datetime.datetime] = None
     update_date: Optional[datetime.datetime] = None

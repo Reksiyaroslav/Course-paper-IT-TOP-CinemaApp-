@@ -1,15 +1,16 @@
 import datetime
 import uuid
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
+from app.utils.comon import faker, generatao_bio
 
 
 class AuthorCreateRequest(BaseModel):
-    fistname: str
-    lastname: str
-    birth_date: datetime.date
-    patronymic: str
-    bio: str
+    fistname: str = Field(default_factory=faker.first_name)
+    lastname: str = Field(default_factory=faker.last_name)
+    birth_date: datetime.date = Field(default_factory=faker.date_of_birth)
+    patronymic: str = Field(default_factory=faker.first_name)
+    bio: str = Field(default_factory=generatao_bio)
 
 
 class AuthorUpdateRequest(BaseModel):

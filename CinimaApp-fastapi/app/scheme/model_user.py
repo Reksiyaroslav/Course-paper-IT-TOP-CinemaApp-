@@ -6,12 +6,13 @@ import datetime
 from app.scheme.model_coment import ComentResponse
 from app.scheme.model_ratingfilms import RatingFilmResponse
 from app.scheme.model_film import FilmResponse
+from app.utils.comon import faker
 
 
 class UserCreateRequest(BaseModel):
-    username: str
-    email: str
-    password: str
+    username: str = Field(default_factory=faker.user_name)
+    email: str = Field(default_factory=faker.email)
+    password: str = Field(default_factory=faker.password)
 
 
 class UserUpdateRequest(BaseModel):

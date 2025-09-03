@@ -10,31 +10,24 @@ class AuthorService(Base_Service):
         super().__init__(repo)
 
     async def create_model(self, data, name_title_value=None):
-        if list_serach_date[1] in data and data[list_serach_date[1]] is not None:
-            if await validate_is_data_range(data[list_serach_date[1]], "actor"):
-                if not await is_fistname_lastname(
-                    self.repo.model, self.repo.session, data
-                ):raise HTTPException(
-                        detail="Такой актёр уже есть ", status_code=400
-                    )     
+        if not validate_is_data_range(data[list_serach_date[1]], "author"):
             raise HTTPException(
-                detail="Что не так сдадой рождения возможно не находится дипозоне 2025  или 1945",
+                detail="Что не так с дадой рождения возможно не находится дипозоне 1945-2025",
                 status_code=400,
             )
+        elif not await is_fistname_lastname(self.repo.model, self.repo.session, data):
+            raise HTTPException(detail="Такой  автор существует", status_code=400)
         return await super().create_model(data, name_title_value)
 
     async def update_model(self, model_id, data):
-        if list_serach_date[1] in data and data[list_serach_date[1]] is not None:
-            if await validate_is_data_range(data[list_serach_date[1]], "actor"):
-                if not await is_fistname_lastname(
-                    self.repo.model, self.repo.session, data
-                ):raise HTTPException(
-                        detail="Такой актёр уже есть ", status_code=400
-                    )
+        if not validate_is_data_range(data[list_serach_date[1]], "author"):
             raise HTTPException(
-                detail="Что не так сдадой рождения возможно не находится дипозоне 2025  или 1945",
+                detail="Что не так сдадой рождения возможно не находится дипозоне 1945-2025",
                 status_code=400,
             )
+        elif not await is_fistname_lastname(self.repo.model, self.repo.session, data):
+            raise HTTPException(detail="Тайокй автор сосиствует", status_code=400)
+
         return await super().update_model(model_id, data)
 
     async def get_fistname_lastname_pat(self, name: str):

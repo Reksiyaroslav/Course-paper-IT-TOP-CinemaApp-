@@ -14,8 +14,7 @@ from app.db.model.model_db import (
 from app.db.engine import get_session, enigine
 from sqlalchemy import select, func
 import bcrypt
-
-faker = Faker()
+from app.utils.comon import faker
 
 
 async def init_db():

@@ -42,18 +42,6 @@ author_ciema = Table(
     Column("film_id", ForeignKey("films.id"), primary_key=True),
     Column("author_id", ForeignKey("authors.id"), primary_key=True),
 )
-user_coment = Table(
-    "user_coment",
-    Base.metadata,
-    Column("user_id", ForeignKey("users.id"), primary_key=True),
-    Column("coment_id", ForeignKey("coments.id"), primary_key=True),
-)
-film_coment = Table(
-    "film_coment",
-    Base.metadata,
-    Column("film_id", ForeignKey("films.id"), primary_key=True),
-    Column("coment_id", ForeignKey("coments.id"), primary_key=True),
-)
 user_film = Table(
     "fans_user",
     Base.metadata,
@@ -71,12 +59,15 @@ user_frends = Table(
 
 class RatingFilm(Base):
 
-    __table_args__ = (UniqueConstraint("user_id", "film_id", name="uix_user_film"),)
     rating: Mapped[int] = mapped_column(Integer, nullable=False)
     film_id: Mapped[UUID] = mapped_column(ForeignKey("films.id"), nullable=False)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
-    user: Mapped["User"] = relationship("User", back_populates="rating_users")
-    film: Mapped["Film"] = relationship("Film", back_populates="rating_films")
+    user: Mapped["User"] = relationship(
+        "User", back_populates="rating_users", lazy="selectin"
+    )
+    film: Mapped["Film"] = relationship(
+        "Film", back_populates="rating_films", lazy="selectin"
+    )
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -111,19 +102,21 @@ class Author(Base):
 class Coment(Base):
 
     description: Mapped[str]
-    countheart: Mapped[int]
-    countdemon: Mapped[int]
+    countheart: Mapped[int] = mapped_column(default=0)
+    countdemon: Mapped[int] = mapped_column(default=0)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     updated_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-    users: Mapped[list["User"]] = relationship(
-        secondary=user_coment, back_populates="coment_users", lazy="selectin"
+    film_id: Mapped[UUID] = mapped_column(ForeignKey("films.id"), nullable=False)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user: Mapped[list["User"]] = relationship(
+        "User", back_populates="coments", lazy="selectin"
     )
-    films: Mapped[list["Film"]] = relationship(
-        secondary=film_coment, back_populates="films_comnet", lazy="selectin"
+    film: Mapped[list["Film"]] = relationship(
+        "Film", back_populates="coments", lazy="selectin"
     )
 
 
@@ -165,11 +158,11 @@ class Film(Base):
         secondary=film_actor, back_populates="films_acted", lazy="selectin"
     )
     estimation: Mapped[int]
-    films_comnet: Mapped[list[Coment]] = relationship(
-        secondary=film_coment, back_populates="films"
+    coments: Mapped[list[Coment]] = relationship(
+        "Coment", back_populates="film", lazy="selectin"
     )
     rating_films: Mapped[list["RatingFilm"]] = relationship(
-        "RatingFilm", back_populates="film", lazy="raise"
+        "RatingFilm", back_populates="film", lazy="selectin"
     )
     fans: Mapped[list["User"]] = relationship(
         "User", secondary=user_film, back_populates="likefilms"
@@ -193,11 +186,11 @@ class User(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-    coment_users: Mapped[list["Coment"]] = relationship(
-        secondary=user_coment, back_populates="users"
+    coments: Mapped[list["Coment"]] = relationship(
+        "Coment", back_populates="user", lazy="selectin"
     )
     rating_users: Mapped[list["RatingFilm"]] = relationship(
-        "RatingFilm", back_populates="user"
+        "RatingFilm", back_populates="user", lazy="selectin"
     )
     """friends: Mapped[list["User"]] = relationship(
         "User",
