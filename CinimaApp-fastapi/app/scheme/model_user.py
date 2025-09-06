@@ -42,5 +42,18 @@ class UserResponse(BaseModel):
 # friends: List[UserResponse]=[]
 
 
+
+class  UserRensponseAdmin(BaseModel):
+    id:uuid.UUID
+    username :str
+    email : str
+    password:str
+    coments: List[ComentResponse] = []
+    ratings: List[RatingFilmResponse] = []
+    likefilms: List[FilmResponse] = []
+    # friends: List[UserResponseFrends]=[]
+    model_config = {"from_attributes": True}
+    
+
 class AddFilmUserResponse(BaseModel):
     film_id: uuid.UUID

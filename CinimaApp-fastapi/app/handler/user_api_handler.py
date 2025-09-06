@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import Dict, List
-from app.scheme.model_user import UserCreateRequest, UserResponse, UserUpdateRequest
+from app.scheme.model_user import UserCreateRequest, UserResponse, UserUpdateRequest,UserRensponseAdmin
 from app.service.user_service import UserService
 from app.repositories.users_repositorie import UserRepository
 from app.scheme.model_film import FilmResponse
@@ -30,7 +30,13 @@ async def get_users(
     users = await users_servers.get_models()
     return [UserResponse.from_orm(user) for user in users]
 
-
+@user_router.get("s/admin/")
+async def get_admin_users(
+    async_session: SessionDep,
+) -> List[UserRensponseAdmin]:
+    users_servers = await get_service(UserService, UserRepository, async_session)
+    users = await users_servers.get_models()
+    return [UserRensponseAdmin.from_orm(user) for user in users]
 @user_router.get("/{user_id}")
 async def get_user(user_id: UUID, async_session: SessionDep) -> UserResponse:
     users_servers = await get_service(UserService, UserRepository, async_session)
