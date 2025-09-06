@@ -4,6 +4,7 @@ from sqlalchemy import select, delete, update
 from uuid import UUID
 from app.repositories.repostoried import ModelRepository
 from typing import Dict
+import datetime
 
 
 class RatingFilmRepository(ModelRepository):
@@ -27,3 +28,21 @@ class RatingFilmRepository(ModelRepository):
             average_rating += rating_film.rating
         average_rating /= len(film.rating_films)
         return average_rating
+    async def update_rating_user_id(self, user_id:UUID, data:dict):
+        smnt = select(RatingFilm).where(RatingFilm.user_id==user_id)
+        relult = await self.session.execute(smnt)
+        rating_film = relult.scalars().one()
+        if not rating_film:
+            return None
+        for key,value in  data.items():
+            if value is not None and hasattr(rating_film, key):
+                    setattr(rating_film, key, value)
+            if hasattr(rating_film, "update_at"):
+                setattr(rating_film, "update_at", datetime.datetime.utcnow())
+
+        await self.session.commit()
+        await self.session.refresh(rating_film)
+        return rating_film
+        
+           
+

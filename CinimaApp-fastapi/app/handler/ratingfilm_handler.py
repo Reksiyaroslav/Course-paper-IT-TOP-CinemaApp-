@@ -2,6 +2,7 @@ from app.scheme.model_ratingfilms import (
     RatingFilmCreateRequest,
     RatingFilmResponse,
     RatingFilmUpdateRequest,
+    RatingFilmResponseAdmin
 )
 from app.repositories.ratingfilm_repositore import RatingFilmRepository
 from app.service.ratingfilms_service import RatingFilmService
@@ -47,7 +48,13 @@ async def get_rating_id(
     )
     rating = await rating_sev.get_model(rating_id)
     return RatingFilmResponse.from_orm(rating)
-
+@rating_router.get("/admin/rating/")
+async def get_list_admin_rating(async_session:SessionDep)->List[RatingFilmResponseAdmin]:
+    rating_sev = await get_service(
+        RatingFilmService, RatingFilmRepository, async_session
+    )
+    ratings = await rating_sev.get_models()
+    return [RatingFilmResponseAdmin.from_orm(rating) for rating in ratings]
 
 @rating_router.get("/average/{film_id}")
 async def average_rating_film(
@@ -71,7 +78,13 @@ async def update_rating(
     if not rating:
         raise HTTPException(detail="Нету такого ратинга", status_code=404)
     return RatingFilmResponse.from_orm(rating)
-
+@rating_router.put("/update/{user_id}")
+async def update_rating_user_id(data:RatingFilmUpdateRequest,async_session:SessionDep,user_id:UUID)->RatingFilmResponse:
+    rating_sev = await get_service(RatingFilmService,RatingFilmRepository,async_session)
+    rating = await rating_sev.update_rating_user_id(data.dict(),user_id)
+    if not rating:
+        raise HTTPException(detail="Not rating db")
+    return RatingFilmResponse.from_orm(rating)
 
 @rating_router.delete("/delet/{rating_id}")
 async def delete_rating(rating_id: UUID, async_session: SessionDep) -> dict[str, str]:
