@@ -1,5 +1,5 @@
 import datetime
-import uuid
+
 from pydantic import BaseModel
 from typing import List, Optional
 from uuid import UUID
@@ -14,8 +14,18 @@ class RatingFilmUpdateRequest(BaseModel):
 
 
 class RatingFilmResponse(BaseModel):
-    id: uuid.UUID
+    id: UUID
     rating: Optional[int] = None
     created_at: Optional[datetime.datetime] = None
-    update_date: Optional[datetime.datetime] = None
+    update_at: Optional[datetime.datetime] = None
     model_config = {"from_attributes": True}
+
+class RatingFilmResponseAdmin(BaseModel):
+    id:UUID
+    film_id:UUID
+    user_id:UUID
+    rating:Optional[int] =None
+    created_at: Optional[datetime.datetime] = None
+    update_at: Optional[datetime.datetime] = None
+    model_config = {"from_attributes": True}
+
