@@ -93,7 +93,7 @@ async def get_rating_and_film(
     film_id: UUID, async_session: SessionDep
 ) -> List[RatingFilmResponse]:
     film_servise = await get_service(FilmService, FilmRepository, async_session)
-    ratings = await film_servise.get_list_coment(film_id)
+    ratings = await film_servise.get_list_rating(film_id)
     return [RatingFilmResponse.from_orm(rating) for rating in ratings]
 
 @film_router.get("/get_title_film/{film_title}")
