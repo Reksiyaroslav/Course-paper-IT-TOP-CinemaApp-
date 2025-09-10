@@ -52,4 +52,4 @@ class ActorService(Base_Service):
     async def get_serahc_name_list(self, name: str, limint: int):
         if not name or not name.strip():
             raise HTTPException(status_code=424, detail="Нет такой актера часть имени ")
-        return await self.repo.get_actorname(name.strip(), limint)
+        return await self.repo.get_actorname_list(name.strip(), limint)

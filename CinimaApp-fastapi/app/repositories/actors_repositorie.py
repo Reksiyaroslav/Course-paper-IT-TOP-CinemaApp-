@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.model.model_db import Actor
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete,or_
 from app.repositories.repostoried import ModelRepository
 import uuid
 
@@ -19,14 +19,16 @@ class ActorRepository(ModelRepository):
         actor = result.scalars().first()
         return actor
 
-    async def get_actorname_list(self, name: str, limit) -> Actor:
+    async def get_actorname_list(self, name: str, limit:int=3) -> Actor:
         serhat_parametr = f"%{name}%"
         smt = (
             select(Actor)
             .where(
-                (Actor.fistname.ilike(serhat_parametr))
-                | (Actor.lastname.ilike(serhat_parametr))
-                | (Actor.patronymic.ilike(serhat_parametr))
+                or_(
+                    Actor.fistname.contains(serhat_parametr),
+                    Actor.lastname.contains(serhat_parametr),
+                    Actor.patronymic.contains(serhat_parametr)
+                )
             )
             .limit(limit)
         )

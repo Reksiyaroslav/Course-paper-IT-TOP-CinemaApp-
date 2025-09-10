@@ -4,8 +4,7 @@ from app.scheme.model_actor import ActorCreateRequest, ActorResponse, ActorUpdat
 from app.repositories.actors_repositorie import ActorRepository
 from app.service.factory import get_service
 from app.service.actor_service import ActorService
-from app.utils.comon import SessionDep
-
+from app.utils.comon import SessionDep, limit
 from uuid import UUID
 
 actor_router = APIRouter(prefix="/actor", tags=["Actor"])
@@ -53,13 +52,13 @@ async def get_name_actor(fistname_latname_pat: str, async_session: SessionDep):
 
 @actor_router.get("/name_actors/{fistname_latname_pat}")
 async def get_name_actors(
-    fistname_latname_pat: str, async_session: SessionDep
-) -> ActorResponse:
+    fistname_latname_pat: str, async_session: SessionDep,limit
+) -> List[ActorResponse]:
     actor_sev = await get_service(ActorService, ActorRepository, async_session)
-    actor = await actor_sev.get_serahc_name_list(fistname_latname_pat)
-    if not actor:
-        raise HTTPException(detail="Не найдено такой актёр", status_code=404)
-    return ActorResponse.from_orm(actor)
+    actors = await actor_sev.get_serahc_name_list(fistname_latname_pat,limit)
+    if not actors:
+        raise HTTPException(detail="Не найдено такой актёров", status_code=404)
+    return [ActorResponse.from_orm(actor) for actor in actors]
 
 
 @actor_router.put("/update/{actor_id}")
