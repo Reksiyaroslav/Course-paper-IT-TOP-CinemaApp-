@@ -28,6 +28,12 @@ class Base(DeclarativeBase):
     id: Mapped[uuid.UUID] = mapped_column(
         primary_key=True, unique=True, nullable=False, default=uuid.uuid4
     )
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
 
 film_actor = Table(
@@ -68,12 +74,7 @@ class RatingFilm(Base):
     film: Mapped["Film"] = relationship(
         "Film", back_populates="rating_films", lazy="selectin"
     )
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-    update_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+
 
 
 class Author(Base):
@@ -91,12 +92,7 @@ class Author(Base):
     films_authored: Mapped[list["Film"]] = relationship(
         secondary=author_ciema, back_populates="authors"
     )
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-    update_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+
 
 
 class Coment(Base):
@@ -104,12 +100,6 @@ class Coment(Base):
     description: Mapped[str]
     countheart: Mapped[int] = mapped_column(default=0)
     countdemon: Mapped[int] = mapped_column(default=0)
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-    updated_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
     film_id: Mapped[UUID] = mapped_column(ForeignKey("films.id"), nullable=False)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
     user: Mapped[list["User"]] = relationship(
@@ -134,12 +124,6 @@ class Actor(Base):
     films_acted: Mapped[list["Film"]] = relationship(
         secondary=film_actor, back_populates="actors"
     )
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-    update_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
 
 
 class Film(Base):
@@ -149,7 +133,7 @@ class Film(Base):
     title: Mapped[str]
 
     release_date: Mapped[datetime.date]
-
+    
     authors: Mapped[list[Author]] = relationship(
         secondary=author_ciema, back_populates="films_authored", lazy="selectin"
     )
@@ -167,9 +151,7 @@ class Film(Base):
     fans: Mapped[list["User"]] = relationship(
         "User", secondary=user_film, back_populates="likefilms"
     )
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    
     path_image: Mapped[str] = mapped_column(nullable=True)
 
 
@@ -182,9 +164,6 @@ class User(Base):
     email: Mapped[str]
     datetimenow: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.now
-    )
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     coments: Mapped[list["Coment"]] = relationship(
         "Coment", back_populates="user", lazy="selectin"
@@ -204,6 +183,4 @@ class User(Base):
     likefilms: Mapped[list["Film"]] = relationship(
         back_populates="fans", secondary=user_film, lazy="selectin"
     )
-    update_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+   
