@@ -1,7 +1,7 @@
 from sqlalchemy import select, and_
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import date, timedelta
-from app.list.list_searhc import list_serach_name_title, list_serach_rating
+from app.list.list_searhc import list_serach_name_title, list_serach_rating,list_blocked_text
 import bcrypt
 from fastapi import Depends, Query
 from app.db.engine import get_session
@@ -67,17 +67,29 @@ async def validate_is_data_range(value: date, type_obj: str) -> bool:
     return True
 
 
-async def validet_star_rating(dict: dict, filed_name: str):
-    if filed_name == list_serach_rating[0]:
-        if dict[filed_name] < 1 or dict[filed_name] > 10:
-            return False
-        return True
-    elif filed_name == list_serach_rating[1]:
+async def validet_star_rating(dict: dict, filed_name: str)->bool:
+    if filed_name == list_serach_rating[0] or  filed_name == list_serach_rating[1] or filed_name==list_serach_rating[2]:
         if dict[filed_name] < 1 or dict[filed_name] > 10:
             return False
         return True
     return False
+async def validet_text_coment(dict:dict,filed_name:str)->bool:
+    if  filed_name  not in dict:
+       return False
+    text_value = dict.get(filed_name)
+    if text_value is None or not isinstance(text_value,str):
+        return False
+    if not text_value.strip():
+        return False
+    text_lower = text_value.lower().strip()
+    for block_text in list_blocked_text:
+        if block_text in text_lower:
+            return False
+    return True
+       
 
+        
+    
 
 def hath_password(password: str):
     password_byte = password.encode("utf-8")
@@ -90,3 +102,4 @@ def auth_password(password_user: str, password_api: str):
     password_api_byte = password_api.encode("utf-8")
     password_user_byte = password_user.encode("utf-8")
     return bcrypt.checkpw(password_user_byte, password_api_byte)
+
