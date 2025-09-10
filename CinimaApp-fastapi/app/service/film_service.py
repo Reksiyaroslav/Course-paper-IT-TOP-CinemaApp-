@@ -78,3 +78,7 @@ class FilmService(Base_Service):
 
     async def get_list_author(self, film_id: UUID):
         return await self.repo.get_list_author(film_id)
+    async def get_list_coment(self,film_id:UUID):
+        return await self.repo.get_list_comnet(film_id)
+    async def get_list_rating(self,film_id:UUID):
+        return await self.repo.get_list_rating(film_id)

@@ -3,6 +3,8 @@ from app.service.film_service import FilmService
 from app.repositories.films_repositorie import FilmRepository
 from app.scheme.model_actor import ActorResponse
 from app.scheme.model_author import AuthorResponse
+from app.scheme.model_ratingfilms import RatingFilmResponse
+from app.scheme.model_coment import ComentResponse
 from app.scheme.model_film import (
     FilmCreateRequest,
     FilmResponse,
@@ -79,6 +81,20 @@ async def get_author_and_film(
     authors = await film_servise.get_list_author(film_id)
     return [AuthorResponse.from_orm(author) for author in authors]
 
+@film_router.get("/get_coments/{film_id}")
+async def get_coment_and_film(
+    film_id: UUID, async_session: SessionDep
+) -> List[ComentResponse]:
+    film_servise = await get_service(FilmService, FilmRepository, async_session)
+    coments = await film_servise.get_list_coment(film_id)
+    return [ComentResponse.from_orm(coments) for coments in coments]
+@film_router.get("/get_ratings/{film_id}")
+async def get_rating_and_film(
+    film_id: UUID, async_session: SessionDep
+) -> List[RatingFilmResponse]:
+    film_servise = await get_service(FilmService, FilmRepository, async_session)
+    ratings = await film_servise.get_list_coment(film_id)
+    return [RatingFilmResponse.from_orm(rating) for rating in ratings]
 
 @film_router.get("/get_title_film/{film_title}")
 async def get_film_title(film_title: str, async_session: SessionDep) -> FilmResponse:

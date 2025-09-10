@@ -42,7 +42,8 @@ class FilmRepository(ModelRepository):
         stmt = (
             select(Film)
             .where(Film.id == film_id)
-            .options(selectinload(Film.actors), selectinload(Film.authors))
+            .options(selectinload(Film.actors), selectinload(Film.authors),
+                     selectinload(Film.coments),selectinload(Film.rating_films))
         )
         relult = await self.session.execute(stmt)
         return relult.scalar_one_or_none()
@@ -100,6 +101,12 @@ class FilmRepository(ModelRepository):
     async def get_list_author(self, film_id: UUID):
         film = await self.get_film_relations(film_id=film_id)
         return film.authors
+    async def get_list_coment(self,film_id:UUID):
+        film =  await self.get_film_relations(film_id)
+        return film.coments
+    async def get_list_rating(self,film_id:UUID):
+        film =  await self.get_film_relations(film_id)
+        return film.rating_films
 
     async def get_films_title_list(self, film_titel) -> list[Film]:
         smt = select(Film).where(Film.title == film_titel)
