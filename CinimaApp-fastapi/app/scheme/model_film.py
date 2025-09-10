@@ -35,7 +35,7 @@ class FilmResponse(BaseModel):
     authors: List[AuthorResponse] = None
     actors: List[ActorResponse] = None
     coments: List[ComentResponse] = []
-    ratings: List[RatingFilmResponse] = []
+    rating_films: List[RatingFilmResponse] = []
     created_at: Optional[datetime.datetime] = None
     update_at: Optional[datetime.datetime] = None
     path_image: Optional[str] = "../images/cat.jpg"
