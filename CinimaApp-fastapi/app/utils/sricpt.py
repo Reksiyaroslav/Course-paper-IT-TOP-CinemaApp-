@@ -6,8 +6,8 @@ from app.db.model.model_db import (
     User,
     Actor,
     Author,
-    user_film,
-    author_ciema,
+    user_film_like,
+    author_cinema,
     film_actor,
     Base,
 )
@@ -43,7 +43,7 @@ async def seend_database():
         session.add_all(actors)
         await session.commit()
         # Создание автора
-        for _ in range(0, 30):
+        for _ in range(0, 10):
             author = Author(
                 fistname=faker.first_name(),
                 lastname=faker.last_name(),
@@ -69,40 +69,37 @@ async def seend_database():
         session.add_all(users)
         await session.commit()
         # Создание фильмов
-        for _ in range(1, 100):
+        for _ in range(1, 20):
             film = Film(
                 title=faker.catch_phrase(),
                 description=faker.text(max_nb_chars=500),
                 release_date=faker.date_between(start_date="-30y", end_date="today"),
-                estimation=random.randint(1, 10),
                 path_image="../images/cat.jpg",
             )
             films.append(film)
         session.add_all(films)
-        await session.commit()
         for film_obj in films:
             select_actor = random.sample(actors, random.randint(1, 4))
             for actor in select_actor:
-                smt = film_actor.insert().values(film_id=film_obj.id, actor_id=actor.id)
+                smt = film_actor.insert().values(film_id=film_obj.film_id, actor_id=actor.actor_id)
                 await session.execute(smt)
             select_auhtor = random.sample(authors, random.randint(1, 3))
             for author in select_auhtor:
-                smt = author_ciema.insert().values(
-                    film_id=film_obj.id, author_id=author.id
+                smt = author_cinema.insert().values(
+                    film_id=film_obj.film_id, author_id=author.author_id
                 )
                 await session.execute(smt)
-        await session.commit()
         for user in users:
             num_lice = random.randint(0, 10)
             if num_lice > 0 and films:
                 like_film = random.sample(films, min(num_lice, len(films)))
             for film_obj in like_film:
-                smt = user_film.insert().values(user_id=user.id, film_id=film_obj.id)
+                smt = user_film_like.insert().values(user_id=user.user_id, film_id=film_obj.film_id)
                 await session.execute(smt)
         await session.commit()
-    actors_count = await session.scalar(select(func.count(Actor.id)))
-    users_count = await session.scalar(select(func.count(User.id)))
-    films_count = await session.scalar(select(func.count(Film.id)))
+    actors_count = await session.scalar(select(func.count(Actor.actor_id)))
+    users_count = await session.scalar(select(func.count(User.user_id)))
+    films_count = await session.scalar(select(func.count(Film.film_id)))
 
     print(
         f"База заполнена! Актеры: {actors_count}, Фильмы: {films_count}, Пользователи: {users_count}"

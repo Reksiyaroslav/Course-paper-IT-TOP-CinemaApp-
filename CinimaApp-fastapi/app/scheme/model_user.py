@@ -1,29 +1,29 @@
 from __future__ import annotations
 from pydantic import BaseModel, Field
+from pydantic import EmailStr
 from typing import Optional, List
 import uuid
 import datetime
 from app.scheme.model_coment import ComentResponse
 from app.scheme.model_ratingfilms import RatingFilmResponse
-from app.scheme.model_film import FilmResponse
+from app.scheme.model_film import FilmResponseBlocFilm
 from app.utils.comon import faker
 
 
 class UserCreateRequest(BaseModel):
-    username: str = Field(default_factory=faker.user_name)
-    email: str = Field(default_factory=faker.email)
-    password: str = Field(default_factory=faker.password)
+    username: str = Field(...,min_length=5,max_length=60,default_factory=faker.user_name)
+    email: EmailStr = Field(default_factory=faker.email)
+    password: str = Field(...,min_length=9,max_length=15,default_factory=faker.password)
 
 
 class UserUpdateRequest(BaseModel):
-    username: Optional[str] = None
-    email: Optional[str] = None
-    password: Optional[str] = None
-    coment_ids: List[uuid.UUID] = None
+    username: Optional[str] = Field(min_length=5,max_length=60)
+    email: Optional[EmailStr] = None
+    password: Optional[str] = Field(min_length=9,max_length=15)
 
 
 class UserResponse(BaseModel):
-    id: uuid.UUID
+    user_id: uuid.UUID
     username: str
     email: str
     datetimenow: Optional[datetime.datetime] = Field(
@@ -33,7 +33,7 @@ class UserResponse(BaseModel):
     update_at: Optional[datetime.datetime] = None
     coments: List[ComentResponse] = []
     ratings: List[RatingFilmResponse] = []
-    likefilms: List[FilmResponse] = []
+    likefilms: List[FilmResponseBlocFilm] = []
     # friends: List[UserResponseFrends]=[]
     model_config = {"from_attributes": True}
 
@@ -42,18 +42,17 @@ class UserResponse(BaseModel):
 # friends: List[UserResponse]=[]
 
 
-
-class  UserRensponseAdmin(BaseModel):
-    id:uuid.UUID
-    username :str
-    email : str
-    password:str
+class UserRensponseAdmin(BaseModel):
+    user_id: uuid.UUID
+    username: str
+    email: str
+    password: str
     coments: List[ComentResponse] = []
     ratings: List[RatingFilmResponse] = []
-    likefilms: List[FilmResponse] = []
+    likefilms: List[FilmResponseBlocFilm] = []
     # friends: List[UserResponseFrends]=[]
     model_config = {"from_attributes": True}
-    
+
 
 class AddFilmUserResponse(BaseModel):
     film_id: uuid.UUID

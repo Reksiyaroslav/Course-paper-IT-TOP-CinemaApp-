@@ -22,7 +22,7 @@ class AuthorUpdateRequest(BaseModel):
 
 
 class AuthorResponse(BaseModel):
-    id: uuid.UUID
+    author_id: uuid.UUID
     fistname: Optional[str] = None
     lastname: Optional[str] = None
     patronymic: Optional[str] = None

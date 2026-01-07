@@ -10,19 +10,19 @@ class ActorCreateRequest(BaseModel):
     lastname: str = Field(default_factory=faker.last_name)
     birth_date: datetime.date = Field(default_factory=faker.date_of_birth)
     patronymic: str = Field(default_factory=faker.first_name)
-    star: int = Field(default_factory=generator_star)
+    star: int = Field(gt=1,lt=7,default_factory=generator_star)
 
 
 class ActorUpdateRequest(BaseModel):
     fistname: Optional[str] = None
     lastname: Optional[str] = None
     patronymic: Optional[str] = None
-    star: Optional[int] = None
+    star: Optional[int] = Field(gt=1,lt=7)
     birth_date: Optional[datetime.date] = None
 
 
 class ActorResponse(BaseModel):
-    id: uuid.UUID
+    actor_id: uuid.UUID
     fistname: Optional[str] = None
     lastname: Optional[str] = None
     patronymic: Optional[str] = None

@@ -2,11 +2,11 @@ import datetime
 import uuid
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from app.utils.comon import generatao_destripsion
+
 
 
 class ComentCreateRequest(BaseModel):
-    description: str = Field(default_factory=generatao_destripsion)
+    description: str 
 
 
 class ComentUpdateRequest(BaseModel):
@@ -14,7 +14,7 @@ class ComentUpdateRequest(BaseModel):
 
 
 class ComentResponse(BaseModel):
-    id: uuid.UUID
+    coment_id: uuid.UUID
     description: Optional[str] = None
     countheart: Optional[int] = Field(default_factory=0)
     countdemon: Optional[int] = Field(default_factory=0)

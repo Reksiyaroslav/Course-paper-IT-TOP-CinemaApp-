@@ -1,5 +1,4 @@
 from sqlalchemy import select, and_
-from sqlalchemy.exc import SQLAlchemyError
 from datetime import date, timedelta
 from app.list.list_searhc import list_serach_name_title, list_serach_rating,list_blocked_text
 import bcrypt
@@ -20,11 +19,11 @@ limint_actor_or_author_filstmane_lastname_pat = Query(
     min_length=3,
     description="Пойск человека  по имени , фамилий т.д  можно только с три сиволо",
 )
+
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 faker = Faker()
 YEARS_FILMS = 30
 YEARS_ACTOR = 80
-
 
 async def is_name_title(model, session, name_filed, name_or_title_value) -> bool:
     smt = select(model).where(getattr(model, name_filed) == name_or_title_value)
@@ -32,18 +31,14 @@ async def is_name_title(model, session, name_filed, name_or_title_value) -> bool
     extit = relut.scalars().first() is None
     return extit
 
-
 def generatao_bio() -> str:
     return faker.text(max_nb_chars=500)
-
 
 def generatao_destripsion() -> str:
     return faker.text(max_nb_chars=200)
 
-
 def generator_star() -> int:
     return randint(1, 5)
-
 
 async def is_fistname_lastname(mode, session, dict_data):
     fields = list_serach_name_title[:3]
@@ -68,7 +63,7 @@ async def validate_is_data_range(value: date, type_obj: str) -> bool:
 
 
 async def validet_star_rating(dict: dict, filed_name: str)->bool:
-    if filed_name == list_serach_rating[0] or  filed_name == list_serach_rating[1] or filed_name==list_serach_rating[2]:
+    if filed_name == list_serach_rating[0]:
         if dict[filed_name] < 1 or dict[filed_name] > 10:
             return False
         return True
@@ -86,17 +81,12 @@ async def validet_text_coment(dict:dict,filed_name:str)->bool:
         if block_text in text_lower:
             return False
     return True
-       
-
-        
-    
 
 def hath_password(password: str):
     password_byte = password.encode("utf-8")
     salf = bcrypt.gensalt()
     hash = bcrypt.hashpw(password_byte, salf)
     return hash.decode("utf-8")
-
 
 def auth_password(password_user: str, password_api: str):
     password_api_byte = password_api.encode("utf-8")

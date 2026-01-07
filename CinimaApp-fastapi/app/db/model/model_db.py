@@ -15,8 +15,6 @@ from sqlalchemy import (
     DateTime,
     func,
     Integer,
-    UniqueConstraint,
-    UUID,
 )
 
 
@@ -25,9 +23,6 @@ class Base(DeclarativeBase):
     def __tablename__(cls):
         return f"{cls.__name__.lower()}s"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        primary_key=True, unique=True, nullable=False, default=uuid.uuid4
-    )
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -39,148 +34,139 @@ class Base(DeclarativeBase):
 film_actor = Table(
     "film_actor",
     Base.metadata,
-    Column("film_id", ForeignKey("films.id"), primary_key=True),
-    Column("actor_id", ForeignKey("actors.id"), primary_key=True),
+    Column("film_id", ForeignKey("films.film_id"), primary_key=True),
+    Column("actor_id", ForeignKey("actors.actor_id"), primary_key=True),
 )
-author_ciema = Table(
+
+author_cinema = Table(
     "author_ciema",
     Base.metadata,
-    Column("film_id", ForeignKey("films.id"), primary_key=True),
-    Column("author_id", ForeignKey("authors.id"), primary_key=True),
+    Column("film_id", ForeignKey("films.film_id"), primary_key=True),
+    Column("author_id", ForeignKey("authors.author_id"), primary_key=True),
 )
-user_film = Table(
+user_film_like = Table(
     "fans_user",
     Base.metadata,
-    Column("film_id", ForeignKey("films.id"), primary_key=True),
-    Column("user_id", ForeignKey("users.id"), primary_key=True),
+    Column("film_id", ForeignKey("films.film_id"), primary_key=True),
+    Column("user_id", ForeignKey("users.user_id"), primary_key=True),
 )
-"""""
-user_frends = Table(
-    "user_frends",
-    AdvancedDeclarativeBase.metadata,
-   Column("friend_id",ForeignKey("users.id"),primary_key= True),
-    Column("user_id",ForeignKey("users.id"),primary_key=True)
-)""" ""
-
 
 class RatingFilm(Base):
-
-    rating: Mapped[int] = mapped_column(Integer, nullable=False)
-    film_id: Mapped[UUID] = mapped_column(ForeignKey("films.id"), nullable=False)
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    rating_id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+    )
+    rating: Mapped[int] = mapped_column(Integer, default=0)
+    film_id: Mapped[UUID] = mapped_column(ForeignKey("films.film_id"), nullable=False)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.user_id"), nullable=False)
     user: Mapped["User"] = relationship(
-        "User", back_populates="rating_users", lazy="selectin"
+        "User", back_populates="rating_users"
     )
     film: Mapped["Film"] = relationship(
-        "Film", back_populates="rating_films", lazy="selectin"
+        "Film", back_populates="rating_films"
     )
-
 
 
 class Author(Base):
+    author_id: Mapped[uuid.UUID] = mapped_column(
+            primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+    )
+    fistname: Mapped[str] =mapped_column(nullable=False)
 
-    fistname: Mapped[str]
+    lastname: Mapped[str]=mapped_column(nullable=False)
 
-    lastname: Mapped[str]
+    birth_date: Mapped[datetime.date] =mapped_column(nullable=False)
 
-    birth_date: Mapped[datetime.date]
+    patronymic: Mapped[str]=mapped_column(nullable=True)
 
-    patronymic: Mapped[str]
-
-    bio: Mapped[str]
+    bio: Mapped[str] =mapped_column(nullable=True)
 
     films_authored: Mapped[list["Film"]] = relationship(
-        secondary=author_ciema, back_populates="authors"
+        secondary=author_cinema, back_populates="authors"
     )
-
 
 
 class Coment(Base):
-
+    coment_id: Mapped[uuid.UUID] = mapped_column(
+            primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+    )
     description: Mapped[str]
     countheart: Mapped[int] = mapped_column(default=0)
     countdemon: Mapped[int] = mapped_column(default=0)
-    film_id: Mapped[UUID] = mapped_column(ForeignKey("films.id"), nullable=False)
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
-    user: Mapped[list["User"]] = relationship(
-        "User", back_populates="coments", lazy="selectin"
+    film_id: Mapped[UUID] = mapped_column(ForeignKey("films.film_id"), nullable=False)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.user_id"), nullable=False)
+    user: Mapped["User"] = relationship(
+        "User", back_populates="coments"
     )
-    film: Mapped[list["Film"]] = relationship(
-        "Film", back_populates="coments", lazy="selectin"
+    film: Mapped["Film"] = relationship(
+        "Film", back_populates="coments"
     )
 
 
 class Actor(Base):
+    actor_id: Mapped[uuid.UUID] = mapped_column(
+            primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+    )
+    fistname: Mapped[str] = mapped_column(nullable=False)
 
-    fistname: Mapped[str]
+    lastname: Mapped[str] =mapped_column(nullable=False)
 
-    lastname: Mapped[str]
+    patronymic: Mapped[str] = mapped_column(nullable=True)
 
-    patronymic: Mapped[str]
     star: Mapped[int] = mapped_column(default=0)
 
-    birth_date: Mapped[datetime.date]
-
+    birth_date: Mapped[datetime.date]=mapped_column(nullable=False)
+ 
     films_acted: Mapped[list["Film"]] = relationship(
         secondary=film_actor, back_populates="actors"
     )
 
 
 class Film(Base):
+    film_id: Mapped[uuid.UUID] = mapped_column(
+            primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+    )
+    description: Mapped[str]=mapped_column(nullable=True)
 
-    description: Mapped[str]
+    title: Mapped[str] =mapped_column(nullable=False)
 
-    title: Mapped[str]
-
-    release_date: Mapped[datetime.date]
-    
+    release_date: Mapped[datetime.date]=mapped_column(nullable=True)
+    avg_rating :Mapped[float] = mapped_column(nullable=True,default=0)
     authors: Mapped[list[Author]] = relationship(
-        secondary=author_ciema, back_populates="films_authored", lazy="selectin"
+        secondary=author_cinema, back_populates="films_authored"
     )
-
     actors: Mapped[list[Actor]] = relationship(
-        secondary=film_actor, back_populates="films_acted", lazy="selectin"
+        secondary=film_actor, back_populates="films_acted"
     )
-    estimation: Mapped[int]
     coments: Mapped[list[Coment]] = relationship(
-        "Coment", back_populates="film", lazy="selectin"
+        "Coment", back_populates="film"
     )
     rating_films: Mapped[list["RatingFilm"]] = relationship(
-        "RatingFilm", back_populates="film", lazy="selectin"
+        "RatingFilm", back_populates="film"
     )
     fans: Mapped[list["User"]] = relationship(
-        "User", secondary=user_film, back_populates="likefilms"
+        "User", secondary=user_film_like, back_populates="likefilms"
     )
-    
     path_image: Mapped[str] = mapped_column(nullable=True)
 
 
 class User(Base):
+    user_id: Mapped[uuid.UUID] = mapped_column(
+            primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+    )
+    password: Mapped[str] =mapped_column(nullable=False)
 
-    password: Mapped[str]
+    username: Mapped[str] =mapped_column(nullable=False)
 
-    username: Mapped[str]
-
-    email: Mapped[str]
+    email: Mapped[str] =mapped_column(nullable=False)
     datetimenow: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.now
     )
     coments: Mapped[list["Coment"]] = relationship(
-        "Coment", back_populates="user", lazy="selectin"
+        "Coment", back_populates="user"
     )
     rating_users: Mapped[list["RatingFilm"]] = relationship(
-        "RatingFilm", back_populates="user", lazy="selectin"
+        "RatingFilm", back_populates="user"
     )
-    """friends: Mapped[list["User"]] = relationship(
-        "User",
-        secondary=user_frends,
-        primaryjoin=foreign(user_frends.c.user_id) == id,
-        secondaryjoin=foreign(user_frends.c.friend_id) == id,
-        backref="friend_of",
-        lazy="selectin"
-    )"""
-
     likefilms: Mapped[list["Film"]] = relationship(
-        back_populates="fans", secondary=user_film, lazy="selectin"
+        back_populates="fans", secondary=user_film_like
     )
-   

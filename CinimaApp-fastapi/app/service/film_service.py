@@ -1,4 +1,5 @@
-from app.service.base_service import Base_Service
+from app.repositories.films_repositorie import FilmRepository
+from app.repositories.ratingfilm_repositore import RatingFilmRepository
 from app.utils.comon import is_name_title, validate_is_data_range, validet_star_rating
 from app.list.list_searhc import (
     list_serach_date,
@@ -7,26 +8,23 @@ from app.list.list_searhc import (
 )
 from fastapi.exceptions import HTTPException
 from uuid import UUID
-
-
+from ..db.model.model_db import Film
+from app.service.base_service import Base_Service
 class FilmService(Base_Service):
-    def __init__(self, repo):
-        super().__init__(repo)
+    def __init__(self, session):
+        super().__init__(session)
+        self.film_repo = FilmRepository(self.session)
+        self.rating_repo = RatingFilmRepository(self.session)
 
-    async def create_model(self, data, name_title_value=None):
+    async def create_film(self, data, name_title_value=None):
         if not await validate_is_data_range(data[list_serach_date[0]], "film"):
             raise HTTPException(
                 detail="Что не так с датой  возможно ненаходится в дипозоне от 1995-2025",
                 status_code=400,
             )
-        elif not await validet_star_rating(data, list_serach_rating[1]):
-            raise HTTPException(
-                detail="Что не так с оценкой возможно не находится в дипозоне 1 от 10",
-                status_code=400,
-            )
         elif not await is_name_title(
-            model=self.repo.model,
-            session=self.repo.session,
+            model=Film,
+            session=self.film_repo.session(),
             name_filed=list_serach_name_title[3],
             name_or_title_value=data[list_serach_name_title[3]],
         ):
@@ -35,23 +33,24 @@ class FilmService(Base_Service):
                 detail="Фильм с таким названием есть уже существует",
             )
 
-        data["path_image"] = "../images/cat.jpg"
-        return await super().create_model(data, name_title_value)
-
-    async def update_model(self, model_id, data):
+        data["path_image"] = "images/cat.jpg"
+        return await self.film_repo.create_film(data)
+    
+    async def get_film_by_id(self,film_id):
+        return await self.film_repo.get_film_by_id(film_id)
+    
+    async def get_list_film(self):
+        return await self.film_repo.get_films()
+    
+    async def update_film(self, film_id, data):
         if not await validate_is_data_range(data[list_serach_date[0]], "film"):
             raise HTTPException(
                 detail="Что не так с датой  возможно ненаходится в дипозоне от 1995-2025",
                 status_code=400,
             )
-        elif not await validet_star_rating(data, list_serach_rating[1]):
-            raise HTTPException(
-                detail="Что не так с оценкой возможно не находится в дипозоне 1 от 10",
-                status_code=400,
-            )
         elif not await is_name_title(
-            model=self.repo.model,
-            session=self.repo.session,
+            model=Film,
+            session=self.film_repo.session,
             name_filed=list_serach_name_title[3],
             name_or_title_value=data[list_serach_name_title[3]],
         ):
@@ -59,26 +58,35 @@ class FilmService(Base_Service):
                 status_code=409,
                 detail="Фильм с таким названием есть уже существует",
             )
-        return await super().update_model(model_id, data)
-
+        return await self.film_repo.update_film(film_id=film_id,data=data)
+    
+    async def delete_film(self,film_id):
+        return await self.film_repo.delete_film(film_id)
+    async def update_rating(self,film_id):
+        avg_rating = await self.rating_repo.average_rating_film(film_id)
+        return await self.film_repo.update_rating(avg_rating=avg_rating,film_id=film_id)
     async def add_actors_film_model(self, film_id: UUID, actor_list: list[UUID]):
-        return await self.repo.add_list_actor_id(actor_list, film_id)
+        return await self.film_repo.add_list_actor_id(actor_list=actor_list, film_id=film_id)
 
     async def add_authors_film_model(self, film_id: UUID, author_list: list[UUID]):
-        return await self.repo.add_list_author_id(author_list, film_id)
-
+        return await self.film_repo.add_list_author_id(author_ids=author_list, film_id=film_id)
+    
+    async def get_film_block(self):
+        return await self.film_repo.get_film_block()
     async def get_film_titles(self, titles: str, limint: int):
-        return await self.repo.get_films_title_list(titles, limint)
+        return await self.film_repo.get_films_title_list(titles, limint)
 
     async def get_film_title(self, title: str, limint: int):
-        return await self.repo.get_film_title(title, limint)
+        return await self.film_repo.get_film_title(title, limint)
 
     async def get_list_actor(self, film_id: UUID):
-        return await self.repo.get_list_actor(film_id)
+        return await self.film_repo.get_list_actor(film_id)
 
     async def get_list_author(self, film_id: UUID):
-        return await self.repo.get_list_author(film_id)
-    async def get_list_coment(self,film_id:UUID):
-        return await self.repo.get_list_coment(film_id)
-    async def get_list_rating(self,film_id:UUID):
-        return await self.repo.get_list_rating(film_id)
+        return await self.film_repo.get_list_author(film_id)
+
+    async def get_list_coment(self, film_id: UUID):
+        return await self.film_repo.get_list_coment(film_id)
+
+    async def get_list_rating(self, film_id: UUID):
+        return await self.film_repo.get_list_rating(film_id)

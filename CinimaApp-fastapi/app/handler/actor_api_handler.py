@@ -1,10 +1,8 @@
 from typing import Dict, List
 from fastapi import APIRouter, HTTPException
 from app.scheme.model_actor import ActorCreateRequest, ActorResponse, ActorUpdateRequest
-from app.repositories.actors_repositorie import ActorRepository
-from app.service.factory import get_service
-from app.service.actor_service import ActorService
-from app.utils.comon import SessionDep, limit
+from app.utils.comon import limit, Depends
+from app.utils.depencines import ActorService, get_actor_service
 from uuid import UUID
 
 actor_router = APIRouter(prefix="/actor", tags=["Actor"])
@@ -12,10 +10,9 @@ actor_router = APIRouter(prefix="/actor", tags=["Actor"])
 
 @actor_router.post("/")
 async def create_actor(
-    data: ActorCreateRequest, async_session: SessionDep
+    data: ActorCreateRequest, actor_service: ActorService = Depends(get_actor_service)
 ) -> ActorResponse:
-    actor_servers = await get_service(ActorService, ActorRepository, async_session)
-    actor = await actor_servers.create_model(data.dict())
+    actor = await actor_service.create_actor(data.dict())
     if not actor:
         raise HTTPException(status_code=401, detail="not create actor")
     return ActorResponse.from_orm(actor)
@@ -23,39 +20,26 @@ async def create_actor(
 
 @actor_router.get("s/")
 async def get_actors(
-    async_session: SessionDep,
+    actor_service: ActorService = Depends(get_actor_service),
 ) -> List[ActorResponse]:
-    actor_sev = await get_service(ActorService, ActorRepository, async_session)
-    actors = await actor_sev.get_models()
+    actors = await actor_service.get_actor_list()
     return [ActorResponse.from_orm(actor) for actor in actors]
 
 
 @actor_router.get("/{actor_id}")
 async def get_actor_actor_id(
-    actor_id: UUID, async_session: SessionDep
+    actor_id: UUID, actor_service: ActorService = Depends(get_actor_service)
 ) -> ActorResponse:
-    actor_sev = await get_service(ActorService, ActorRepository, async_session)
-    actor = await actor_sev.get_model(actor_id)
+    actor = await actor_service.get_actor_by_id(actor_id)
     if not actor:
         raise HTTPException(detail="Не найдено такой актёр", status_code=404)
     return ActorResponse.from_orm(actor)
-
-
-@actor_router.get("/name_actor/{fistname_latname_pat}")
-async def get_name_actor(fistname_latname_pat: str, async_session: SessionDep):
-    actor_sev = await get_service(ActorService, ActorRepository, async_session)
-    actor = await actor_sev.get_fistname_lastname_pat(fistname_latname_pat)
-    if not actor:
-        raise HTTPException(detail="Не найдено такой актёр", status_code=404)
-    return ActorResponse.from_orm(actor)
-
 
 @actor_router.get("/name_actors/{fistname_latname_pat}")
 async def get_name_actors(
-    fistname_latname_pat: str, async_session: SessionDep,limit
+    fistname_latname_pat: str, actor_service: ActorService = Depends(get_actor_service)
 ) -> List[ActorResponse]:
-    actor_sev = await get_service(ActorService, ActorRepository, async_session)
-    actors = await actor_sev.get_serahc_name_list(fistname_latname_pat,limit)
+    actors = await actor_service.get_serahc_name_list(fistname_latname_pat, limit)
     if not actors:
         raise HTTPException(detail="Не найдено такой актёров", status_code=404)
     return [ActorResponse.from_orm(actor) for actor in actors]
@@ -63,19 +47,21 @@ async def get_name_actors(
 
 @actor_router.put("/update/{actor_id}")
 async def update_actor(
-    data: ActorUpdateRequest, actor_id: UUID, async_session: SessionDep
+    data: ActorUpdateRequest,
+    actor_id: UUID,
+    actor_service: ActorService = Depends(get_actor_service),
 ) -> ActorResponse:
-    actor_servers = await get_service(ActorService, ActorRepository, async_session)
-    actor = await actor_servers.update_model(actor_id, data.dict())
+    actor = await actor_service.update_actor(actor_id=actor_id, data=data.dict())
     if not actor:
         raise HTTPException(detail="Не найдено такой актёр", status_code=404)
     return ActorResponse.from_orm(actor)
 
 
 @actor_router.delete("/delete/{actor_id}")
-async def delete_actor(actor_id: UUID, async_session: SessionDep) -> Dict[str, str]:
-    actor_sev = await get_service(ActorService, ActorRepository, async_session)
-    actor = await actor_sev.delete_model(actor_id)
+async def delete_actor(
+    actor_id: UUID, actor_service: ActorService = Depends(get_actor_service)
+) -> Dict[str, str]:
+    actor = await actor_service.delete_actor(actor_id)
     if not actor:
         raise HTTPException(detail="Не найдено такой актёр", status_code=404)
     return {"message": "Delete actor and db"}
