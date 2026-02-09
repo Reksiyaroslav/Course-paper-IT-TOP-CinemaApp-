@@ -1,4 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select,delete
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import selectinload
+from uuid import UUID
+from typing import List
+
 from app.db.model.model_db import (
     Film,
     RatingFilm,
@@ -6,10 +12,6 @@ from app.db.model.model_db import (
     Actor,
     Author
 )
-from sqlalchemy import select,delete
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import selectinload
-from uuid import UUID
 class FilmRepository():
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -60,7 +62,8 @@ class FilmRepository():
         relult = await self.session.execute(smt)
         film = relult.scalars().all()
         return film
-    async def update_rating(self,film_id:UUID,avg_rating:float):
+    
+    async def update_rating(self,film_id:UUID,avg_rating:float)->Film:
         film = await self.get_film_by_id(film_id=film_id)
         if not film:
             return "Not db film"
@@ -69,6 +72,7 @@ class FilmRepository():
         await self.session.commit()
         await self.session.refresh(film)
         return film
+    
     async def add_coment_film(self, film_id: UUID, coment: Coment):
         film = await self.get_film_by_id(film_id)
         if film:
@@ -80,7 +84,7 @@ class FilmRepository():
 
     async def add_ratingfilm_film(self, film_id: UUID, ratingfilm: RatingFilm):
         if not ratingfilm:
-            raise ValueError("rating nmone")
+            raise ValueError("rating none")
         film = await self.get_film_by_id(film_id)
         if film:
             film.rating_films.append(ratingfilm)
@@ -117,10 +121,10 @@ class FilmRepository():
             return None
         return film
 
-    async def get_film_film_ids(self, film_ids: list[UUID]):
+    async def get_film_film_ids(self, film_ids: list[UUID])->List[Film]:
         smt = select(Film).where(Film.film_id.in_(film_ids))
         result = await self.session.execute(smt)
-        return result.scalars().all()
+        return list(result.scalars().all())
     
     async def get_film_block(self)->list[Film]:
         """Для вывода только части информаций по фильма"""
@@ -149,28 +153,28 @@ class FilmRepository():
             return None
         return films
 
-    async def get_list_actor(self, film_id: UUID):
+    async def get_list_actor(self, film_id: UUID)->List[Actor]:
         """Получение информаций о сценаристов фильма кто занимался """
         film = await self.get_film_by_id(film_id=film_id)
         if not film:
             return None
         return film.actors
 
-    async def get_list_author(self, film_id: UUID):
+    async def get_list_author(self, film_id: UUID)->list[Actor]:
         """Актёры которые смнимальс там"""
         film = await self.get_film_by_id(film_id=film_id)
         if not film:
             return None
         return film.authors
 
-    async def get_list_coment(self, film_id: UUID):
+    async def get_list_coment(self, film_id: UUID)->List[Coment]:
         """Получения все кометариях о фильме """
         film = await self.get_film_by_id(film_id)
         if not film:
             return None
         return film.coments
 
-    async def get_list_rating(self, film_id: UUID):
+    async def get_list_rating(self, film_id: UUID)->List[RatingFilm]:
         """Получения информаций о ратингах фильма """
         film = await self.get_film_by_id(film_id)
         if not film:

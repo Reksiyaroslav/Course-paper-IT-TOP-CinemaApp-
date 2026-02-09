@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.model.model_db import RatingFilm, Film
-from sqlalchemy import select,delete
+from sqlalchemy import select,delete,and_
 from uuid import UUID
 from typing import Dict
 import datetime
@@ -36,7 +36,7 @@ class RatingFilmRepository():
         film = relult.scalars().one()
         ratings_film = film.rating_films
         average_rating:float = 0.0
-        if ratings_film!= None:
+        if ratings_film== None:
             average_rating=1
             return average_rating
         for rating_film in ratings_film:
@@ -57,8 +57,8 @@ class RatingFilmRepository():
         await self.session.refresh(rating_film)
         return rating_film
     
-    async def update_rating_user_id(self, user_id: UUID, data: dict):
-        smnt = select(RatingFilm).where(RatingFilm.user_id == user_id)
+    async def update_rating_user_id(self, user_id: UUID,film_id:UUID, data: dict):
+        smnt = select(RatingFilm).where(RatingFilm.user_id == user_id , RatingFilm.film_id==film_id)
         relult = await self.session.execute(smnt)
         rating_film = relult.scalars().one()
         if not rating_film:

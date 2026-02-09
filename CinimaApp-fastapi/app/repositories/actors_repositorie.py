@@ -12,14 +12,17 @@ class ActorRepository():
         self.session.add(actor)
         await self.session.commit()
         return actor
+    
     async def get_actors(self):
         smt = select(Actor)
         relult = await self.session.execute(smt)
         actor = relult.scalars().all()
         return actor
+    
     async def get_actor_by_id(self,actor_id):
         actor = await self.session.get(Actor,actor_id)
         return actor
+    
     async def update_actor(self,data:dict,actor_id):
         actor = await self.get_actor_by_id(actor_id=actor_id)
         for key,values in data.items():
@@ -28,11 +31,13 @@ class ActorRepository():
         await self.session.commit()
         await self.session.refresh(actor)
         return actor
+    
     async def delete_actor(self,actor_id)->dict:
         smt = delete(Actor).filter(Actor.actor_id==actor_id)
         await self.session.execute(smt)
         await self.session.commit()
         return {"message":"Delete actor the db"}
+    
     async def get_actorname(self, actorname: str) -> Actor|None:
         smt = select(Actor).where(
             (Actor.fistname == actorname)

@@ -13,13 +13,16 @@ class AuthorRepository():
         self.session.add(author)
         await self.session.commit()
         return author
+    
     async def get_authors(self):
         relult = await self.session.execute(select(Author))
         author = relult.scalars().all()
         return author
+    
     async def get_author_by_id(self,author_id):
         author = await self.session.get(Author,author_id)
         return author
+    
     async def update_author(self,data:dict,author_id):
         author = await self.get_author_by_id(author_id=author_id)
         for key,values in data.items():
@@ -28,11 +31,13 @@ class AuthorRepository():
         await self.session.commit()
         await self.session.refresh(author)
         return author
+    
     async def delete_author(self,author_id)->dict:
         smt = delete(Author).filter(Author.author_id==author_id)
         await self.session.execute(smt)
         await self.session.commit()
         return {"message":"Delete actor the db"}
+    
     async def get_author_fistname_latname_pat(self, author_name: str) -> Author| None:
         smt = select(Author).where(
             (Author.fistname == author_name)

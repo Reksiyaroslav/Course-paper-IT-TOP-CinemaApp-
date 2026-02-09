@@ -124,12 +124,12 @@ class UserRepository():
     async def add_coment_user(self, user_id: UUID, coment: Coment):
         user = await self.get_user_by_id(user_id)
         if user:
-            user.coment_users.append(coment)
+            user.coments.append(coment)
             await self.session.commit()
             await self.session.refresh(user)
 
     async def add_ratingfilm_user(self, user_id: UUID, ratingfilm: RatingFilm):
-        user = await self.get_model_id(user_id)
+        user = await self.get_user_by_id(user_id)
         if user:
             user.rating_users.append(ratingfilm)
             await self.session.commit()
