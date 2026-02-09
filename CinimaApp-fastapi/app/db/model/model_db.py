@@ -15,8 +15,10 @@ from sqlalchemy import (
     DateTime,
     func,
     Integer,
+    VARCHAR,
 )
 
+from app.utils.enums import Role_User,Type_Rec
 
 class Base(DeclarativeBase):
     @declared_attr
@@ -100,7 +102,14 @@ class Coment(Base):
     film: Mapped["Film"] = relationship(
         "Film", back_populates="coments"
     )
+    recos :Mapped[list["Recone"]] = relationship("Recone",back_populates="coment")
 
+class Recone(Base):
+    recone_id :Mapped[uuid.UUID] = mapped_column(primary_key=True,nullable=False,default=uuid.uuid4)
+    type_rect:Mapped[str] =  mapped_column(VARCHAR(50),nullable=False)
+    repit_user_id:Mapped[UUID] = mapped_column(ForeignKey("users.user_id"),nullable=False)
+    coment_recone:Mapped[UUID] = mapped_column(ForeignKey("coments.coment_id"),nullable=False)
+    coment:  Mapped[Coment] = relationship("Coment",back_populates="recos")
 
 class Actor(Base):
     actor_id: Mapped[uuid.UUID] = mapped_column(
@@ -158,6 +167,7 @@ class User(Base):
     username: Mapped[str] =mapped_column(nullable=False)
 
     email: Mapped[str] =mapped_column(nullable=False)
+    role_user :Mapped[str] = mapped_column(VARCHAR(40),default=Role_User.User.value)
     datetimenow: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.now
     )
@@ -170,3 +180,4 @@ class User(Base):
     likefilms: Mapped[list["Film"]] = relationship(
         back_populates="fans", secondary=user_film_like
     )
+    
