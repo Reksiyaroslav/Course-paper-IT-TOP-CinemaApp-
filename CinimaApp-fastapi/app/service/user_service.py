@@ -13,7 +13,7 @@ class UserService(Base_Service):
     async def create_user(self, data, name_title_value=None):
         if not await is_name_title(
             model=User,
-            session=self.repo.session,
+            session=self.session,
             name_filed=list_serach_name_title[4],
             name_or_title_value=data[list_serach_name_title[4]],
         ):

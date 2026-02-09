@@ -56,24 +56,13 @@ async def update_coment(
 
 
 @coment_router.put("/update/like/{coment_id}")
-async def update_coment_like(
-    coment_id: UUID, coment_sev: ComentService = Depends(get_comment_service)
+async def update_coment_type_rec(
+    coment_id: UUID,type_rec:str ,user_id:UUID,coment_sev: ComentService = Depends(get_comment_service)
 ) -> ComentResponse:
-    coment = await coment_sev.update_like(coment_id)
+    coment = await coment_sev.update_comet_like_unlike(coment_id=coment_id,user_id=user_id,type_rec=type_rec)
     if not coment:
         raise HTTPException(detail="Не найдено такой кометария ", status_code=404)
     return ComentResponse.from_orm(coment)
-
-
-@coment_router.put("/update/unlike/{coment_id}")
-async def update_coment_unlike(
-    coment_id: UUID, coment_sev: ComentService = Depends(get_comment_service)
-) -> ComentResponse:
-    coment = await coment_sev.update_unlike(coment_id)
-    if not coment:
-        raise HTTPException(detail="Не найдено такой кометария ", status_code=404)
-    return ComentResponse.from_orm(coment)
-
 
 @coment_router.delete("/delete/{comnet_id}")
 async def delete_coment(

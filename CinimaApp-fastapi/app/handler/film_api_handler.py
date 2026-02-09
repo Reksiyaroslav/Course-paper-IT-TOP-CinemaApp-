@@ -62,12 +62,14 @@ async def get_film_and_film_id(
     return FilmResponse.from_orm(film)
 
 
-@film_router.get("/get_actors/{film_id}")
-async def get_actor_and_film(
-    film_id: UUID, film_serveice:FilmService =Depends(get_film_service)
-) -> List[ActorResponse]:
-    actors = await film_serveice.get_list_actor(film_id)
-    return [ActorResponse.from_orm(actor) for actor in actors]
+@film_router.get("/get_type_model/{film_id}", response_model=List[ActorResponse| RatingFilmResponse| AuthorResponse|ComentResponse])
+async def get_type_model_and_film(
+    film_id: UUID, type_model:str,film_serveice:FilmService =Depends(get_film_service)
+) :
+    type_model = await film_serveice.get_list_model(film_id,type_model)
+    if type_model == None:
+        raise HTTPException(status_code= 404,detail="Not found type model")
+    return type_model
 
 @film_router.get("/update_rating/{film_id}")
 async def update_rating(
@@ -78,28 +80,6 @@ async def update_rating(
         return {"message":film}
     else:
         return FilmResponse.from_orm(film)
-@film_router.get("/get_authors/{film_id}")
-async def get_author_and_film(
-    film_id: UUID, film_service:FilmService =Depends(get_film_service)
-) -> List[AuthorResponse]:
-    authors = await film_service.get_list_author(film_id)
-    return [AuthorResponse.from_orm(author) for author in authors]
-
-
-@film_router.get("/get_coments/{film_id}")
-async def get_coment_and_film(
-    film_id: UUID, film_service:FilmService = Depends(get_film_service)
-) -> List[ComentResponse]:
-    coments = await film_service.get_list_coment(film_id)
-    return [ComentResponse.from_orm(coments) for coments in coments]
-
-
-@film_router.get("/get_ratings/{film_id}")
-async def get_rating_and_film(
-    film_id: UUID, film_service:FilmService =Depends(get_film_service)
-) -> List[RatingFilmResponse]:
-    ratings = await film_service.get_list_rating(film_id)
-    return [RatingFilmResponse.from_orm(rating) for rating in ratings]
 
 @film_router.get("/get_titles_film/{film_titles}")
 async def get_film_titles(
@@ -159,7 +139,7 @@ async def add_author_film(
 async def delete_film_film_id(
     film_id: UUID, film_service:FilmService = Depends(get_film_service)
 ) -> Dict[str, str]:
-    film = await film_service.delete_film_film_id(film_id)
+    film = await film_service.delete_film(film_id)
     if not film:
         raise HTTPException(
             detail="Нет такого фильма ", status_code=status.HTTP_404_NOT_FOUND

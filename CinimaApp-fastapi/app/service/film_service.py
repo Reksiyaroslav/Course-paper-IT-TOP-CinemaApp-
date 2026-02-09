@@ -5,6 +5,7 @@ from app.list.list_searhc import (
     list_serach_date,
     list_serach_name_title,
     list_serach_rating,
+    list_type_model
 )
 from fastapi.exceptions import HTTPException
 from uuid import UUID
@@ -13,7 +14,7 @@ from app.service.base_service import Base_Service
 class FilmService(Base_Service):
     def __init__(self, session):
         super().__init__(session)
-        self.film_repo = FilmRepository(self.session)
+        self.film_repo:FilmRepository = FilmRepository(self.session)
         self.rating_repo = RatingFilmRepository(self.session)
 
     async def create_film(self, data, name_title_value=None):
@@ -79,14 +80,25 @@ class FilmService(Base_Service):
     async def get_film_title(self, title: str, limint: int):
         return await self.film_repo.get_film_title(title, limint)
 
-    async def get_list_actor(self, film_id: UUID):
-        return await self.film_repo.get_list_actor(film_id)
+    async def get_list_model(self,film_id:UUID,type_model_list:str):
+        if type_model_list == list_type_model[0]:
+            return await self.film_repo.get_list_rating(film_id)
+        if type_model_list == list_type_model[1]:
+            return await self.film_repo.get_list_coment(film_id)
+        if type_model_list== list_type_model[2]:
+            return await self.film_repo.get_list_actor(film_id)
+        if type_model_list== list_type_model[3]:
+            return await self.film_repo.get_list_author(film_id)
+        else:
+            raise HTTPException(status_code=404,detail="Не надено по модеям  есть только rating ,coment,actor,author")
+    # async def get_list_actor(self, film_id: UUID):
+    #     return await self.film_repo.get_list_actor(film_id)
 
-    async def get_list_author(self, film_id: UUID):
-        return await self.film_repo.get_list_author(film_id)
+    # async def get_list_author(self, film_id: UUID):
+    #     return await self.film_repo.get_list_author(film_id)
 
-    async def get_list_coment(self, film_id: UUID):
-        return await self.film_repo.get_list_coment(film_id)
+    # async def get_list_coment(self, film_id: UUID):
+    #     return await self.film_repo.get_list_coment(film_id)
 
-    async def get_list_rating(self, film_id: UUID):
-        return await self.film_repo.get_list_rating(film_id)
+    # async def get_list_rating(self, film_id: UUID):
+    #     return await self.film_repo.get_list_rating(film_id)

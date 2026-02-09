@@ -62,7 +62,10 @@ async def delete_user(
     user_id: UUID, user_service: UserService = Depends(get_user_service)
 ) -> Dict[str, str]:
     user = await user_service.delete_user(user_id)
-    return {"message": "Delete the db"}
+    if user==None:
+        return {"message": "Delete the db"}
+    else:
+        return {"message": "Что не удалось удалить"}
 
 
 @user_router.post("/{user_id}/like_film/{film_id}")

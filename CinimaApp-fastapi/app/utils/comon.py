@@ -1,14 +1,15 @@
 from sqlalchemy import select, and_
 from datetime import date, timedelta
-from app.list.list_searhc import list_serach_name_title, list_serach_rating,list_blocked_text
 import bcrypt
 from fastapi import Depends, Query
-from app.db.engine import get_session
 from typing_extensions import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from faker import Faker
 from random import randint
+from uuid import UUID
 
+from app.db.engine import get_session
+from app.list.list_searhc import list_serach_name_title, list_serach_rating,list_blocked_text
 limit = Query(10, ge=1, le=50)
 limint_name = Query(10, ge=8, le=30)
 limint_film_title = Query(
@@ -47,6 +48,14 @@ async def is_fistname_lastname(mode, session, dict_data):
     relut = await session.execute(smt)
     extit = relut.scalars().first() is None
     return extit
+
+async def not_create_rating(model,session:AsyncSession,film_id:UUID,user_id:UUID)->bool:
+    smt = select(model).where(model.user_id== user_id and model.film_id==film_id)
+    rating = await session.execute(statement=smt)
+    if rating:
+        return False
+    else:
+        return True
 
 
 async def validate_is_data_range(value: date, type_obj: str) -> bool:
