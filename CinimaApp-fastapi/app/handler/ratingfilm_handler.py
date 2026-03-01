@@ -19,9 +19,9 @@ async def create_rating(
     film_id: UUID,
     user_id: UUID,
     rating_sev: RatingFilmService = Depends(get_rating_service),
-) -> RatingFilmResponse| dict:
+) -> RatingFilmResponse | dict:
     rating = await rating_sev.create_ratingfilm(data.dict(), user_id, film_id)
-    if isinstance(rating,dict):
+    if isinstance(rating, dict):
         return rating
     else:
         return RatingFilmResponse.from_orm(rating)
@@ -75,12 +75,14 @@ async def update_rating(
 async def update_rating_user_id(
     data: RatingFilmUpdateRequest,
     user_id: UUID,
-    film_id:UUID,
+    film_id: UUID,
     rating_sev: RatingFilmService = Depends(get_rating_service),
 ) -> RatingFilmResponse:
-    rating = await rating_sev.update_rating_user_id_and_film_id(data=data.dict(), user_id=user_id,film_id=film_id)
+    rating = await rating_sev.update_rating_user_id_and_film_id(
+        data=data.dict(), user_id=user_id, film_id=film_id
+    )
     if not rating:
-        raise HTTPException(detail="Not rating db",status_code=402)
+        raise HTTPException(detail="Not rating db", status_code=402)
     return RatingFilmResponse.from_orm(rating)
 
 

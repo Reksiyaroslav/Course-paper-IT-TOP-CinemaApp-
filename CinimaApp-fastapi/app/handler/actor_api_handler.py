@@ -26,7 +26,7 @@ async def get_actors(
     return [ActorResponse.from_orm(actor) for actor in actors]
 
 
-@actor_router.get("/{actor_id}")
+@actor_router.get("profile/{actor_id}")
 async def get_actor_actor_id(
     actor_id: UUID, actor_service: ActorService = Depends(get_actor_service)
 ) -> ActorResponse:
@@ -34,6 +34,7 @@ async def get_actor_actor_id(
     if not actor:
         raise HTTPException(detail="Не найдено такой актёр", status_code=404)
     return ActorResponse.from_orm(actor)
+
 
 @actor_router.get("/name_actors/{fistname_latname_pat}")
 async def get_name_actors(

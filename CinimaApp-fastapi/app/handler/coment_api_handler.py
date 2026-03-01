@@ -21,7 +21,7 @@ async def create_coment(
 ) -> ComentResponse:
     coment = await coment_sev.create_model(data.dict(), film_id, user_id)
     if not coment:
-        raise HTTPException(detail="Не удалось создать коментарий" ,status_code=400)
+        raise HTTPException(detail="Не удалось создать коментарий", status_code=400)
     return ComentResponse.from_orm(coment)
 
 
@@ -57,12 +57,18 @@ async def update_coment(
 
 @coment_router.put("/update/like/{coment_id}")
 async def update_coment_type_rec(
-    coment_id: UUID,type_rec:str ,user_id:UUID,coment_sev: ComentService = Depends(get_comment_service)
+    coment_id: UUID,
+    type_rec: str,
+    user_id: UUID,
+    coment_sev: ComentService = Depends(get_comment_service),
 ) -> ComentResponse:
-    coment = await coment_sev.update_comet_like_unlike(coment_id=coment_id,user_id=user_id,type_rec=type_rec)
+    coment = await coment_sev.update_comet_like_unlike(
+        coment_id=coment_id, user_id=user_id, type_rec=type_rec
+    )
     if not coment:
         raise HTTPException(detail="Не найдено такой кометария ", status_code=404)
     return ComentResponse.from_orm(coment)
+
 
 @coment_router.delete("/delete/{comnet_id}")
 async def delete_coment(

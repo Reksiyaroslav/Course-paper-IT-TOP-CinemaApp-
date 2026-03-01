@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends
-from typing import Dict, List
+from fastapi import APIRouter, HTTPException, Depends,Form
+from typing import Dict, List,Annotated
 from app.scheme.model_user import (
     UserCreateRequest,
     UserResponse,
     UserUpdateRequest,
     UserRensponseAdmin,
+    
 )
 from app.scheme.model_film import FilmResponse
 from uuid import UUID
@@ -15,12 +16,13 @@ user_router = APIRouter(prefix="/user", tags=["User"])
 
 @user_router.post("/")
 async def create_user(
-    data: UserCreateRequest, user_servers: UserService = Depends(get_user_service)
-) -> dict[str,str]:
+    data: Annotated[UserCreateRequest,Form()], user_servers: UserService = Depends(get_user_service)
+) -> dict[str, str]:
     user = await user_servers.create_user(data.dict())
     if not user:
         raise HTTPException(status_code=401, detail="not create user")
-    return {"message":"Вы успешно прошли регестрацию"}
+    return {"message": "Вы успешно прошли регестрацию"}
+
 
 @user_router.get("s/")
 async def get_users(
@@ -39,7 +41,7 @@ async def get_admin_users(
     return [UserRensponseAdmin.from_orm(user) for user in users]
 
 
-@user_router.get("/{user_id}")
+@user_router.get("/profile/{user_id}")
 async def get_user(
     user_id: UUID, user_services: UserService = Depends(get_user_service)
 ) -> UserResponse:
@@ -62,7 +64,7 @@ async def delete_user(
     user_id: UUID, user_service: UserService = Depends(get_user_service)
 ) -> Dict[str, str]:
     user = await user_service.delete_user(user_id)
-    if user==None:
+    if user == None:
         return {"message": "Delete the db"}
     else:
         return {"message": "Что не удалось удалить"}

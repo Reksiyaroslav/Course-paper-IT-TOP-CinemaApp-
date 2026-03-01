@@ -31,7 +31,7 @@ async def get_authors(
     return [AuthorResponse.from_orm(author) for author in authors]
 
 
-@author_router.get("/{actor_id}")
+@author_router.get("/profile/{actor_id}")
 async def get_author_id(
     author_id: UUID, author_service: AuthorService = Depends(get_author_service)
 ) -> AuthorResponse:
