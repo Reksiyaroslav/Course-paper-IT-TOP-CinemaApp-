@@ -5,6 +5,8 @@ from fastapi.exceptions import HTTPException
 from app.list.list_searhc import list_serach_name_title
 from ..db.model.model_db import User
 from app.repositories.users_repositorie import UserRepository
+
+
 class UserService(Base_Service):
     def __init__(self, session):
         super().__init__(session)
@@ -21,14 +23,17 @@ class UserService(Base_Service):
                 status_code=409, detail="Пользователь с таким именем уже существует"
             )
         return await self.user_repo.create_user(data)
+
     async def get_all_user(self):
         return await self.user_repo.get_list_users()
-    async def get_user_by_id(self,user_id):
+
+    async def get_user_by_id(self, user_id):
         return await self.user_repo.get_user_by_id(user_id)
+
     async def update_user(self, model_id, data):
         if not await is_name_title(
             model=User,
-            session=self.repo.session,
+            session=self.session,
             name_filed=list_serach_name_title[4],
             name_or_title_value=data[list_serach_name_title[4]],
         ):
@@ -36,10 +41,10 @@ class UserService(Base_Service):
                 status_code=409, detail="Пользователь с таким именем уже существует"
             )
         return await self.user_repo.update_user(model_id, data)
-    
-    async def delete_user(self,user_id):
+
+    async def delete_user(self, user_id):
         return await self.user_repo.delete_user(user_id)
-    
+
     async def get_film_username(self, username: str):
         return await self.user_repo.get_name(username)
 
