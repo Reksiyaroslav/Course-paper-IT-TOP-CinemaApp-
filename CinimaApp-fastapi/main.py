@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Depends
-from fastapi.responses import RedirectResponse 
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from app.handler.user_api_handler import user_router
 from app.handler.film_api_handler import film_router, get_block_films
@@ -28,8 +28,8 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 
 @app.get("/")
-def hello_people(reqest:Request) -> RedirectResponse:
-    return RedirectResponse(url=reqest.url_for('main_film'),status_code=303)
+def hello_people(reqest: Request) -> RedirectResponse:
+    return RedirectResponse(url=reqest.url_for("main_film"), status_code=303)
 
 
 if __name__ == "__main__":
