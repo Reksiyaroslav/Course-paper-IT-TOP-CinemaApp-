@@ -4,9 +4,8 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 
 
-
 class ComentCreateRequest(BaseModel):
-    description: str 
+    description: str
 
 
 class ComentUpdateRequest(BaseModel):

@@ -11,15 +11,19 @@ from app.utils.comon import faker
 
 
 class UserCreateRequest(BaseModel):
-    username: str = Field(...,min_length=5,max_length=60,default_factory=faker.user_name)
+    username: str = Field(
+        ..., min_length=5, max_length=60, default_factory=faker.user_name
+    )
     email: EmailStr = Field(default_factory=faker.email)
-    password: str = Field(...,min_length=9,max_length=15,default_factory=faker.password)
+    password: str = Field(
+        ..., min_length=9, max_length=15, default_factory=faker.password
+    )
 
 
 class UserUpdateRequest(BaseModel):
-    username: Optional[str] = Field(min_length=5,max_length=60)
+    username: Optional[str] = Field(min_length=5, max_length=60)
     email: Optional[EmailStr] = None
-    password: Optional[str] = Field(min_length=9,max_length=15)
+    password: Optional[str] = Field(min_length=9, max_length=15)
 
 
 class UserResponse(BaseModel):
