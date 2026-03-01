@@ -18,7 +18,8 @@ from sqlalchemy import (
     VARCHAR,
 )
 
-from app.utils.enums import Role_User,Type_Rec
+from app.utils.enums import Role_User, Type_Rec
+
 
 class Base(DeclarativeBase):
     @declared_attr
@@ -53,6 +54,7 @@ user_film_like = Table(
     Column("user_id", ForeignKey("users.user_id"), primary_key=True),
 )
 
+
 class RatingFilm(Base):
     rating_id: Mapped[uuid.UUID] = mapped_column(
         primary_key=True, unique=True, nullable=False, default=uuid.uuid4
@@ -60,27 +62,23 @@ class RatingFilm(Base):
     rating: Mapped[int] = mapped_column(Integer, default=0)
     film_id: Mapped[UUID] = mapped_column(ForeignKey("films.film_id"), nullable=False)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.user_id"), nullable=False)
-    user: Mapped["User"] = relationship(
-        "User", back_populates="rating_users"
-    )
-    film: Mapped["Film"] = relationship(
-        "Film", back_populates="rating_films"
-    )
+    user: Mapped["User"] = relationship("User", back_populates="rating_users")
+    film: Mapped["Film"] = relationship("Film", back_populates="rating_films")
 
 
 class Author(Base):
     author_id: Mapped[uuid.UUID] = mapped_column(
-            primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+        primary_key=True, unique=True, nullable=False, default=uuid.uuid4
     )
-    fistname: Mapped[str] =mapped_column(nullable=False)
+    fistname: Mapped[str] = mapped_column(nullable=False)
 
-    lastname: Mapped[str]=mapped_column(nullable=False)
+    lastname: Mapped[str] = mapped_column(nullable=False)
 
-    birth_date: Mapped[datetime.date] =mapped_column(nullable=False)
+    birth_date: Mapped[datetime.date] = mapped_column(nullable=False)
 
-    patronymic: Mapped[str]=mapped_column(nullable=True)
+    patronymic: Mapped[str] = mapped_column(nullable=True)
 
-    bio: Mapped[str] =mapped_column(nullable=True)
+    bio: Mapped[str] = mapped_column(nullable=True)
 
     films_authored: Mapped[list["Film"]] = relationship(
         secondary=author_cinema, back_populates="authors"
@@ -89,42 +87,46 @@ class Author(Base):
 
 class Coment(Base):
     coment_id: Mapped[uuid.UUID] = mapped_column(
-            primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+        primary_key=True, unique=True, nullable=False, default=uuid.uuid4
     )
     description: Mapped[str]
     countheart: Mapped[int] = mapped_column(default=0)
     countdemon: Mapped[int] = mapped_column(default=0)
     film_id: Mapped[UUID] = mapped_column(ForeignKey("films.film_id"), nullable=False)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.user_id"), nullable=False)
-    user: Mapped["User"] = relationship(
-        "User", back_populates="coments"
-    )
-    film: Mapped["Film"] = relationship(
-        "Film", back_populates="coments"
-    )
-    recos :Mapped[list["Recone"]] = relationship("Recone",back_populates="coment")
+    user: Mapped["User"] = relationship("User", back_populates="coments")
+    film: Mapped["Film"] = relationship("Film", back_populates="coments")
+    recos: Mapped[list["Recone"]] = relationship("Recone", back_populates="coment")
+
 
 class Recone(Base):
-    recone_id :Mapped[uuid.UUID] = mapped_column(primary_key=True,nullable=False,default=uuid.uuid4)
-    type_rect:Mapped[str] =  mapped_column(VARCHAR(50),nullable=False)
-    repit_user_id:Mapped[UUID] = mapped_column(ForeignKey("users.user_id"),nullable=False)
-    coment_recone:Mapped[UUID] = mapped_column(ForeignKey("coments.coment_id"),nullable=False)
-    coment:  Mapped[Coment] = relationship("Coment",back_populates="recos")
+    recone_id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, nullable=False, default=uuid.uuid4
+    )
+    type_rect: Mapped[str] = mapped_column(VARCHAR(50), nullable=False)
+    repit_user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.user_id"), nullable=False
+    )
+    coment_recone: Mapped[UUID] = mapped_column(
+        ForeignKey("coments.coment_id"), nullable=False
+    )
+    coment: Mapped[Coment] = relationship("Coment", back_populates="recos")
+
 
 class Actor(Base):
     actor_id: Mapped[uuid.UUID] = mapped_column(
-            primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+        primary_key=True, unique=True, nullable=False, default=uuid.uuid4
     )
     fistname: Mapped[str] = mapped_column(nullable=False)
 
-    lastname: Mapped[str] =mapped_column(nullable=False)
+    lastname: Mapped[str] = mapped_column(nullable=False)
 
     patronymic: Mapped[str] = mapped_column(nullable=True)
 
     star: Mapped[int] = mapped_column(default=0)
 
-    birth_date: Mapped[datetime.date]=mapped_column(nullable=False)
- 
+    birth_date: Mapped[datetime.date] = mapped_column(nullable=False)
+
     films_acted: Mapped[list["Film"]] = relationship(
         secondary=film_actor, back_populates="actors"
     )
@@ -132,23 +134,21 @@ class Actor(Base):
 
 class Film(Base):
     film_id: Mapped[uuid.UUID] = mapped_column(
-            primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+        primary_key=True, unique=True, nullable=False, default=uuid.uuid4
     )
-    description: Mapped[str]=mapped_column(nullable=True)
+    description: Mapped[str] = mapped_column(nullable=True)
 
-    title: Mapped[str] =mapped_column(nullable=False)
+    title: Mapped[str] = mapped_column(nullable=False)
 
-    release_date: Mapped[datetime.date]=mapped_column(nullable=True)
-    avg_rating :Mapped[float] = mapped_column(nullable=True,default=0)
+    release_date: Mapped[datetime.date] = mapped_column(nullable=True)
+    avg_rating: Mapped[float] = mapped_column(nullable=True, default=0)
     authors: Mapped[list[Author]] = relationship(
         secondary=author_cinema, back_populates="films_authored"
     )
     actors: Mapped[list[Actor]] = relationship(
         secondary=film_actor, back_populates="films_acted"
     )
-    coments: Mapped[list[Coment]] = relationship(
-        "Coment", back_populates="film"
-    )
+    coments: Mapped[list[Coment]] = relationship("Coment", back_populates="film")
     rating_films: Mapped[list["RatingFilm"]] = relationship(
         "RatingFilm", back_populates="film"
     )
@@ -160,24 +160,21 @@ class Film(Base):
 
 class User(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(
-            primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+        primary_key=True, unique=True, nullable=False, default=uuid.uuid4
     )
-    password: Mapped[str] =mapped_column(nullable=False)
+    password: Mapped[str] = mapped_column(nullable=False)
 
-    username: Mapped[str] =mapped_column(nullable=False)
+    username: Mapped[str] = mapped_column(nullable=False)
 
-    email: Mapped[str] =mapped_column(nullable=False)
-    role_user :Mapped[str] = mapped_column(VARCHAR(40),default=Role_User.User.value)
+    email: Mapped[str] = mapped_column(nullable=False)
+    role_user: Mapped[str] = mapped_column(VARCHAR(40), default=Role_User.User.value)
     datetimenow: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.now
     )
-    coments: Mapped[list["Coment"]] = relationship(
-        "Coment", back_populates="user"
-    )
+    coments: Mapped[list["Coment"]] = relationship("Coment", back_populates="user")
     rating_users: Mapped[list["RatingFilm"]] = relationship(
         "RatingFilm", back_populates="user"
     )
     likefilms: Mapped[list["Film"]] = relationship(
         back_populates="fans", secondary=user_film_like
     )
-    
