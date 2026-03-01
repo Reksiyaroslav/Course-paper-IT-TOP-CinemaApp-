@@ -9,7 +9,12 @@ from random import randint
 from uuid import UUID
 
 from app.db.engine import get_session
-from app.list.list_searhc import list_serach_name_title, list_serach_rating,list_blocked_text
+from app.list.list_searhc import (
+    list_serach_name_title,
+    list_serach_rating,
+    list_blocked_text,
+)
+
 limit = Query(10, ge=1, le=50)
 limint_name = Query(10, ge=8, le=30)
 limint_film_title = Query(
@@ -26,20 +31,25 @@ faker = Faker()
 YEARS_FILMS = 30
 YEARS_ACTOR = 80
 
+
 async def is_name_title(model, session, name_filed, name_or_title_value) -> bool:
     smt = select(model).where(getattr(model, name_filed) == name_or_title_value)
     relut = await session.execute(smt)
     extit = relut.scalars().first() is None
     return extit
 
+
 def generatao_bio() -> str:
     return faker.text(max_nb_chars=500)
+
 
 def generatao_destripsion() -> str:
     return faker.text(max_nb_chars=200)
 
+
 def generator_star() -> int:
     return randint(1, 5)
+
 
 async def is_fistname_lastname(mode, session, dict_data):
     fields = list_serach_name_title[:3]
@@ -49,8 +59,11 @@ async def is_fistname_lastname(mode, session, dict_data):
     extit = relut.scalars().first() is None
     return extit
 
-async def not_create_rating(model,session:AsyncSession,film_id:UUID,user_id:UUID)->bool:
-    smt = select(model).where(model.user_id== user_id and model.film_id==film_id)
+
+async def not_create_rating(
+    model, session: AsyncSession, film_id: UUID, user_id: UUID
+) -> bool:
+    smt = select(model).where(model.user_id == user_id and model.film_id == film_id)
     rating = await session.execute(statement=smt)
     if rating:
         return False
@@ -71,17 +84,19 @@ async def validate_is_data_range(value: date, type_obj: str) -> bool:
     return True
 
 
-async def validet_star_rating(dict: dict, filed_name: str)->bool:
+async def validet_star_rating(dict: dict, filed_name: str) -> bool:
     if filed_name == list_serach_rating[0]:
         if dict[filed_name] < 1 or dict[filed_name] > 10:
             return False
         return True
     return False
-async def validet_text_coment(dict:dict,filed_name:str)->bool:
-    if  filed_name  not in dict:
-       return False
+
+
+async def validet_text_coment(dict: dict, filed_name: str) -> bool:
+    if filed_name not in dict:
+        return False
     text_value = dict.get(filed_name)
-    if text_value is None or not isinstance(text_value,str):
+    if text_value is None or not isinstance(text_value, str):
         return False
     if not text_value.strip():
         return False
@@ -91,14 +106,15 @@ async def validet_text_coment(dict:dict,filed_name:str)->bool:
             return False
     return True
 
+
 def hath_password(password: str):
     password_byte = password.encode("utf-8")
     salf = bcrypt.gensalt()
     hash = bcrypt.hashpw(password_byte, salf)
     return hash.decode("utf-8")
 
+
 def auth_password(password_user: str, password_api: str):
     password_api_byte = password_api.encode("utf-8")
     password_user_byte = password_user.encode("utf-8")
     return bcrypt.checkpw(password_user_byte, password_api_byte)
-
