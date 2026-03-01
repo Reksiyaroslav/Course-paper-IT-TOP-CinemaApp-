@@ -3,7 +3,7 @@ list_serath_password = ["password", "email"]
 list_serach_date = ["release_date", "birth_date"]
 list_serach_rating = ["star", "avegas_rating"]
 list_serach_des = ["description"]
-list_type_model:list[str]  = ["rating","coment","actor","author"] 
+list_type_model: list[str] = ["rating", "coment", "actor", "author"]
 list_blocked_text = [
     # 1. Ненормативная лексика и маты
     "мат1",
