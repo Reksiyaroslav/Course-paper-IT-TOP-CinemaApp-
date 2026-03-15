@@ -1,36 +1,29 @@
 import datetime
 import uuid
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field,field_serializer
 from typing import List, Optional
-from app.scheme.model_author import AuthorResponse
-from app.scheme.model_actor import ActorResponse
-from app.scheme.model_coment import ComentResponse
-from app.scheme.model_ratingfilms import RatingFilmResponse
-
-
-class FilmCreateRequest(BaseModel):
-    description: str = Field(min_length=10, max_length=10000)
-    title: str = Field(..., mmin_length=10, max_length=1000)
-    release_date: datetime.date
+from app.scheme.author.model_author import AuthorResponse
+from app.scheme.actor.model_actor import ActorResponse
+from app.scheme.comment.model_coment import ComentWithUserResponse
+from app.scheme.rating.model_ratingfilms import RatingFilmResponse
+from app.scheme.film.film_base import FilmBase,FilmBaseResponse
+class FilmCreateRequest(FilmBase):
+    pass
 
 
 class FilmUpdateRequest(BaseModel):
-    description: Optional[str] = Field(min_length=10, max_length=1000)
-    title: Optional[str] = Field(min_length=10, max_length=10000)
+    description: Optional[str] = Field(min_length=10, max_length=10000)
+    title: Optional[str] = Field(..., min_length=10, max_length=1000)
     release_date: Optional[datetime.date] = None
     actor_ids: List[uuid.UUID] = None
     author_ids: List[uuid.UUID] = None
-    path_images: Optional[str] = None
 
 
-class FilmResponse(BaseModel):
+class FilmResponse(FilmBaseResponse):
     film_id: uuid.UUID
-    description: Optional[str] = None
-    title: Optional[str] = None
-    release_date: Optional[datetime.date] = None
     authors: Optional[List[AuthorResponse]] = None
     actors: Optional[List[ActorResponse]] = None
-    coments: Optional[List[ComentResponse]] = []
+    coments: Optional[List[ComentWithUserResponse]] = []
     rating_films: Optional[List[RatingFilmResponse]] = []
     created_at: Optional[datetime.datetime] = None
     update_at: Optional[datetime.datetime] = None
@@ -43,14 +36,18 @@ class FilmResponseBlocFilm(BaseModel):
     film_id: uuid.UUID
     title: Optional[str]
     description: Optional[str]
-    path_image: Optional[str] = "../images/cat.jpg"
-    avg_rating: float
+    path_image: Optional[str] = "images/cat.jpg"
+    avg_rating: float   = 0.0
     model_config = {"from_attributes": True}
+    @field_serializer('film_id')
+    def serialize_film_id(self, value: uuid.UUID) -> str:
+        return str(value)
 
 
 class FilmlListResponse(BaseModel):
     films: List[FilmResponse]
-
+class FilmlListBlockResponse(BaseModel):
+    films: List[FilmResponseBlocFilm]
 
 class AddActorFilsmResponse(BaseModel):
     actor_ids: List[uuid.UUID]
