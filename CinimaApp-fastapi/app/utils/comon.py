@@ -1,30 +1,21 @@
 from sqlalchemy import select, and_
 from datetime import date, timedelta
 import bcrypt
-from fastapi import Depends, Query
+from fastapi import Depends
 from typing_extensions import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from faker import Faker
 from random import randint
 from uuid import UUID
 
-from app.db.engine import get_session
-from app.list.list_searhc import (
-    list_serach_name_title,
-    list_serach_rating,
-    list_blocked_text,
-)
 
-limit = Query(10, ge=1, le=50)
-limint_name = Query(10, ge=8, le=30)
-limint_film_title = Query(
-    ..., min_length=3, description="Пойск фильма по названию можно только с три сиволо"
+from app.db.engine import get_session
+from app.search_class.list_searhc import (
+    list_blocked_text,
+
 )
-limint_actor_or_author_filstmane_lastname_pat = Query(
-    ...,
-    min_length=3,
-    description="Пойск человека  по имени , фамилий т.д  можно только с три сиволо",
-)
+from app.enums.type_model import TypeModel
+from app.enums.serach_fileld import SerachFiled
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 faker = Faker()
@@ -52,7 +43,7 @@ def generator_star() -> int:
 
 
 async def is_fistname_lastname(mode, session, dict_data):
-    fields = list_serach_name_title[:3]
+    fields = SerachFiled.Name.value[:3]
     mas = [getattr(mode, field) == dict_data[field] for field in fields]
     smt = select(mode).where(and_(*mas))
     relut = await session.execute(smt)
@@ -73,11 +64,11 @@ async def not_create_rating(
 
 async def validate_is_data_range(value: date, type_obj: str) -> bool:
     today = date.today()
-    if type_obj == "film":
+    if type_obj == TypeModel.Film:
         min_date = today - timedelta(YEARS_FILMS * 365)
         if value > today or value < min_date:
             return False
-    elif type_obj in ["actor", "author"]:
+    elif type_obj== TypeModel.Actor or TypeModel.Author:
         min_date = today - timedelta(YEARS_ACTOR * 365)
         if value > today or value < min_date:
             return False
@@ -85,7 +76,7 @@ async def validate_is_data_range(value: date, type_obj: str) -> bool:
 
 
 async def validet_star_rating(dict: dict, filed_name: str) -> bool:
-    if filed_name == list_serach_rating[0]:
+    if filed_name == SerachFiled.Rating.value[0]:
         if dict[filed_name] < 1 or dict[filed_name] > 10:
             return False
         return True
