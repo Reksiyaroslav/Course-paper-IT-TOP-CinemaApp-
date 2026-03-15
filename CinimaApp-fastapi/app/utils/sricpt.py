@@ -1,5 +1,4 @@
 import asyncio
-from faker import Faker
 import random
 from app.db.model.model_db import (
     Film,
@@ -81,7 +80,9 @@ async def seend_database():
         for film_obj in films:
             select_actor = random.sample(actors, random.randint(1, 4))
             for actor in select_actor:
-                smt = film_actor.insert().values(film_id=film_obj.film_id, actor_id=actor.actor_id)
+                smt = film_actor.insert().values(
+                    film_id=film_obj.film_id, actor_id=actor.actor_id
+                )
                 await session.execute(smt)
             select_auhtor = random.sample(authors, random.randint(1, 3))
             for author in select_auhtor:
@@ -94,7 +95,9 @@ async def seend_database():
             if num_lice > 0 and films:
                 like_film = random.sample(films, min(num_lice, len(films)))
             for film_obj in like_film:
-                smt = user_film_like.insert().values(user_id=user.user_id, film_id=film_obj.film_id)
+                smt = user_film_like.insert().values(
+                    user_id=user.user_id, film_id=film_obj.film_id
+                )
                 await session.execute(smt)
         await session.commit()
     actors_count = await session.scalar(select(func.count(Actor.actor_id)))
