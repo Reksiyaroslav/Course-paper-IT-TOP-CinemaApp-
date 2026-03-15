@@ -1,6 +1,6 @@
 from typing import Dict, List
 from fastapi import APIRouter, HTTPException, Depends
-from app.scheme.model_coment import (
+from app.scheme.comment.model_coment import (
     ComentCreateRequest,
     ComentResponse,
     ComentUpdateRequest,

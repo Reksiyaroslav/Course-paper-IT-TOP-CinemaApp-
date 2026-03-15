@@ -1,4 +1,4 @@
-from app.scheme.model_ratingfilms import (
+from app.scheme.rating.model_ratingfilms import (
     RatingFilmCreateRequest,
     RatingFilmResponse,
     RatingFilmUpdateRequest,

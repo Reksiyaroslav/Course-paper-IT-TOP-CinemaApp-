@@ -1,6 +1,6 @@
 from typing import Dict, List
 from fastapi import APIRouter, HTTPException
-from app.scheme.model_author import (
+from app.scheme.author.model_author import (
     AuthorResponse,
     AuthorUpdateRequest,
     AuthorCreateRequest,
