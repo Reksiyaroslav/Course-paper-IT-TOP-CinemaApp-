@@ -18,7 +18,7 @@ from sqlalchemy import (
     VARCHAR,
 )
 
-from app.utils.enums import Role_User, Type_Rec
+from app.enums.enums import Role_User, Type_Rec
 
 
 class Base(DeclarativeBase):
