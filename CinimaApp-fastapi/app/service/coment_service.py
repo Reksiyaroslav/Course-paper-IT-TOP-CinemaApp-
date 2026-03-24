@@ -6,6 +6,12 @@ from app.repositories.reco_repo import RecoRepository
 
 from app.utils.comon import validet_text_coment
 
+from app.enums.serach_fileld import SerachFiled
+from app.enums.type_model import TypeModel
+from app.utils.noramliz_text import normalize_data
+
+from app.scheme.comment.model_coment import ComentResponse, ComentListReponse
+
 
 class ComentService(Base_Service):
     def __init__(self, session):
@@ -20,28 +26,48 @@ class ComentService(Base_Service):
         user_id: UUID,
         name_title_value=None,
     ):
-        if not await validet_text_coment(data, "description"):
+        filed_des = SerachFiled.Des.value[0]
+        clean_data = normalize_data(data, TypeModel.Comment.value)
+        if not await validet_text_coment(data, filed_des):
             raise HTTPException(
                 detail="Использовали не нужное слова в тексте", status_code=404
             )
-
-        return await self.coment_repo.create_coment(data, film_id, user_id)
+        new_comment = await self.coment_repo.create_coment(clean_data, film_id, user_id)
+        if not new_comment:
+            raise HTTPException(
+                status_code=500, detail="Ошибка при создании комментария"
+            )
+        return ComentResponse.from_orm(new_comment)
 
     async def get_coments(self):
-        return await self.coment_repo.get_coments()
+        comments = await self.coment_repo.get_coments()
+        return ComentListReponse(comments=comments)
 
     async def get_by_id_coment(self, coment_id):
-        return await self.coment_repo.get_by_id_coments(coment_id)
+        comment = await self.coment_repo.get_by_id_coments(coment_id)
+        if not comment:
+            raise HTTPException(status_code=404, detail="Комментарий не найден")
+        return ComentResponse.from_orm(comment)
 
     async def update_coment(self, coment_id, data):
-        if not await validet_text_coment(data, "description"):
+        filed_des = SerachFiled.Des.value[0]
+        clean_data = normalize_data(data, TypeModel.Comment.value)
+        if not await validet_text_coment(data, filed_des):
             raise HTTPException(
                 detail="Использовали не нужное слова в тексте", status_code=404
             )
-        return await self.coment_repo.update_coment(coment_id=coment_id, data=data)
+        update_comment = await self.coment_repo.update_coment(
+            coment_id=coment_id, data=clean_data
+        )
+        if not update_comment:
+            raise HTTPException(status_code=404, detail="Комментарий не найден")
+        return ComentResponse.from_orm(update_comment)
 
     async def delete_coment(self, coment_id):
-        return await self.coment_repo.delete_coment(coment_id=coment_id)
+        success = await self.coment_repo.delete_coment(coment_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Комментарий не найден")
+        return {"message": "Комментарий успешно удалён"}
 
     async def update_comet_like_unlike(self, user_id: UUID, coment_id, type_rec: str):
         if type_rec not in (Type_Rec.Like.value, Type_Rec.UnLike.value):
@@ -62,12 +88,9 @@ class ComentService(Base_Service):
             await self.reco_repo.update_reco(
                 user_id=user_id, coment_id=coment_id, type_rec=type_rec
             )
-        return await self.coment_repo.update_type_recon(
+        comment = await self.coment_repo.update_type_recon(
             coment_id=coment_id, type_recon=type_rec, relult_recon=old_type
         )
-
-    async def list_user_coments(self, user_id: UUID):
-        return await self.coment_repo.list_user_coments(user_id)
-
-    async def list_film_coments(self, film_id: UUID):
-        return await self.coment_repo.list_film_coments(film_id)
+        if not comment:
+            raise HTTPException(status_code=404, detail="Комментарий не найден")
+        return ComentResponse.from_orm(comment)
