@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 from sqlalchemy.exc import SQLAlchemyError
-from app.db.model.model_db import User, Coment, RatingFilm
+from app.db.model.model_db import User, Coment, RatingFilm, Film
 from app.utils.comon import hath_password, auth_password
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload
 from uuid import UUID
 from app.repositories.films_repositorie import FilmRepository
 
@@ -12,7 +12,7 @@ class UserRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create_user(self, data):
+    async def create_user(self, data: dict) -> User | None:
         try:
             if "password" in data:
                 data["password"] = hath_password(data["password"])
@@ -28,25 +28,25 @@ class UserRepository:
     async def get_list_users(self):
         try:
             smt = select(User).options(
-                joinedload(User.coments),
-                joinedload(User.rating_users),
-                joinedload(User.likefilms),
+                selectinload(User.coments),
+                selectinload(User.rating_users),
+                selectinload(User.likefilms),
             )
             relult = await self.session.execute(smt)
             user = relult.scalars().unique().all()
             return user
         except SQLAlchemyError as e:
             await self.session.rollback()
-            raise Exception(str(e))
+            raise
 
-    async def get_user_by_id(self, user_id: UUID):
+    async def get_user_by_id(self, user_id: UUID) -> User | None:
         try:
             smt = (
                 select(User)
                 .options(
-                    joinedload(User.coments),
-                    joinedload(User.rating_users),
-                    joinedload(User.likefilms),
+                    selectinload(User.coments),
+                    selectinload(User.rating_users),
+                    selectinload(User.likefilms),
                 )
                 .filter(User.user_id == user_id)
             )
@@ -55,14 +55,14 @@ class UserRepository:
             return user
         except SQLAlchemyError as e:
             await self.session.rollback()
-            raise Exception(f"Error problem select {str(e)}")
+            raise
 
-    async def update_user(self, user_id, data: dict):
+    async def update_user(self, user_id: UUID, data: dict) -> User | None:
         if "password" in data and data["password"] != None:
             data["password"] = hath_password(data["password"])
         user = await self.get_user_by_id(user_id)
         if not user:
-            return Exception("Not user to db")
+            return None
         for key, values in data.items():
             if values is not None and hasattr(user, key):
                 setattr(user, key, values)
@@ -71,11 +71,15 @@ class UserRepository:
         update_user = await self.get_user_by_id(user_id)
         return update_user
 
-    async def delete_user(self, user_id):
-        smt = delete(User).where(User.user_id == user_id)
-        await self.session.execute(smt)
-        await self.session.commit()
-        return None
+    async def delete_user(self, user_id: UUID) -> bool:
+        try:
+            smt = delete(User).where(User.user_id == user_id)
+            await self.session.execute(smt)
+            await self.session.commit()
+            return True
+        except Exception:
+            await self.session.rollback()
+            return False
 
     async def get_name(self, username: str) -> User | None:
         smt = select(User).where(User.username == username)
@@ -85,13 +89,15 @@ class UserRepository:
             return None
         return user
 
-    async def get_username_password(self, username: str, password: str) -> User | None:
-        smt = select(User).where(User.username == username)
+    async def get_username_password(self, data: dict) -> User | None:
+        email: str = data.get("email")
+        password: str = data.get("password")
+        smt = select(User).where(User.email == email)
         result = await self.session.execute(smt)
         user = result.scalars().first()
         if not user:
             return None
-        if auth_password(user.password, password):
+        if auth_password(password_user=user.password, password_api=password):
             return user
         return None
 
@@ -105,13 +111,11 @@ class UserRepository:
             user.user_id = row[0]
             user.username = row[1]
             user.email = row[2]
-        users.append(user)
+            users.append(user)
         return users
 
-    async def add_licefilm(self, user_id: UUID, film_id: UUID):
-        film_repo = FilmRepository(self.session)
+    async def add_licefilm(self, user_id: UUID, film: Film) -> User:
         user = await self.get_user_by_id(user_id)
-        film = await film_repo.get_film_by_id(film_id)
         if not user:
             raise ValueError("Нет такого пользователя")
         if not film:
@@ -133,14 +137,14 @@ class UserRepository:
         films = await film_repo.get_film_film_ids(film_ids)
         return films
 
-    async def add_coment_user(self, user_id: UUID, coment: Coment):
+    async def add_coment_user(self, user_id: UUID, coment: Coment) -> None:
         user = await self.get_user_by_id(user_id)
         if user:
             user.coments.append(coment)
             await self.session.commit()
             await self.session.refresh(user)
 
-    async def add_ratingfilm_user(self, user_id: UUID, ratingfilm: RatingFilm):
+    async def add_ratingfilm_user(self, user_id: UUID, ratingfilm: RatingFilm) -> None:
         user = await self.get_user_by_id(user_id)
         if user:
             user.rating_users.append(ratingfilm)

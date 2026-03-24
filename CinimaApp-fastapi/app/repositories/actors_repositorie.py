@@ -1,30 +1,46 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.model.model_db import Actor
+from app.db.model.model_db import Actor, uuid
 from sqlalchemy import select, or_, delete
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class ActorRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create_actor(self, data: dict):
-        actor = Actor(**data)
-        self.session.add(actor)
-        await self.session.commit()
-        return actor
+    async def create_actor(self, data: dict) -> Actor | None:
+        "Создание актёра"
+        try:
+            actor = Actor(**data)
+            self.session.add(actor)
+            await self.session.commit()
+            return actor
+        except SQLAlchemyError as e:
+            await self.session.rollback()
+            print(e)
+            return None
 
-    async def get_actors(self):
-        smt = select(Actor)
-        relult = await self.session.execute(smt)
-        actor = relult.scalars().all()
-        return actor
+    async def get_actors(self) -> list[Actor] | None:
+        "Получения списка актеров"
+        try:
+            smt = select(Actor)
+            relult = await self.session.execute(smt)
+            actor = relult.scalars().all()
+            return actor
+        except SQLAlchemyError as e:
+            await self.session.rollback()
+            raise
 
-    async def get_actor_by_id(self, actor_id):
+    async def get_actor_by_id(self, actor_id: uuid.UUID) -> Actor | None:
+        "Получение актера по id"
         actor = await self.session.get(Actor, actor_id)
         return actor
 
-    async def update_actor(self, data: dict, actor_id):
+    async def update_actor(self, data: dict, actor_id: uuid.UUID):
+        "Обновления актёра"
         actor = await self.get_actor_by_id(actor_id=actor_id)
+        if not actor:
+            return None
         for key, values in data.items():
             if values is not None and hasattr(actor, key):
                 setattr(actor, key, values)
@@ -32,34 +48,26 @@ class ActorRepository:
         await self.session.refresh(actor)
         return actor
 
-    async def delete_actor(self, actor_id) -> dict:
-        smt = delete(Actor).filter(Actor.actor_id == actor_id)
-        await self.session.execute(smt)
-        await self.session.commit()
-        return {"message": "Delete actor the db"}
+    async def delete_actor(self, actor_id: uuid.UUID) -> bool:
+        "Удаланения актёра"
+        try:
+            smt = delete(Actor).filter(Actor.actor_id == actor_id)
+            result = await self.session.execute(smt)
+            await self.session.commit()
+            return True
+        except Exception:
+            await self.session.rollback()
+            return False
 
-    async def get_actorname(self, actorname: str) -> Actor | None:
-        smt = select(Actor).where(
-            (Actor.fistname == actorname)
-            | (Actor.lastname == actorname)
-            | (Actor.patronymic == actorname)
-        )
-        result = await self.session.execute(smt)
-        actor = result.scalars().first()
-        return actor
-
-    async def get_actorname_list(self, name: str, limit: int = 3) -> list[Actor] | None:
+    async def get_actorname_list(self, name: str) -> list[Actor] | None:
+        "Получения актеров по имени или очеству которые совпадают"
         serhat_parametr = f"%{name}%"
-        smt = (
-            select(Actor)
-            .where(
-                or_(
-                    Actor.fistname.contains(serhat_parametr),
-                    Actor.lastname.contains(serhat_parametr),
-                    Actor.patronymic.contains(serhat_parametr),
-                )
+        smt = select(Actor).where(
+            or_(
+                Actor.fistname.contains(serhat_parametr),
+                Actor.lastname.contains(serhat_parametr),
+                Actor.patronymic.contains(serhat_parametr),
             )
-            .limit(limit)
         )
         result = await self.session.execute(smt)
         actors = result.scalars().all()
