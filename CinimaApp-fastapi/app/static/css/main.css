@@ -47,6 +47,20 @@
     margin-right: 30px;
 
 }
+.actor_block
+{
+    width: 10%;
+    height: 20%;
+    flex-direction: column;
+    border-radius: 20px;
+    padding: 20px;
+}
+.actor_bloc_text
+{
+    color: blueviolet;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-direction: row;
+}
 h2{
     margin-left: 40px;
 }

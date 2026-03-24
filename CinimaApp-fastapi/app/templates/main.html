@@ -3,10 +3,10 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" type="text/css" href="static/css/main.css">
-	<link rel="stylesheet" type="text/css" href="static/css/header.css">
-	<link rel="stylesheet" type="text/css" href="static/css/footer.css">
-	<link rel="shortcut icon" href="static/icong_web.svg">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/main.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/header.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/footer.css')}}">
+	<link rel="shortcut icon" href="{{url_for('static',path='icong_web.svg')}}">
 	<title>Главная страница</title>
 </head>
 <body>
@@ -14,17 +14,31 @@
 		<div class="mini_film  df">
 			{% for film in films %}
 			<div class="mini_bloc_film df">
-				<a href="{profiles.html}" id="film"><img src="static/{{film.path_image}}"></a>
+				<a href="{{url_for('view_item',env_type_model='film',item_id = film.film_id)}}" id="film">
+					<img src="{{url_for('static',path=film.path_image)}}">
+				</a>
 				<p id = titel>{{film.title}}</p>
 				<p>{{film.avg_rating}}</p>
+				<p>{{ film.release_date if film.release_date else "Дата не указана" }}</p>
 			</div>	
 			{% endfor  %}
 		</div>
+	{% for actor in actors %}
+		<div class="actor_block">
+			<div class="actor_block_text">
+				<h1>{{actor.lastname}} {{actor.fistname}}</h1>
+				{%if actor.star%}
+				<a href="{{url_for("view_item",env_type_model="actor",item_id=actor.actor_id)}}">Профиль актёра</a>
+				{%else%}
+				<a href="{{url_for("view_item",env_type_model="author",item_id=actor.author_id)}}">Профиль автора</a>
+				{%endif%}
+			</div>
+	</div>
 	
-	
+	{% endfor%}
 	{% for film in films %}
 		<div class="bloc_film df ">
-			<a href="" id="film"><img src="static/{{film.path_image}}"></a>
+			<a href="{{url_for('view_item',env_type_model='film',item_id = film.film_id)}}" id="film"><img src="{{url_for('static',path=film.path_image)}}"></a>
 			<div class="text_dect df">
 				<h1>
 					{{film.title}}

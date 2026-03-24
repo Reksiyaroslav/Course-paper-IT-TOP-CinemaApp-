@@ -16,18 +16,30 @@
                 <a href="">
                     Разрабочики
                 </a>
-                <a href="">
+                <a href="{{url_for('main_film')}}">
                     Фильмы
                 </a>
-                <a href="">
+                <a href="{{url_for('main_actor')}}">
                     Актеры
                 </a>
-                <a href="">
+                <a href="{{url_for('main_author')}}">
                     Авторы
                 </a>
-                 <a href="">
+                {%if user.role_user%}
+                <a href="{{url_for("view_item",env_type_model="user",item_id= user.user_id)}}">
                     Профиль
                 </a>
+                <form action="{{url_for("logout")}}" method="post" >
+                    <button type="submit">Выход</button>
+                </form>
+                {%elif not user.role_user%}
+                <a href="{{url_for("reg")}}"> Регестрация</a>
+                <a href="{{url_for("log")}}"> Вход</a>
+                {%elif user.role_user == "admin" or user.role_user=="author"%}
+                <a href="{{url_for("create_model",type_model="film")}}">Создание фильма</a>
+                <a href="{{url_for("create_model",type_model="actor")}}">Создание актёра</a>
+                <a href="{{url_for("create_model",type_model="author")}}">Создание сценариста</a>
+                {%endif%}
             </li> 
         </div>
     </header>

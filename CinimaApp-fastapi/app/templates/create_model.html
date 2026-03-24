@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create model</title>
+</head>
+<body>
+    {%if type_model=="film"%}
+    <form action="{{url_for("film_create")}}" method="post" enctype="multipart/form-data">
+        <input type="text" name="title" value="{{ data.title if data.title else "" }}" placeholder="Название фильма">
+        <input type="text" name="description" value="{{ data.description if data.description  else ""}}" placeholder="Описание фильма">
+        <input type="date" name ="release_date" value="{{data.release_date.strftime('%Y-%m-%d') if data.release_date else ""}}" placeholder="Дата релиза">
+        <input type="file" name="image" placeholder="Главный банер ">
+        <select name="actor_ids" multiple>
+            {%for actor  in actors%}
+            <option value="{{actor.actor_id}}">{{actor.fistname}} {{actor.lastname}}</option>
+            {%endfor%}
+            <small>Зажмите Ctrl, чтобы выбрать нескольких</small>
+        </select>
+        <select name="author_ids" multiple>
+            {%for author  in authors%}
+            <option value="{{author.author_id}}">{{author.fistname }} {{author.lastname}}</option>
+            {%endfor%}
+             <small>Зажмите Ctrl, чтобы выбрать нескольких</small>
+        </select>
+        
+        <button type="submit">Создать фильм</button>
+    </form>
+    {% elif type_model=="actor"%}
+    <form action="{{url_for("create_actor")}}" method="post" enctype="multipart/form-data">
+        <input type="text" name="fistname" value="{{ data.fistname if data.fistname else "" }}" placeholder="Имя">
+        <input type="text" name="lastname" value="{{ data.lastname if data.lastname  else ""}}" placeholder="Фамилия">
+        <input type="text" name="patronymic" value="{{ data.patronymic if data.patronymic else "" }}" placeholder="Отечства">
+        <input type="date" name ="birth_date" value="{{data.birth_date.strftime('%Y-%m-%d') if data.birth_date else ""}}" placeholder="Дата рождения">
+        <input type="number" name="star" value="{{ data.star if data.star else "" }}" placeholder="Сколько звёст">
+        <!-- <input type="file" name="image" placeholder="Главный банер "> -->
+        <button type="submit">Создать актёра</button>
+    </form>
+    {%  elif type_model =='author'%}
+    <form action="{{url_for("create_author")}}" method="post" enctype="multipart/form-data">
+        <input type="text" name="fistname" value="{{ data.fistname if data.fistname else "" }}" placeholder="Имя">
+        <input type="text" name="lastname" value="{{ data.lastname if data.lastname  else ""}}" placeholder="Фамилия">
+        <input type="text" name="patronymic" value="{{ data.patronymic if data.patronymic else "" }}" placeholder="Отечства">
+        <input type="date" name ="birth_date" value="{{data.birth_date.strftime('%Y-%m-%d') if data.birth_date else ""}}" placeholder="Дата рождения">
+        <textarea name="bio"   placeholder="Сколько звёст"> {{ data.bio if data.bio else "" }}</textarea>
+        <!-- <input type="file" name="image" placeholder="Главный банер "> -->
+        <button type="submit">Создать автора</button>
+    </form>
+    {%else%}
+    <p>Не такой модели</p>
+    {%endif%}
+</body>
+</html>
