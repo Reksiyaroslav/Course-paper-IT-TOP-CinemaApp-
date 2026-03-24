@@ -37,21 +37,35 @@ class Base(DeclarativeBase):
 film_actor = Table(
     "film_actor",
     Base.metadata,
-    Column("film_id", ForeignKey("films.film_id"), primary_key=True),
-    Column("actor_id", ForeignKey("actors.actor_id"), primary_key=True),
+    Column(
+        "film_id", ForeignKey("films.film_id", ondelete="CASCADE"), primary_key=True
+    ),
+    Column(
+        "actor_id", ForeignKey("actors.actor_id", ondelete="CASCADE"), primary_key=True
+    ),
 )
 
 author_cinema = Table(
     "author_ciema",
     Base.metadata,
-    Column("film_id", ForeignKey("films.film_id"), primary_key=True),
-    Column("author_id", ForeignKey("authors.author_id"), primary_key=True),
+    Column(
+        "film_id", ForeignKey("films.film_id", ondelete="CASCADE"), primary_key=True
+    ),
+    Column(
+        "author_id",
+        ForeignKey("authors.author_id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
 )
 user_film_like = Table(
     "fans_user",
     Base.metadata,
-    Column("film_id", ForeignKey("films.film_id"), primary_key=True),
-    Column("user_id", ForeignKey("users.user_id"), primary_key=True),
+    Column(
+        "film_id", ForeignKey("films.film_id", ondelete="CASCADE"), primary_key=True
+    ),
+    Column(
+        "user_id", ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True
+    ),
 )
 
 
@@ -60,8 +74,12 @@ class RatingFilm(Base):
         primary_key=True, unique=True, nullable=False, default=uuid.uuid4
     )
     rating: Mapped[int] = mapped_column(Integer, default=0)
-    film_id: Mapped[UUID] = mapped_column(ForeignKey("films.film_id"), nullable=False)
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.user_id"), nullable=False)
+    film_id: Mapped[UUID] = mapped_column(
+        ForeignKey("films.film_id", ondelete="CASCADE"), nullable=False
+    )
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False
+    )
     user: Mapped["User"] = relationship("User", back_populates="rating_users")
     film: Mapped["Film"] = relationship("Film", back_populates="rating_films")
 
@@ -92,8 +110,12 @@ class Coment(Base):
     description: Mapped[str]
     countheart: Mapped[int] = mapped_column(default=0)
     countdemon: Mapped[int] = mapped_column(default=0)
-    film_id: Mapped[UUID] = mapped_column(ForeignKey("films.film_id"), nullable=False)
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.user_id"), nullable=False)
+    film_id: Mapped[UUID] = mapped_column(
+        ForeignKey("films.film_id", ondelete="CASCADE"), nullable=False
+    )
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False
+    )
     user: Mapped["User"] = relationship("User", back_populates="coments")
     film: Mapped["Film"] = relationship("Film", back_populates="coments")
     recos: Mapped[list["Recone"]] = relationship("Recone", back_populates="coment")
@@ -105,10 +127,10 @@ class Recone(Base):
     )
     type_rect: Mapped[str] = mapped_column(VARCHAR(50), nullable=False)
     repit_user_id: Mapped[UUID] = mapped_column(
-        ForeignKey("users.user_id"), nullable=False
+        ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False
     )
     coment_recone: Mapped[UUID] = mapped_column(
-        ForeignKey("coments.coment_id"), nullable=False
+        ForeignKey("coments.coment_id", ondelete="CASCADE"), nullable=False
     )
     coment: Mapped[Coment] = relationship("Coment", back_populates="recos")
 
@@ -148,9 +170,11 @@ class Film(Base):
     actors: Mapped[list[Actor]] = relationship(
         secondary=film_actor, back_populates="films_acted"
     )
-    coments: Mapped[list[Coment]] = relationship("Coment", back_populates="film")
+    coments: Mapped[list[Coment]] = relationship(
+        "Coment", back_populates="film", cascade="all, delete-orphan"
+    )
     rating_films: Mapped[list["RatingFilm"]] = relationship(
-        "RatingFilm", back_populates="film"
+        "RatingFilm", back_populates="film", cascade="all, delete-orphan"
     )
     fans: Mapped[list["User"]] = relationship(
         "User", secondary=user_film_like, back_populates="likefilms"
@@ -171,9 +195,11 @@ class User(Base):
     datetimenow: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.now
     )
-    coments: Mapped[list["Coment"]] = relationship("Coment", back_populates="user")
+    coments: Mapped[list["Coment"]] = relationship(
+        "Coment", back_populates="user", cascade="all, delete-orphan"
+    )
     rating_users: Mapped[list["RatingFilm"]] = relationship(
-        "RatingFilm", back_populates="user"
+        "RatingFilm", back_populates="user", cascade="all, delete-orphan"
     )
     likefilms: Mapped[list["Film"]] = relationship(
         back_populates="fans", secondary=user_film_like
