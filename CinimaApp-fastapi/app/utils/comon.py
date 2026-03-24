@@ -12,7 +12,6 @@ from uuid import UUID
 from app.db.engine import get_session
 from app.search_class.list_searhc import (
     list_blocked_text,
-
 )
 from app.enums.type_model import TypeModel
 from app.enums.serach_fileld import SerachFiled
@@ -54,12 +53,9 @@ async def is_fistname_lastname(mode, session, dict_data):
 async def not_create_rating(
     model, session: AsyncSession, film_id: UUID, user_id: UUID
 ) -> bool:
-    smt = select(model).where(model.user_id == user_id and model.film_id == film_id)
+    smt = select(model).where(and_(model.user_id == user_id, model.film_id == film_id))
     rating = await session.execute(statement=smt)
-    if rating:
-        return False
-    else:
-        return True
+    return rating is None
 
 
 async def validate_is_data_range(value: date, type_obj: str) -> bool:
@@ -68,7 +64,7 @@ async def validate_is_data_range(value: date, type_obj: str) -> bool:
         min_date = today - timedelta(YEARS_FILMS * 365)
         if value > today or value < min_date:
             return False
-    elif type_obj== TypeModel.Actor or TypeModel.Author:
+    elif type_obj == TypeModel.Actor or TypeModel.Author:
         min_date = today - timedelta(YEARS_ACTOR * 365)
         if value > today or value < min_date:
             return False
@@ -108,4 +104,6 @@ def hath_password(password: str):
 def auth_password(password_user: str, password_api: str):
     password_api_byte = password_api.encode("utf-8")
     password_user_byte = password_user.encode("utf-8")
-    return bcrypt.checkpw(password_user_byte, password_api_byte)
+    return bcrypt.checkpw(
+        password=password_api_byte, hashed_password=password_user_byte
+    )
