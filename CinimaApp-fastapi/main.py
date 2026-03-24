@@ -16,6 +16,16 @@ from app.handler.ui_api_route import ui_router, teamlates
 import uvicorn
 
 app = FastAPI(debug=True, title="FilmApp")
+# @app.on_event("startup")
+# async def event():
+# await create_tabel()
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="radom_moler",
+    max_age=3600,  # 1 час
+    same_site="lax",
+    https_only=False,
+)
 app.include_router(user_router)
 app.include_router(film_router)
 app.include_router(actor_router)
@@ -24,14 +34,18 @@ app.include_router(coment_router)
 app.include_router(rating_router)
 app.include_router(ui_router)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-# @app.on_event("startup")
-# async def event():
-# await create_tabel()
-app.add_middleware(SessionMiddleware,secret_key = "radom_moler")
+
 
 @app.get("/")
-def hello_people(reqest: Request) -> RedirectResponse:
-    return RedirectResponse(url=reqest.url_for("main_film"), status_code=303)
+def hello_people(request: Request) -> RedirectResponse:
+    return RedirectResponse(url=request.url_for("main_film"), status_code=303)
+
+
+@app.post("/logout")
+def logout(request: Request):
+    request.session.clear()
+    url = request.url_for("main_film")
+    return RedirectResponse(url)
 
 
 if __name__ == "__main__":
