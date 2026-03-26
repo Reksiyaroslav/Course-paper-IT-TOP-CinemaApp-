@@ -11,7 +11,8 @@
 </head>
 <body>
 	<div id="header">{% include "header.html"%}</div>
-		<div class="mini_film  df">
+	{%if films%}
+	<div class="mini_film  df">
 			{% for film in films %}
 			<div class="mini_bloc_film df">
 				<a href="{{url_for('view_item',env_type_model='film',item_id = film.film_id)}}" id="film">
@@ -23,6 +24,8 @@
 			</div>	
 			{% endfor  %}
 		</div>
+	{%endif%}	
+	{%if actors%}	
 	{% for actor in actors %}
 		<div class="actor_block">
 			<div class="actor_block_text">
@@ -33,9 +36,12 @@
 				<a href="{{url_for("view_item",env_type_model="author",item_id=actor.author_id)}}">Профиль автора</a>
 				{%endif%}
 			</div>
-	</div>
+			
+		</div>
+		{% endfor%}
+		{%endif%}
 	
-	{% endfor%}
+	{%if films%}
 	{% for film in films %}
 		<div class="bloc_film df ">
 			<a href="{{url_for('view_item',env_type_model='film',item_id = film.film_id)}}" id="film"><img src="{{url_for('static',path=film.path_image)}}"></a>
@@ -49,8 +55,16 @@
 				<p>{{film.avg_rating}}</p>
 				
 			</div>
+			
 		</div>
-	{% endfor %}
+		{% endfor %}
+	
+	{%endif%}
+
+	
+	{%if not films and not actors%}
+	<h1>Сдесь пока не чего нет </h1>	
+	{%endif%}
 	<div id="footer">{% include"footer.html"%}</div>
 		
 	
