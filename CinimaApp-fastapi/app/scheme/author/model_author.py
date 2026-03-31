@@ -3,6 +3,8 @@ import uuid
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from app.utils.comon import faker, generatao_bio
+from app.scheme.film.film_base import FilmShort
+from app.scheme.country.country_base import CountryShort
 
 
 class ScreenWriterBase(BaseModel):
@@ -22,11 +24,11 @@ class ScreenWriterBaseResponse(BaseModel):
 
 
 class AuthorCreateRequest(ScreenWriterBase):
-    pass
+    country_id: Optional[uuid.UUID] = None
 
 
 class AuthorUpdateRequest(ScreenWriterBase):
-    pass
+    country_id: Optional[uuid.UUID] = None
 
 
 class AuthorResponse(ScreenWriterBaseResponse):
@@ -34,6 +36,16 @@ class AuthorResponse(ScreenWriterBaseResponse):
     birth_date: Optional[datetime.date] = None
     created_at: Optional[datetime.datetime] = None
     update_at: Optional[datetime.datetime] = None
+    model_config = {"from_attributes": True}
+
+
+class Author_FullResponse(ScreenWriterBaseResponse):
+    author_id: uuid.UUID
+    birth_date: Optional[datetime.date] = None
+    created_at: Optional[datetime.datetime] = None
+    update_at: Optional[datetime.datetime] = None
+    films_authored: List[Optional[FilmShort]] = []
+    country: Optional[CountryShort] = None
     model_config = {"from_attributes": True}
 
 

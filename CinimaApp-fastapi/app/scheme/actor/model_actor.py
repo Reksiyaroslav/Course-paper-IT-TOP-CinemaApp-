@@ -3,6 +3,8 @@ import uuid
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from app.utils.comon import faker, generator_star
+from app.scheme.film.film_base import FilmShort
+from app.scheme.country.country_base import CountryShort
 
 
 class ActorBase(BaseModel):
@@ -22,17 +24,26 @@ class ActorBaseResponse(BaseModel):
 
 
 class ActorCreateRequest(ActorBase):
-    pass
+    country_id: Optional[uuid.UUID] = None
 
 
 class ActorUpdateRequest(ActorBase):
-    pass
+    country_id: Optional[uuid.UUID] = None
 
 
 class ActorResponse(ActorBaseResponse):
     actor_id: uuid.UUID
     create_at: Optional[datetime.datetime] = None
     update_at: Optional[datetime.datetime] = None
+    model_config = {"from_attributes": True}
+
+
+class Actor_FullResponse(ActorBaseResponse):
+    actor_id: uuid.UUID
+    create_at: Optional[datetime.datetime] = None
+    update_at: Optional[datetime.datetime] = None
+    films_acted: List[Optional[FilmShort]] = []
+    country: Optional[CountryShort] = None
     model_config = {"from_attributes": True}
 
 
