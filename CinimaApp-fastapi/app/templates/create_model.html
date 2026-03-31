@@ -6,49 +6,97 @@
     <title>Create model</title>
 </head>
 <body>
-    {%if type_model=="film"%}
-    <form action="{{url_for("film_create")}}" method="post" enctype="multipart/form-data">
-        <input type="text" name="title" value="{{ data.title if data.title else "" }}" placeholder="Название фильма">
-        <input type="text" name="description" value="{{ data.description if data.description  else ""}}" placeholder="Описание фильма">
-        <input type="date" name ="release_date" value="{{data.release_date.strftime('%Y-%m-%d') if data.release_date else ""}}" placeholder="Дата релиза">
-        <input type="file" name="image" placeholder="Главный банер ">
-        <select name="actor_ids" multiple>
-            {%for actor  in actors%}
-            <option value="{{actor.actor_id}}">{{actor.fistname}} {{actor.lastname}}</option>
-            {%endfor%}
-            <small>Зажмите Ctrl, чтобы выбрать нескольких</small>
-        </select>
-        <select name="author_ids" multiple>
-            {%for author  in authors%}
-            <option value="{{author.author_id}}">{{author.fistname }} {{author.lastname}}</option>
-            {%endfor%}
-             <small>Зажмите Ctrl, чтобы выбрать нескольких</small>
-        </select>
-        
-        <button type="submit">Создать фильм</button>
-    </form>
-    {% elif type_model=="actor"%}
-    <form action="{{url_for("create_actor")}}" method="post" enctype="multipart/form-data">
-        <input type="text" name="fistname" value="{{ data.fistname if data.fistname else "" }}" placeholder="Имя">
-        <input type="text" name="lastname" value="{{ data.lastname if data.lastname  else ""}}" placeholder="Фамилия">
-        <input type="text" name="patronymic" value="{{ data.patronymic if data.patronymic else "" }}" placeholder="Отечства">
-        <input type="date" name ="birth_date" value="{{data.birth_date.strftime('%Y-%m-%d') if data.birth_date else ""}}" placeholder="Дата рождения">
-        <input type="number" name="star" value="{{ data.star if data.star else "" }}" placeholder="Сколько звёст">
-        <!-- <input type="file" name="image" placeholder="Главный банер "> -->
-        <button type="submit">Создать актёра</button>
-    </form>
-    {%  elif type_model =='author'%}
-    <form action="{{url_for("create_author")}}" method="post" enctype="multipart/form-data">
-        <input type="text" name="fistname" value="{{ data.fistname if data.fistname else "" }}" placeholder="Имя">
-        <input type="text" name="lastname" value="{{ data.lastname if data.lastname  else ""}}" placeholder="Фамилия">
-        <input type="text" name="patronymic" value="{{ data.patronymic if data.patronymic else "" }}" placeholder="Отечства">
-        <input type="date" name ="birth_date" value="{{data.birth_date.strftime('%Y-%m-%d') if data.birth_date else ""}}" placeholder="Дата рождения">
-        <textarea name="bio"   placeholder="Сколько звёст"> {{ data.bio if data.bio else "" }}</textarea>
-        <!-- <input type="file" name="image" placeholder="Главный банер "> -->
-        <button type="submit">Создать автора</button>
-    </form>
+    {%if user.role_user=="admin" or user.role_user=="author" %}
+        {%if type_model=="film"%}
+        <form action="{{url_for("film_create")}}" method="post" enctype="multipart/form-data">
+            <input type="text" name="title" minlength="10"  maxlength="1000" value="{{ data.title if data.title else "" }}" placeholder="Название фильма">
+            <input type="text" name="description" minlength="50" maxlength="10000" value="{{ data.description if data.description  else ""}}" placeholder="Описание фильма">
+            <input type="date" name ="release_date"  value="{{data.release_date.strftime('%Y-%m-%d') if data.release_date else ""}}" placeholder="Дата релиза">
+            <input type="file" name="image" placeholder="Главный банер ">
+            {%if actors%}
+                <select name="actor_ids" multiple>
+                    {%for actor  in actors%}
+                    <option value="{{actor.actor_id}}">{{actor.fistname}} {{actor.lastname}}</option>
+                    {%endfor%}
+                    <small>Зажмите Ctrl, чтобы выбрать нескольких</small>
+                </select>
+            {%else%}
+            <h2>Нет сдесь актёров</h2>
+            {%endif%}
+            {%if authors %}
+            <select name="author_ids" multiple>
+                {%for author  in authors%}
+                <option value="{{author.author_id}}">{{author.fistname}} {{author.lastname}}</option>
+                {%endfor%}
+                <small>Зажмите Ctrl, чтобы выбрать нескольких</small>
+            </select>
+            {%else%}
+            <h4>Нет авторов</h4>
+            {%endif%}
+            {%if types_film %}
+            <select name="types_id" multiple>
+                {%for type_film  in types_film%}
+                <option value="{{type_film.type_film_id}}">{{type_film.type_film_name.title()}}</option>
+                {%endfor%}
+                <small>Зажмите Ctrl, чтобы выбрать нескольких</small>
+            </select>
+            {%else%}
+            <h4>Нет типа ретинга</h4>
+            {%endif%}
+            {%if countrys %}
+            <select name="country_id">
+                {%for country  in countrys%}
+                <option value="{{country.country_id}}">{{country.country_name.title()}}</option>
+                {%endfor%}
+            </select>
+            {%else%}
+            <h4>Нет стран</h4>
+            {%endif%}
+            <button type="submit">Создать фильма</button>
+        {% elif type_model=="actor"%}
+        <form action="{{url_for("create_actor")}}" method="post" enctype="multipart/form-data">
+            <input type="text" name="fistname" value="{{ data.fistname if data.fistname else "" }}" placeholder="Имя">
+            <input type="text" name="lastname" value="{{ data.lastname if data.lastname  else ""}}" placeholder="Фамилия">
+            <input type="text" name="patronymic" value="{{ data.patronymic if data.patronymic else "" }}" placeholder="Отечства">
+            <input type="date" name ="birth_date" value="{{data.birth_date.strftime('%Y-%m-%d') if data.birth_date else ""}}" placeholder="Дата рождения">
+            <input type="number" name="star" value="{{ data.star if data.star else "" }}" placeholder="Сколько звёст">
+            <!-- <input type="file" name="image" placeholder="Главный банер "> -->
+            {%if countrys %}
+            <select name="country_id">
+                {%for country  in countrys%}
+                <option value="{{country.country_id}}">{{country.country_name.title()}}</option>
+                {%endfor%}
+            </select>
+            {%else%}
+            <h4>Нет стран</h4>
+            {%endif%}
+            <button type="submit">Создать актёра</button>
+        </form>
+        {%  elif type_model =='author'%}
+        <form action="{{url_for("create_author")}}" method="post" enctype="multipart/form-data">
+            <input type="text" name="fistname" value="{{ data.fistname if data.fistname else "" }}" placeholder="Имя">
+            <input type="text" name="lastname" value="{{ data.lastname if data.lastname  else ""}}" placeholder="Фамилия">
+            <input type="text" name="patronymic" value="{{ data.patronymic if data.patronymic else "" }}" placeholder="Отечства">
+            <input type="date" name ="birth_date" value="{{data.birth_date.strftime('%Y-%m-%d') if data.birth_date else ""}}" placeholder="Дата рождения">
+            <textarea name="bio"   placeholder="Сколько звёст"> {{ data.bio if data.bio else "" }}</textarea>
+            <!-- <input type="file" name="image" placeholder="Главный банер "> -->
+        {%if countrys %}
+            <select name="country_id">
+                {%for country  in countrys%}
+                <option value="{{country.country_id}}">{{country.country_name.title()}}</option>
+                {%endfor%}
+            </select>
+            {%else%}
+            <h4>Нет стран</h4>
+            {%endif%}
+            <button type="submit">Создать автора</button>
+        </form>
+        {%else%}
+        <p>Не такой модели</p>
+        {%endif%}
     {%else%}
-    <p>Не такой модели</p>
+    <h1>Нет доступа</h1>
+    <a href="{{url_for("main_item",type_model="film")}}">Обратно</a>
     {%endif%}
 </body>
 </html>

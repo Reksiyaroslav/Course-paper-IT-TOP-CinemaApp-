@@ -16,94 +16,137 @@
 		{%if item.username%}
 			<h1 id="username">{{item.username}}</h1>
 			<h2 id = "datanow">{{item.datanow}}</h2>
+			{%if user.role_user=="admin" and item.role_user=="admin"%}
+				<a href="{{url_for("update_form_role_user")}}">Изменеия ролик у user</a>	
+			{%endif%}
+			{%if  user.role_user=="admin"%}
+			<h2>{{item.role_user}}</h2>
+			{%endif%}
+			{%if item.likefilm%}
+			{%for film in item.likefilm %}
+			<h1>{{film.title.title()}}</h1>
+			<a href="{{url_for("viem_item",env_type_model="film",item_id=film.film_id)}}">Профиль фильма</a>
+			{%endfor%}
+			{%else%}
+			<h1>Не у пользователя фильмов</h1>
+			{%endif%}
+
+
 		{%elif item.title%}
-		<data>{{item.release_date}}</data>
-		<span>{{item.avg_rating}}</span>
-		{%if user and not rating_user  %}
-		<form  action="{{url_for("create_rating",film_id=item.film_id,user_id=user.user_id)}}" method="post">
-			<select name="rating" >
-				{%for i in range(1,11)%}
-				<option value="{{i}}">{{i}}</option>
-				{%endfor%}	
-			</select>
-			<button type="submit">Создать ретинг</button>
-		</form>
-		{%elif rating_user and user.user_id %}
-		<h2>Ваш ратинг:{{rating_user.rating}}/10</h2>
-		<form  action="{{url_for("update_rating_user_id",film_id=item.film_id,user_id=user.user_id)}}" method="post">
-			<select name="rating" >
-				{%for i in range(1,11)%}
-				<option value="{{i}}">{{i}}</option>
-				{%endfor%}	
-			</select>
-			<button type="submit">Обновить  ретинг</button>
-		</form>
-		<form  action="{{url_for("delete_rating",rating_id = rating_user.rating_id,film_id=item.film_id)}}" method="post">
-			<button type="submit">удалить ратин твой </button>
-		</form>
-		{%endif%}
-		<h1 id="titile">{{item.title}}</h1>
-		<p id = "description">{{item.description}}</p>
-		<img src="{{url_for('static',path=item.path_image)}}" alt="">
-		<h1>Actors</h1>
-		{%if item.actors %}
-		
-		{%for actor in item.actors%}
-		<a href="{{url_for("view_item",env_type_model='actor',item_id = actor.actor_id)}}" id="actor">{{actor.firstname}} {{actor.lastname}} {{actor.patronymic}}<br></a>
-		{%endfor%}
-		{%else%}
-		<p>Пока не сказали кастинг </p>
-		{%endif%}
-		<h2>Authors</h2>
-		{%if item.authors%}
-		{%for author in item.authors%}
-		<a href="{{url_for("view_item",env_type_model='author',item_id = author.author_id)}}" id="author">
-			{{author.firstname}} {{author.lastname}} {{author.patronymic}}<br>
-		</a>
-		{%endfor%}
-		{% else%}
-		<h2>Not author </h2>
-		{%endif%}
-		{%if user%}
-		<form action="{{url_for("create_comment",user_id=user.user_id,film_id=item.film_id)}}" method="post">
-			<textarea name="description" id="" placeholder="Текст кометария"></textarea>
-			<button type="submit">Создать новый комент</button>
-		</form>
-		{%endif%}
-		<h2>Comment</h2>
-		{%if item.coments%}
-		
-		{%for coment in item.coments%}
-		<h3>{{coment.user.username}}</h3>
-		<p> Описние  {{coment.description}}</p>
-		<p> Лайки {{coment.countheart}}</p>
-		{%if user%}
-		<form action="{{url_for("update_coment_type_rec" 
-		,coment_id=coment.coment_id,
-		film_id=item.film_id,
-		user_id = user.user_id, type_rec = "like")}}" method="post">
-			<button>💖Лайк</button>
-		</form>
-		{%endif%}
-		<p>Дизлайки {{coment.countdemon}}</p>
-		{%if user%}
-		<form action="{{url_for("update_coment_type_rec" 
-		,coment_id=coment.coment_id,
-		film_id=item.film_id,
-		user_id = user.user_id, type_rec = "unlike")}}" method="post">
-			<button>💩Дизлайк</button>
-		</form>
-		{%endif%}
-		{%endfor%}
-		{%else%}
-		<p>Кометарий не написаны  </p>
-		{%endif%}
-		<form action="{{url_for("update_model",env_type_model="film",item_id=item_id)}}" method="get">
-			<button type="submit">Изменить</button>
-		</form>
-		<form action="{{url_for("delete_film",film_id=item_id)}}" method="post">
-			<button type="submit">Удалить</button>
-		</form>
+			<data>{{item.release_date}}</data>
+			<span>{{item.avg_rating}}</span>
+			{%if user and not rating_user  %}
+			<form  action="{{url_for("create_rating",film_id=item.film_id,user_id=user.user_id)}}" method="post">
+				<select name="rating" >
+					{%for i in range(1,11)%}
+					<option value="{{i}}">{{i}}</option>
+					{%endfor%}	
+				</select>
+				<button type="submit">Создать ретинг</button>
+			</form>
+			{%elif rating_user and user.user_id %}
+			<h2>Ваш ратинг:{{rating_user.rating}}/10</h2>
+			<form  action="{{url_for("update_rating_user_id",film_id=item.film_id,user_id=user.user_id)}}" method="post">
+				<select name="rating" >
+					{%for i in range(1,11)%}
+					<option value="{{i}}">{{i}}</option>
+					{%endfor%}	
+				</select>
+				<button type="submit">Обновить  ретинг</button>
+			</form>
+			<form  action="{{url_for("delete_rating",rating_id = rating_user.rating_id,film_id=item.film_id)}}" method="post">
+				<button type="submit">удалить ратин твой </button>
+			</form>
+			{%endif%}
+			<h1 id="titile">{{item.title.title()}}</h1>
+			<p id = "description">{{item.description}}</p>
+			{%if item.country%}
+			<h2>{{item.country.country_name.title()}}</h2>
+			{%else%}
+			<h1>Пока нет страны </h1>
+			{%endif%}
+			{%if item.types_film%} 
+			{%for type_film in  item.types_film%}
+				<h4>{{type_film.type_film_name.title()}}</h4>
+			{%endfor%}
+			{%else%}
+			<h5>Нет жанра в у фильма</h5>
+			{%endif%}
+			<img src="{{url_for('static',path=item.path_image)}}" alt="">
+			<h1>Actors</h1>
+			{%if item.actors %}
+			
+			{%for actor in item.actors%}
+			<a href="{{url_for("view_item",env_type_model='actor',item_id = actor.actor_id)}}" id="actor">{{actor.firstname}} {{actor.lastname}} {{actor.patronymic}}<br></a>
+			{%endfor%}
+			{%else%}
+			<p>Пока не сказали кастинг </p>
+			{%endif%}
+			<h2>Authors</h2>
+			{%if item.authors%}
+			{%for author in item.authors%}
+			<a href="{{url_for("view_item",env_type_model='author',item_id = author.author_id)}}" id="author">
+				{{author.firstname}} {{author.lastname}} {{author.patronymic}}<br>
+			</a>
+			{%endfor%}
+			{% else%}
+			<h2>Not author </h2>
+			{%endif%}
+			{%if user%}
+			<form action="{{url_for("create_comment",user_id=user.user_id,film_id=item.film_id)}}" method="post">
+				<textarea name="description" id="" placeholder="Текст кометария"></textarea>
+				<button type="submit">Создать новый комент</button>
+			</form>
+			{%endif%}
+			<h2>Comment</h2>
+			{%if item.coments%}
+			
+			{%for coment in item.coments%}
+			<h3>{{coment.user.username}}</h3>
+			<p> Описние  {{coment.description}}</p>
+			<p> Лайки {{coment.countheart}}</p>
+			
+
+
+			{%if user%}
+			<form action="{{url_for("update_coment_type_rec" 
+			,coment_id=coment.coment_id,
+			film_id=item.film_id,
+			user_id = user.user_id, type_rec = "like")}}" method="post">
+				<button>💖Лайк</button>
+			</form>
+			{%endif%}
+			<p>Дизлайки {{coment.countdemon}}</p>
+			{%if user%}
+			<form action="{{url_for("update_coment_type_rec" 
+			,coment_id=coment.coment_id,
+			film_id=item.film_id,
+			user_id = user.user_id, type_rec = "unlike")}}" method="post">
+				<button>💩Дизлайк</button>
+			</form>
+			{%endif%}
+			{%if (user.user_id == coment.user.user_id) or (user and user.role_user=="admin")%}
+				<form action="{{url_for("update_coment",coment_id=coment.coment_id,film_id=item.film_id)}}" method="post">
+					<textarea name="description" id="" placeholder="Текст кометария"></textarea>
+					<button type="submit">Обновить   коментарий</button>
+				</form>
+				<form action="{{url_for("delete_coment",coment_id=coment.coment_id,film_id=item.film_id)}}" method="post">
+					<button type="submit" onclick="return confirm('Вы уверены')">Удалить</button>
+				</form>
+			{%endif%}
+			{%endfor%}
+			{%else%}
+			
+			<p>Кометарий не написаны  </p>
+			{%endif%}
+				{%if user and (user.role_user=="admin" or user.role_user=="author" )%}
+				<form action="{{url_for("update_model",env_type_model="film",item_id=item_id)}}" method="get">
+					<button type="submit">Изменить</button>
+				</form>
+				<form action="{{url_for("delete_film",film_id=item_id)}}" method="post">
+					<button type="submit">Удалить</button>
+				</form>
+				{%endif%}
 		{% elif item.bio %}
 			<h1>{{item.lastname }} {{item.firtname}} {{item.patronymic}}</h1>
 			<h2>{{item.birth_date}}</h2>
@@ -112,11 +155,26 @@
 				{%else%}
 				<p>Автор не стал сообшать историю о себе</p>
 				{%endif%}
-		<form action="{{url_for("update_model",env_type_model="author",item_id=item_id)}}" method="get">
-		<button type="submit">Изменить</button>
-		</form>
-			<form action="{{url_for("delete_author",author_id=item_id)}}" method="post">
-				<button type="submit">Удалить</button>
+			{%if item.country%}
+			<h1>{{item.country.country_name.title()}}</h1>
+			{%else%}
+			<h2>Нет где родился</h2>
+			{%endif%}
+			{%if item.films_authored%}
+			{%for film in item.films_authored%}
+			<h3>{{film.title.title()}}</h3>
+			{%endfor%}
+			{%else%}
+			<h2>Нет работ у него</h2>
+			{%endif%}
+			{%if user and (user.role_user=="admin" or user.role_user=="author" )%}
+			<form action="{{url_for("update_model",env_type_model="author",item_id=item_id)}}" method="get">
+			<button type="submit">Изменить</button>
+			</form>
+				<form action="{{url_for("delete_author",author_id=item_id)}}" method="post">
+					<button type="submit">Удалить</button>
+					</form>
+			{%endif%}
 			{% else %}
 			<h1>{{item.lastname }} {{item.firtname}} {{item.patronymic}}</h1>
 			<h2>{{item.birth_date}}</h2>
@@ -125,11 +183,26 @@
 				{%else%}
 				<p>Актера нет звест</p>
 				{%endif%}
-			<form action="{{url_for("update_model",env_type_model="actor",item_id=item_id )}}" method="get">
-			<button type="submit">Изменить</button>
-			</form>
-			<form action="{{url_for("delete_actor",actor_id=item_id)}}" method="post">
-				<button type="submit">Удалить</button>
+				{%if item.country%}
+			<h1>{{item.country.country_name.title()}}</h1>
+			{%else%}
+			<h2>Нет где родился</h2>
+			{%endif%}
+			{%if item.films_acted%}
+			{%for film in item.films_acted%}
+			<h3>{{film.title.title()}}</h3>
+			{%endfor%}
+			{%else%}
+			<h2>Нет работ у него</h2>
+			{%endif%}
+				{%if user and (user.role_user=="admin" or user.role_user=="author" )%}
+				<form action="{{url_for("update_model",env_type_model="actor",item_id=item_id )}}" method="get">
+				<button type="submit">Изменить</button>
+				</form>
+				<form action="{{url_for("delete_actor",actor_id=item_id)}}" method="post">
+					<button type="submit">Удалить</button>
+				</form>
+				{%endif%}
 			{%endif%}
 			{%if err%}
 			<p>{{err}}</p>

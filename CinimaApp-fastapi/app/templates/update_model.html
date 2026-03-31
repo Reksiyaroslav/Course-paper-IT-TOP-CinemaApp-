@@ -3,12 +3,12 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/update_model.css')}}">
+	<!-- <link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/update_model.css')}}"> -->
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.6.0/css/all.css">
 	<title>Изменение</title>
 </head>
 <body>
-	
+		{% if user.user_role=="admin"or user.user_role=="author"%}
 		<h1>Изменение</h1>
 		{%if type_model=="user"%}
         <div class="form_user form">
@@ -33,7 +33,7 @@
 		{%elif type_model == "film"%}
         <div class="form_films form">
 
-            <form action="{{url_for("update_film",film_id = model_id)}}" method="post">
+            <form action="{{url_for("update_film",film_id = model_id)}}" method="post" enctype="multipart/form-data">
 			<div class="input_box">
 				<i class="fa-solid fa-user"></i>
 				<input type="text"  name = "title"placeholder="Название фильма" value="{{data.title if data.title else ""}}">
@@ -48,6 +48,40 @@
 				<i class="fa-regular fa-envelope"></i>
 				<input type="date" placeholder="Измените дату релиза " name="release_date" value="{{data.release_date if data.release_date else "" }}">
 			</div>
+			{%if actors%}
+			<select name="actor_ids" multiple>
+            {%for actor  in actors%}
+            <option value="{{actor.actor_id}}" {% if  actor in data.actors %}selected{% endif %}>{{actor.fistname}} {{actor.lastname}}</option>
+            {%endfor%}
+            <small>Зажмите Ctrl, чтобы выбрать нескольких</small>
+				</select>
+			{%endif%}
+			{%if authors %}
+			<select name="author_ids" multiple>
+				{%for author  in authors%}
+				<option value="{{author.author_id}}" {% if  author in data.authors %}selected{% endif %}>{{author.fistname}} {{author.lastname}}</option>
+				{%endfor%}
+				<small>Зажмите Ctrl, чтобы выбрать нескольких</small>
+			</select>
+			{%endif%}
+			{%if types_film%}
+			<select name="types_id" multiple>
+				{%for type_film  in types_film%}
+				<option value="{{type_film.type_film_id}}" {% if  type_film in data.types_film %}selected{% endif %}>{{type_film.type_film_name.title()}}</option>
+				{%endfor%}
+				<small>Зажмите Ctrl, чтобы выбрать нескольких</small>
+			</select>
+			{%endif%}
+			{%if countrys %}
+			<select name="country_id" >
+				<option value=""  disabled>Создан фильм</option>
+				{%for country  in countrys%}
+				<option value="{{country.country_id}}" {% if  country.country_id in data.country.country_id %}selected{% endif %}>{{country.country_name.title()}}</option>
+				{%endfor%}
+				<small>Зажмите Ctrl, чтобы выбрать нескольких</small>
+			</select>
+			{%endif%}
+			<input type="file" name="image" placeholder="Главный банер ">
 			<button type="submit">Изменить </button>
 		</form>
         </div>
@@ -76,6 +110,15 @@
 				<i class="fa-regular fa-envelope"></i>
 				<input type="date" placeholder="Ввдедите год рождения" name="birth_date"value="{{data.birth_date if data.birth_date else ""}}">
 			</div>
+			{%if countrys %}
+			<select name="country_id">
+				<option value="" disabled>Вы берете где автор</option>
+				{%for country  in countrys%}
+				<option value="{{country.country_id}}" {%if  country.country_id in data.country.country_id %}selected{% endif %}>{{country.country_name.title()}}</option>
+				{%endfor%}
+				
+			</select>
+			{%endif%}
 			<button type="submit">Изменить </button>
 		</form>
         </div>
@@ -107,9 +150,22 @@
 				<textarea placeholder="Введите био автора" name="bio">{{data.bio if data.bio else ""}}</textarea>
 				
 			</div>
+			{%if countrys %}
+            <select name="country_id">
+				<option value="" disabled>Вы берете где автор</option>
+				{%for country  in countrys%}
+				<option value="{{country.country_id}}"{%if  country.country_id in data.country.country_id %}selected{% endif %}>{{country.country_name.title()}}</option>
+				{%endfor%}
+				
+			</select>
+			{%endif%}
 			<button type="submit">Изменить </button>
 		</form>
 		{%endif%}
+		{%else%}
+		<h1>Нет доступа</h1>
+		 <a href="{{url_for("main_item",type_model="film")}}">Обратно</a>
+		 {%endif%}
 		{%if err==""%}
 		{%else%}
 		<p>{{err}}</p>
