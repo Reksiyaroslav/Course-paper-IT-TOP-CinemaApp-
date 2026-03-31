@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Всё типы фильма и страны </title>
+</head>
+<body>
+    {%include "header.html"%}
+    <H1>Типы фильмаов</H1>
+    {%for type_film in types_film%}
+   
+    <h3>{{type_film.type_film_name.title()}}</h3>
+    {%endfor%}
+     <H1>Страны</H1>
+    {%for country in countrys%}
+    <h3>{{country.country_name.title()}}</h3>
+    {%endfor%}
+
+
+    {%if  type_action== "list" and user and (user.role_user=="admin" or user.role_user=="author")%}
+    <form action="{{url_for("manager_type_film")}}" method="post">
+    <select  name="type_film_id" required>
+        <option value="" disabled selected>-- Выберите --</option>
+    {%for type_film in types_film%}
+        <option value="{{type_film.type_film_id}}">{{type_film.type_film_name.title()}}</option>
+    {%endfor%}
+     </select>
+    <button type="submit"  name = "action_type" value="create">Создать тип фильма</button>
+    <button type="submit"  name = "action_type" value="update">Обновит тип фильма </button>
+    <button type="submit" name = "action_type" value="delete" onclick="return confirm('Вы уверены')">
+        Удалить тип фильма</button>
+    </form>
+    <form action="{{url_for("manager_country")}}" method="post">
+    <select name="country_id" required>
+    <option value="" disabled selected>-- Выберите --</option>
+    {%for country in countrys%}
+            <option value="{{country.country_id}}">{{country.country_name.title()}}</option>
+    {%endfor%}
+    </select>
+     <button  name = "action_type" value="create" type="submit" >Создать страну</button>
+    <button  name = "action_type" value="update" type="submit" type="submit" >Обновить страну</button>
+    <button  name = "action_type" value="delete" type="submit" >Удалить страну </button>
+    </form>
+    {%elif type_action =="create"%}
+        {%if type_model=="type_film"%}
+        <form action="{{url_for("create_film_type")}}" method="post">
+            <input type="text" name="type_film_name">
+            <button type="submit">Создать новый тип фильм</button>
+        </form>
+        {%elif  type_model=="country"%}
+        <form action="{{url_for("create_country")}}" method="post">
+            <input type="text" name="name_country">
+            <button type="submit">Создать новый страну</button>
+        </form>
+        
+        {%endif%}
+        <a href="{{url_for("show_type_film_country")}}">Обратно</a>
+    {%elif type_action=="update"%}
+        {%if   type_model=="country"%}
+         <form action="{{url_for("update_country",country_id=item_id)}}" method="post">
+            <input type="text" name="name_country">
+            <button type="submit">Обновить  страну</button>
+        </form>
+        {%elif type_model=="type_film"%}
+        <form action="{{url_for("update_type_film",type_film_id=item_id)}}" method="post">
+            <input type="text" name="type_film_name">
+            <button type="submit">Обновить новый тип фильма</button>
+        </form>
+        {%endif%}
+        <a href="{{url_for("show_type_film_country")}}">Обратно</a>
+     {%endif%}
+    {%if not types_film and not countrys %}
+    <h2>Нет типа фильма и нет </h2>
+    {%elif not types_film%}
+    <h2>Нет типаов фильма</h2>
+     {%elif not countrys%}
+    <h2>Нет стран</h2>
+    
+    {%endif%}
+    
+</body>
+</html>

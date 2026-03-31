@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результат поиска</title>
+</head>
+<body>
+    <div id="header">{% include "header.html"%}</div>
+    <h1>Запрос на поиск {{search_text}}</h1>
+    <h2>Вот что нашли для вас вот сколько фильмов :{{count_films}}
+        сколько авторов {{count_authors}} и актёров:{{count_actors}}</h2>
+    {% if not films and not actors and not authors%}
+        <h1>Не удалаос найти что вы хотели</h1>
+    {%else%}
+        {%if films%}
+            <h1>Film</h1>
+            {%for film in films %}
+                <h1>Название:{{film.title}}</h1>
+                <p>Описание:{{film.description}}</p>
+                <a href="{{url_for('view_item',env_type_model='film',item_id = film.film_id)}}" id="film"><img src="{{url_for('static',path=film.path_image)}}"></a>
+            {%endfor%}
+        {%endif%}
+        {%if actors%}
+            <h1>Actor</h1>
+            {%for actor in actors%}
+                <h1>ФИ: {{actor.lastname}} {{actor.firstname}} </h1>
+                <a href="{{url_for("view_item",env_type_model="actor",item_id=actor.actor_id)}}">Профиль</a>
+            {%endfor%}
+        {%endif%}
+        {%if authors%}
+            <h1>Author</h1>
+            {%for author in authors%}
+            <h2>ФИ: {{author.lastname}} {{author.firstname}} </h2>
+                <a href="{{url_for("view_item",env_type_model="author",item_id=author.author_id)}}">Профиль</a>
+            {%endfor%}
+        {%endif%}
+    {%endif%}
+    <div id="footer">{% include"footer.html"%}</div>
+</body>
+</html>
