@@ -8,3 +8,5 @@ class TypeModel(Enum):
     Author = "author"
     Film = "film"
     User = "user"
+    Country = "country"
+    TypeFilm = "type_film"
