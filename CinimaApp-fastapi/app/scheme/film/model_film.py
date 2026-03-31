@@ -6,11 +6,17 @@ from app.scheme.author.model_author import AuthorResponse
 from app.scheme.actor.model_actor import ActorResponse
 from app.scheme.comment.model_coment import ComentWithUserResponse
 from app.scheme.rating.model_ratingfilms import RatingFilmResponse
-from app.scheme.film.film_base import FilmBase, FilmBaseResponse
+from app.scheme.country.country_base import CountryShort
+from app.scheme.film.type_film import TypeFilmResponse
+from app.scheme.film.film_base import (
+    FilmBase,
+    FilmBaseResponse,
+    FilmBaseList,
+)
 
 
 class FilmCreateRequest(FilmBase):
-    pass
+    country_id: Optional[uuid.UUID] = None
 
 
 class FilmUpdateRequest(BaseModel):
@@ -19,32 +25,22 @@ class FilmUpdateRequest(BaseModel):
     release_date: Optional[datetime.date] = None
     actor_ids: List[uuid.UUID] = []
     author_ids: List[uuid.UUID] = []
+    country_id: Optional[uuid.UUID] = None
 
 
 class FilmResponse(FilmBaseResponse):
-    film_id: uuid.UUID
     authors: Optional[List[AuthorResponse]] = None
     actors: Optional[List[ActorResponse]] = None
     coments: Optional[List[ComentWithUserResponse]] = []
     rating_films: Optional[List[RatingFilmResponse]] = []
+    types_film: Optional[List[TypeFilmResponse]] = []
+    country: Optional[CountryShort] = None
     created_at: Optional[datetime.datetime] = None
     update_at: Optional[datetime.datetime] = None
-    avg_rating: float = 0.0
-    path_image: Optional[str] = "images/cat.jpg"
-    model_config = {"from_attributes": True}
 
 
-class FilmResponseBlocFilm(BaseModel):
-    film_id: uuid.UUID
-    title: Optional[str]
-    description: Optional[str]
-    path_image: Optional[str] = "images/cat.jpg"
-    avg_rating: float = 0.0
-    model_config = {"from_attributes": True}
-
-    @field_serializer("film_id")
-    def serialize_film_id(self, value: uuid.UUID) -> str:
-        return str(value)
+class FilmResponseBlocFilm(FilmBaseResponse):
+    pass
 
 
 class FilmlListResponse(BaseModel):

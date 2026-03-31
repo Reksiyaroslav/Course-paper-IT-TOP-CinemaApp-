@@ -21,6 +21,14 @@ class FilmShort(BaseSheman):
 
 
 class FilmBaseResponse(BaseModel):
+    film_id: uuid.UUID
     description: Optional[str] = None
     title: Optional[str] = None
     release_date: Optional[datetime.date] = None
+    path_image: Optional[str] = "images/cat.jpg"
+    avg_rating: float = 0.0
+    model_config = {"from_attributes": True}
+
+
+class FilmBaseList(BaseModel):
+    films: list[FilmBaseResponse] = []
