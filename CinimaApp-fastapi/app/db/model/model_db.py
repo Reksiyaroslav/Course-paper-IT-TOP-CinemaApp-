@@ -18,7 +18,7 @@ from sqlalchemy import (
     VARCHAR,
 )
 
-from app.enums.enums import Role_User, Type_Rec
+from app.enums.enums import Role_User
 
 
 class Base(DeclarativeBase):
@@ -67,6 +67,18 @@ user_film_like = Table(
         "user_id", ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True
     ),
 )
+film_type_film = Table(
+    "type_film_and_film",
+    Base.metadata,
+    Column(
+        "film_id", ForeignKey("films.film_id", ondelete="CASCADE"), primary_key=True
+    ),
+    Column(
+        "type_film_id",
+        ForeignKey("typefilms.type_film_id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)
 
 
 class RatingFilm(Base):
@@ -82,6 +94,44 @@ class RatingFilm(Base):
     )
     user: Mapped["User"] = relationship("User", back_populates="rating_users")
     film: Mapped["Film"] = relationship("Film", back_populates="rating_films")
+
+
+class TypeFilm(Base):
+    type_film_id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, unique=True, default=uuid.uuid4
+    )
+    type_film_name: Mapped[str] = mapped_column(VARCHAR(100), nullable=False)
+    films: Mapped[list["Film"]] = relationship(
+        "Film", secondary=film_type_film, back_populates="types_film"
+    )
+
+
+class Country(Base):
+    country_id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, unique=True, default=uuid.uuid4
+    )
+    country_name: Mapped[str] = mapped_column(VARCHAR(100), nullable=False)
+    films: Mapped[list["Film"]] = relationship("Film", back_populates="country")
+    actors: Mapped[list["Actor"]] = relationship("Actor", back_populates="country")
+    authors: Mapped[list["Author"]] = relationship("Author", back_populates="country")
+
+
+class Coment(Base):
+    coment_id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+    )
+    description: Mapped[str]
+    countheart: Mapped[int] = mapped_column(default=0)
+    countdemon: Mapped[int] = mapped_column(default=0)
+    film_id: Mapped[UUID] = mapped_column(
+        ForeignKey("films.film_id", ondelete="CASCADE"), nullable=False
+    )
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False
+    )
+    user: Mapped["User"] = relationship("User", back_populates="coments")
+    film: Mapped["Film"] = relationship("Film", back_populates="coments")
+    recos: Mapped[list["Recone"]] = relationship("Recone", back_populates="coment")
 
 
 class Author(Base):
@@ -101,24 +151,10 @@ class Author(Base):
     films_authored: Mapped[list["Film"]] = relationship(
         secondary=author_cinema, back_populates="authors"
     )
-
-
-class Coment(Base):
-    coment_id: Mapped[uuid.UUID] = mapped_column(
-        primary_key=True, unique=True, nullable=False, default=uuid.uuid4
+    country_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("countrys.country_id", ondelete="SET NULL"), nullable=True
     )
-    description: Mapped[str]
-    countheart: Mapped[int] = mapped_column(default=0)
-    countdemon: Mapped[int] = mapped_column(default=0)
-    film_id: Mapped[UUID] = mapped_column(
-        ForeignKey("films.film_id", ondelete="CASCADE"), nullable=False
-    )
-    user_id: Mapped[UUID] = mapped_column(
-        ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False
-    )
-    user: Mapped["User"] = relationship("User", back_populates="coments")
-    film: Mapped["Film"] = relationship("Film", back_populates="coments")
-    recos: Mapped[list["Recone"]] = relationship("Recone", back_populates="coment")
+    country: Mapped["Country"] = relationship("Country", back_populates="authors")
 
 
 class Recone(Base):
@@ -152,6 +188,10 @@ class Actor(Base):
     films_acted: Mapped[list["Film"]] = relationship(
         secondary=film_actor, back_populates="actors"
     )
+    country_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("countrys.country_id", ondelete="SET NULL"), nullable=True
+    )
+    country: Mapped["Country"] = relationship("Country", back_populates="actors")
 
 
 class Film(Base):
@@ -180,6 +220,13 @@ class Film(Base):
         "User", secondary=user_film_like, back_populates="likefilms"
     )
     path_image: Mapped[str] = mapped_column(nullable=True)
+    types_film: Mapped[list["TypeFilm"]] = relationship(
+        "TypeFilm", secondary=film_type_film, back_populates="films"
+    )
+    country_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("countrys.country_id", ondelete="SET NULL"), nullable=True
+    )
+    country: Mapped["Country"] = relationship("Country", back_populates="films")
 
 
 class User(Base):
