@@ -3,11 +3,12 @@ from uuid import UUID
 from app.utils.comon import is_name_title
 from fastapi.exceptions import HTTPException
 from fastapi import status
-from ..db.model.model_db import User
+from ..db.model.model_db import User, Role_User
 from app.repositories.users_repositorie import UserRepository
 from app.repositories.films_repositorie import FilmRepository
 from app.enums.serach_fileld import SerachFiled
 from app.enums.type_model import TypeModel
+
 from app.utils.noramliz_text import normalize_data
 from app.scheme.user.model_user import (
     UserResponse,
@@ -115,3 +116,34 @@ class UserService(Base_Service):
     async def get_list_likefilm(self, user_id: UUID):
         film = await self.user_repo.get_list_licefilm(user_id)
         return FilmResponseBlocFilm.from_orm(film)
+
+    async def user_update_role(
+        self, user_id_admin: UUID, user_id_user: UUID, update_role_user: str
+    ):
+        user_admin = await self.get_user_by_id(user_id=user_id_admin)
+        if not user_admin:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Пользователь админа не найден",
+            )
+        if update_role_user not in Role_User:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Измение можно только admin author user",
+            )
+        if user_admin.role_user != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Только администратор может менять роли",
+            )
+        if user_admin.role_user == "admin":
+            update_user = await self.user_repo.set_user_role(
+                user_id=user_id_user, role_user=update_role_user
+            )
+            if not update_user:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Пользователь которого обновляли не найден",
+                )
+            return UserResponse.from_orm(update_user)
+        return UserResponse.from_orm(user_admin)

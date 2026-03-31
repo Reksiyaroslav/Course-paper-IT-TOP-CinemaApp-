@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from uuid import UUID
 from app.utils.comon import is_fistname_lastname, validate_is_data_range
 from ..db.model.model_db import Author
 from app.repositories.author_repositore import AuthorRepository
@@ -6,7 +7,11 @@ from app.enums.serach_fileld import SerachFiled
 from app.enums.type_model import TypeModel
 from app.utils.noramliz_text import normalize_data, text_strip_lower
 from app.service.base_service import Base_Service
-from app.scheme.author.model_author import AuthorResponse, AuthorlListResponse
+from app.scheme.author.model_author import (
+    AuthorResponse,
+    AuthorlListResponse,
+    Author_FullResponse,
+)
 
 
 class AuthorService(Base_Service):
@@ -70,10 +75,27 @@ class AuthorService(Base_Service):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Автор не найден"
             )
+        return Author_FullResponse.from_orm(author)
+
+    async def add_country(self, country_id: UUID, author_id: UUID):
+        author = await self.author_repo.add_country(
+            author_id=author_id, country_id=country_id
+        )
+        if not author:
+            raise HTTPException(status_code=404, detail="Актёр не найден")
+        return AuthorResponse.from_orm(author)
+
+    async def set_country(self, country_id: UUID, author_id: UUID):
+        author = await self.author_repo.set_country(
+            author_id=author_id, country_id=country_id
+        )
+        if not author:
+            raise HTTPException(status_code=404, detail="Актёр не найден")
         return AuthorResponse.from_orm(author)
 
     async def get_fistname_lastname_pat_list(self, name: str):
         norm_text = text_strip_lower(name)
         authors = await self.author_repo.get_author_fistname_latname_pat_list(norm_text)
-
+        if not authors:
+            return AuthorlListResponse(author=[])
         return AuthorlListResponse(author=authors)

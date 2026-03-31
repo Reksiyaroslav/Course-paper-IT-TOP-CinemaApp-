@@ -1,4 +1,5 @@
 from fastapi.exceptions import HTTPException
+from uuid import UUID
 from app.service.base_service import Base_Service
 from app.enums.serach_fileld import SerachFiled
 from app.enums.type_model import TypeModel
@@ -10,7 +11,11 @@ from app.utils.comon import (
 from ..db.model.model_db import Actor
 from app.repositories.actors_repositorie import ActorRepository
 from app.utils.noramliz_text import normalize_data, text_strip_lower
-from app.scheme.actor.model_actor import ActorListResponse, ActorResponse
+from app.scheme.actor.model_actor import (
+    ActorListResponse,
+    ActorResponse,
+    Actor_FullResponse,
+)
 
 
 class ActorService(Base_Service):
@@ -43,7 +48,7 @@ class ActorService(Base_Service):
             raise HTTPException(status_code=500, detail="Ошибка при создании актёра")
         return ActorResponse.from_orm(new_actor)
 
-    async def update_actor(self, actor_id, data):
+    async def update_actor(self, actor_id: UUID, data):
         filed_data = SerachFiled.Date.value[1]
         filed_rating = SerachFiled.Rating.value[0]
         clean_data: dict = normalize_data(data=data, model_type=TypeModel.Actor.value)
@@ -74,8 +79,24 @@ class ActorService(Base_Service):
         actors = await self.actor_repo.get_actors()
         return ActorListResponse(actors=actors)
 
-    async def get_actor_by_id(self, actor_id):
+    async def get_actor_by_id(self, actor_id: UUID):
         actor = await self.actor_repo.get_actor_by_id(actor_id=actor_id)
+        if not actor:
+            raise HTTPException(status_code=404, detail="Актёр не найден")
+        return Actor_FullResponse.from_orm(actor)
+
+    async def add_country(self, country_id: UUID, actor_id: UUID):
+        actor = await self.actor_repo.add_country(
+            actor_id=actor_id, country_id=country_id
+        )
+        if not actor:
+            raise HTTPException(status_code=404, detail="Актёр не найден")
+        return ActorResponse.from_orm(actor)
+
+    async def set_country(self, country_id: UUID, actor_id: UUID):
+        actor = await self.actor_repo.set_country(
+            actor_id=actor_id, country_id=country_id
+        )
         if not actor:
             raise HTTPException(status_code=404, detail="Актёр не найден")
         return ActorResponse.from_orm(actor)
@@ -87,7 +108,9 @@ class ActorService(Base_Service):
         return {"message": "Актёр успешно удалён"}
 
     async def get_serahc_name_list(self, name: str):
-        if not name or not name.strip():
-            raise HTTPException(status_code=424, detail="Нет такой актера часть имени ")
-        actors = await self.actor_repo.get_actorname_list(name.strip())
+        clear_name = text_strip_lower(name)
+        actors = await self.actor_repo.get_actorname_list(clear_name)
+        print(clear_name)
+        if not actors:
+            return ActorListResponse(actors=[])
         return ActorListResponse(actors=actors)
