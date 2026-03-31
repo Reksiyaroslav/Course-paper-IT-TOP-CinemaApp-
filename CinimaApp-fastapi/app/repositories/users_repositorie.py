@@ -22,7 +22,7 @@ class UserRepository:
             return db_user
         except SQLAlchemyError as e:
             await self.session.rollback()
-            print("Error", e.message)
+            print("Error", e._message)
             return None
 
     async def get_list_users(self):
@@ -100,6 +100,17 @@ class UserRepository:
         if auth_password(password_user=user.password, password_api=password):
             return user
         return None
+
+    async def set_user_role(self, user_id: UUID, role_user: str):
+        user = await self.get_user_by_id(user_id=user_id)
+        if not user:
+            return None
+        if user.role_user == role_user:
+            return user
+        user.role_user = role_user
+        await self.session.commit()
+        await self.session.refresh(user)
+        return user
 
     async def get_block_users(self) -> list[User]:
         smt = select(User.user_id, User.username, User.email)

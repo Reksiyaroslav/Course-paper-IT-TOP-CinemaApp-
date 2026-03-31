@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.model.model_db import Actor, uuid
+from app.db.model.model_db import Actor, uuid, Country
 from sqlalchemy import select, or_, delete
+from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -33,7 +34,13 @@ class ActorRepository:
 
     async def get_actor_by_id(self, actor_id: uuid.UUID) -> Actor | None:
         "Получение актера по id"
-        actor = await self.session.get(Actor, actor_id)
+        smt = (
+            select(Actor)
+            .options(selectinload(Actor.films_acted), selectinload(Actor.country))
+            .where(Actor.actor_id == actor_id)
+        )
+        relult = await self.session.execute(smt)
+        actor = relult.scalars().first()
         return actor
 
     async def update_actor(self, data: dict, actor_id: uuid.UUID):
@@ -58,6 +65,38 @@ class ActorRepository:
         except Exception:
             await self.session.rollback()
             return False
+
+    async def add_country(self, actor_id: uuid.UUID, country_id: uuid.UUID):
+        actor = await self.get_actor_by_id(actor_id=actor_id)
+        if not actor:
+            return None
+        smt = select(Country).where(Country.country_id == country_id)
+        relult = await self.session.execute(smt)
+        country = relult.scalars().first()
+        if not country:
+            return actor
+        actor.country = country
+        actor.country_id = country.country_id
+        await self.session.commit()
+        await self.session.refresh(actor)
+        return actor
+
+    async def set_country(self, actor_id: uuid.UUID, country_id: uuid.UUID):
+        actor = await self.get_actor_by_id(actor_id=actor_id)
+        if not actor:
+            return None
+        smt = select(Country).where(Country.country_id == country_id)
+        relult = await self.session.execute(smt)
+        country = relult.scalars().first()
+        if not country:
+            return actor
+        if actor.country_id == country.country_id:
+            return actor
+        actor.country = country
+        actor.country_id = country.country_id
+        await self.session.commit()
+        await self.session.refresh(actor)
+        return actor
 
     async def get_actorname_list(self, name: str) -> list[Actor] | None:
         "Получения актеров по имени или очеству которые совпадают"

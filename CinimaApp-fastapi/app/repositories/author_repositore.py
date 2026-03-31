@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.model.model_db import Author
+from app.db.model.model_db import Author, Country
 from sqlalchemy import select, or_, delete
+from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
 from uuid import UUID
 
@@ -15,6 +16,7 @@ class AuthorRepository:
             author = Author(**data)
             self.session.add(author)
             await self.session.commit()
+            await self.session.refresh(author)
             return author
         except SQLAlchemyError as e:
             await self.session.rollback()
@@ -34,7 +36,45 @@ class AuthorRepository:
 
     async def get_author_by_id(self, author_id):
         "Получения кортеного автора по id"
-        author = await self.session.get(Author, author_id)
+        smt = (
+            select(Author)
+            .options(selectinload(Author.films_authored), selectinload(Author.country))
+            .where(Author.author_id == author_id)
+        )
+        relult = await self.session.execute(smt)
+        author = relult.scalars().first()
+        return author
+
+    async def add_country(self, author_id: UUID, country_id: UUID):
+        author = await self.get_author_by_id(author_id=author_id)
+        if not author:
+            return None
+        smt = select(Country).where(Country.country_id == country_id)
+        relut = await self.session.execute(smt)
+        country = relut.scalars().first()
+        if not country:
+            return author
+        author.country = country
+        author.country_id = country.country_id
+        await self.session.commit()
+        await self.session.refresh(author)
+        return author
+
+    async def set_country(self, author_id: UUID, country_id: UUID):
+        author = await self.get_author_by_id(author_id=author_id)
+        if not author:
+            return None
+        smt = select(Country).where(Country.country_id == country_id)
+        relut = await self.session.execute(smt)
+        country = relut.scalars().first()
+        if not country:
+            return author
+        if country.country_id == author.country_id:
+            return author
+        author.country = country
+        author.country_id = country.country_id
+        await self.session.commit()
+        await self.session.refresh(author)
         return author
 
     async def update_author(self, data: dict, author_id) -> Author:
