@@ -1,9 +1,7 @@
-from typing import Dict
 from fastapi import APIRouter, Form, Request, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
 from app.scheme.actor.model_actor import (
     ActorCreateRequest,
-    ActorResponse,
     ActorUpdateRequest,
     ActorListResponse,
     datetime,
@@ -11,7 +9,6 @@ from app.scheme.actor.model_actor import (
 from app.utils.comon import Depends
 from app.utils.depencines import ActorService, get_actor_service
 from uuid import UUID
-from app.handler.ui_api_route import teamlates
 
 actor_router = APIRouter(prefix="/actor", tags=["Actor"])
 
@@ -24,18 +21,28 @@ async def create_actor(
     birth_date: datetime.date = Form(None),
     patronymic: str = Form(None),
     star: int = Form(1),
+    country_id: UUID = Form(default=None),
     actor_service: ActorService = Depends(get_actor_service),
 ) -> RedirectResponse | HTMLResponse:
-    data = ActorCreateRequest(
-        fistname=fistname,
-        lastname=lastname,
-        birth_date=birth_date,
-        patronymic=patronymic,
-        star=star,
-    )
-    actor = await actor_service.create_actor(data.model_dump())
-    url = request.url_for("main_actor")
-    return RedirectResponse(url)
+    try:
+        data = ActorCreateRequest(
+            fistname=fistname,
+            lastname=lastname,
+            birth_date=birth_date,
+            patronymic=patronymic,
+            star=star,
+        )
+
+        actor = await actor_service.create_actor(data.model_dump())
+        if country_id:
+            await actor_service.add_country(
+                actor_id=actor.actor_id, country_id=country_id
+            )
+        url = request.url_for("main_item", type_model="actor")
+        return RedirectResponse(url)
+    except HTTPException as e:
+        url = request.url_for("create_model", type_model="actor", err=e.detail)
+        return RedirectResponse(url)
 
 
 @actor_router.get("s/")
@@ -49,7 +56,7 @@ async def get_actors(
 @actor_router.get("/profile/{actor_id}")
 async def get_actor_actor_id(
     actor_id: UUID, actor_service: ActorService = Depends(get_actor_service)
-) -> ActorResponse:
+):
     actor = await actor_service.get_actor_by_id(actor_id)
     return actor
 
@@ -71,6 +78,7 @@ async def update_actor(
     birth_date: datetime.date = Form(None),
     patronymic: str = Form(None),
     star: int = Form(1),
+    country_id: UUID = Form(default=None),
     actor_service: ActorService = Depends(get_actor_service),
 ):
     try:
@@ -80,21 +88,18 @@ async def update_actor(
             patronymic=patronymic,
             birth_date=birth_date,
             star=star,
+            country_id=country_id,
         )
         actor = await actor_service.update_actor(actor_id=actor_id, data=data.dict())
+        if country_id:
+            await actor_service.set_country(actor_id=actor_id, country_id=country_id)
         url = reguest.url_for("view_item", env_type_model="actor", item_id=actor_id)
         return RedirectResponse(url)
     except HTTPException as e:
-        return teamlates.TemplateResponse(
-            "update_model.html",
-            context={
-                "reguest": reguest,
-                "data": data,
-                "err": e.detail,
-                "type_model": "actor",
-                "model_id": actor_id,
-            },
+        url = reguest.url_for(
+            "update_model", item_id=actor_id, env_type_model="actor", err=e.detail
         )
+        return RedirectResponse(url)
 
 
 @actor_router.post("/delete/{actor_id}/")
@@ -106,7 +111,7 @@ async def delete_actor(
 ):
     try:
         actor = await actor_service.delete_actor(actor_id)
-        url = request.url_for("main_actor")
+        url = request.url_for("main_item", type_model="actor")
         return RedirectResponse(url)
     except HTTPException as e:
         url = request.url_for("view_item", env_type_model="actor", item_id=actor_id)

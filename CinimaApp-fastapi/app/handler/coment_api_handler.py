@@ -56,14 +56,31 @@ async def get_coment_coment_id(
     return coment
 
 
+@coment_router.post("/update/{coment_id}/{film_id}/")
 @coment_router.put("/update/{coment_id}")
 async def update_coment(
-    data: ComentUpdateRequest,
-    comnet_id: UUID,
+    request: Request,
+    film_id: UUID,
+    coment_id: UUID,
+    description: str = Form(""),
     coment_sev: ComentService = Depends(get_comment_service),
+    user=Depends(get_curen_user),
 ):
-    coment = await coment_sev.update_coment(comnet_id, data.dict())
-    return coment
+    try:
+        data = ComentUpdateRequest(description=description)
+        await coment_sev.update_coment(data=data.dict(), coment_id=coment_id)
+        url = request.url_for("view_item", item_id=film_id, env_type_model="film")
+        return RedirectResponse(url=url)
+    except HTTPException as e:
+        return teamlates.TemplateResponse(
+            "profile.html",
+            context={
+                "item_id": film_id,
+                "env_type_model": "film",
+                "user": user,
+                "err": e.detail,
+            },
+        )
 
 
 @coment_router.post("/update/like/{coment_id}/{film_id}/{user_id}/{type_rec}")
@@ -95,9 +112,25 @@ async def update_coment_type_rec(
         )
 
 
-@coment_router.delete("/delete/{comnet_id}")
+@coment_router.post("/delete/{film_id}/{coment_id}/")
+# @coment_router.delete("/delete/{film_id}/{coment_id}")
 async def delete_coment(
-    comnet_id: UUID, coment_sev: ComentService = Depends(get_comment_service)
-) -> Dict[str, str]:
-    coment = await coment_sev.delete_coment(comnet_id)
-    return coment
+    request: Request,
+    film_id: UUID,
+    coment_id: UUID,
+    coment_sev: ComentService = Depends(get_comment_service),
+):
+    try:
+        coment = await coment_sev.delete_coment(coment_id)
+        url = request.url_for("view_item", item_id=film_id, env_type_model="film")
+        return RedirectResponse(url)
+    except HTTPException as e:
+        return teamlates.TemplateResponse(
+            "profiles.html",
+            context={
+                "request": request,
+                "item_id": film_id,
+                "env_type_model": "film",
+                "err": e.detail,
+            },
+        )

@@ -43,7 +43,7 @@ async def get_user_login_password(
         reguest.session["user_id"] = str(user.user_id)
         reguest.session["email"] = user.email
         reguest.session["user_type"] = user.role_user
-        url = reguest.url_for("main_film")
+        url = reguest.url_for("main_item", type_model="film")
         return RedirectResponse(url=url)
     except HTTPException as e:
         return teamlates.TemplateResponse(
@@ -102,6 +102,31 @@ async def add_likefilm(
 ):
     user = await user_servers.add_film(user_id, film_id)
     return user
+
+
+@user_router.post("/update_role_user/{user_admin_id}/")
+async def update_user_role(
+    request: Request,
+    user_admin_id: UUID,
+    user_id: UUID = Form(None),
+    update_role_user: str = Form(""),
+    user_servers: UserService = Depends(get_user_service),
+):
+    try:
+        await user_servers.user_update_role(
+            user_id_admin=user_admin_id,
+            user_id_user=user_id,
+            update_role_user=update_role_user,
+        )
+        return RedirectResponse(
+            url=request.url_for("view_item", env_type_model="user", item_id=user_id),
+            status_code=303,
+        )
+
+    except HTTPException as e:
+        return RedirectResponse(
+            url=request.url_for("update_form_role_user", err=e.detail), status_code=303
+        )
 
 
 @user_router.get("/likefilm/{user_id}")

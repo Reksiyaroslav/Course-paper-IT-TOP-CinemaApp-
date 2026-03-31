@@ -1,14 +1,12 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Form, Request, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
-from typing import Dict
+from typing import Dict, Optional
 from uuid import UUID
 from app.utils.depencines import get_film_service, FilmService
 from app.handler.ui_api_route import teamlates
 from app.scheme.film.model_film import (
     FilmCreateRequest,
     FilmUpdateRequest,
-    AddActorFilsmResponse,
-    AddAuthorFilsmResponse,
     FilmResponse,
     datetime,
 )
@@ -41,6 +39,8 @@ async def create_film(
     image: UploadFile = File(None),
     actor_ids: list[UUID] = Form(default=[]),
     author_ids: list[UUID] = Form(default=[]),
+    types_id: list[UUID] = Form(default=[]),
+    country_id: UUID = Form(default=None),
     film_sevice: FilmService = Depends(get_film_service),
 ) -> HTMLResponse | RedirectResponse:
     try:
@@ -57,13 +57,19 @@ async def create_film(
                 await film_sevice.add_authors_film_model(
                     film_id=message.film_id, author_list=author_ids
                 )
-            url = request.url_for("main_film")
+            if country_id:
+                await film_sevice.add_country(
+                    film_id=message.film_id, country_id=country_id
+                )
+            if types_id:
+                await film_sevice.add_types_film(
+                    film_id=message.film_id, types_film=types_id
+                )
+            url = request.url_for("main_item", type_model="film")
             return RedirectResponse(url)
     except HTTPException as e:
-        return teamlates.TemplateResponse(
-            "create_model.html",
-            context={"request": request, "data": data, "err": str(e)},
-        )
+        url = request.url_for("create_model", type_model="film", err=e.detail)
+        return RedirectResponse(url=url)
 
 
 @film_router.get("s/")
@@ -117,7 +123,7 @@ async def update_rating(
 async def get_film_titles(
     film_titles: str, film_service: FilmService = Depends(get_film_service)
 ):
-    films = await film_service.get_film_titles(film_titles, 5)
+    films = await film_service.get_film_titles(film_titles)
     return films
 
 
@@ -129,26 +135,35 @@ async def update_film(
     title: str = Form(None),
     description: str = Form(None),
     release_date: datetime.date = Form(),
+    image: UploadFile = File(None),
+    actor_ids: Optional[list[UUID]] = Form(default=[]),
+    author_ids: list[UUID] = Form(default=[]),
+    types_id: list[UUID] = Form(default=[]),
+    country_id: UUID = Form(default=None),
     film_service: FilmService = Depends(get_film_service),
 ):
     try:
         data = FilmUpdateRequest(
             description=description, title=title, release_date=release_date
         )
-        film = await film_service.update_film(film_id, data.model_dump())
-        url = request.url_for("view_item", env_type_model="film", item_id=film_id)
+        await film_service.update_film(film_id, data.model_dump(), image=image)
+        if actor_ids:
+            await film_service.set_actors(film_id=film_id, actor_ids=actor_ids)
+        if author_ids:
+            await film_service.set_authors(film_id=film_id, author_ids=author_ids)
+        if types_id:
+            await film_service.set_types_film(film_id=film_id, types_film=types_id)
+        if country_id:
+            await film_service.set_country(film_id=film_id, country_id=country_id)
+        url = request.url_for(
+            "view_item", env_type_model=TypeModel.Film.value, item_id=film_id
+        )
         return RedirectResponse(url)
     except HTTPException as e:
-        return teamlates.TemplateResponse(
-            "update_model.html",
-            context={
-                "request": request,
-                "type_model": "film",
-                "data": data,
-                "err": e.detail,
-                "model_id": film_id,
-            },
+        url = request.url_for(
+            "update_model", env_type_model="film", item_id=film_id, err=e.detail
         )
+        return RedirectResponse(url)
 
 
 @film_router.post("/add_authors_actors/{film_id}/")
@@ -176,8 +191,8 @@ async def delete_film(
     film_service: FilmService = Depends(get_film_service),
 ):
     try:
-        film = await film_service.delete_film(film_id)
-        url = request.url_for("main_film")
+        await film_service.delete_film(film_id)
+        url = request.url_for("main_item", type_model="film")
         return RedirectResponse(url)
     except HTTPException as e:
         url = request.url_for("view_item", env_type_model="film", item_id=film_id)

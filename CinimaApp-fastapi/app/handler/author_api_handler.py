@@ -1,15 +1,18 @@
-from typing import Dict, Annotated
 from fastapi import APIRouter, HTTPException, Request, Form
 from fastapi.responses import RedirectResponse
 from datetime import date
 from app.scheme.author.model_author import (
-    AuthorResponse,
     AuthorUpdateRequest,
     AuthorCreateRequest,
     AuthorlListResponse,
 )
 from app.utils.comon import Depends
-from app.utils.depencines import AuthorService, get_author_service
+from app.utils.depencines import (
+    AuthorService,
+    get_author_service,
+    CountryService,
+    get_country_service,
+)
 from uuid import UUID
 from app.handler.ui_api_route import teamlates
 
@@ -19,23 +22,35 @@ author_router = APIRouter(prefix="/author", tags=["Author"])
 @author_router.post("/")
 async def create_author(
     request: Request,
-    data: Annotated[AuthorCreateRequest, Form()],
+    fistname=Form(None),
+    lastname=Form(None),
+    bio: str = Form(None),
+    birth_date: date = Form(None),
+    patronymic: str = Form(None),
+    country_id: UUID = Form(default=None),
     author_service: AuthorService = Depends(get_author_service),
+    country_service: CountryService = Depends(get_country_service),
 ):
     try:
+        country_relut = await country_service.get_countrys()
+        countrys = country_relut.countrys
+        data = AuthorCreateRequest(
+            fistname=fistname,
+            lastname=lastname,
+            bio=bio,
+            birth_date=birth_date,
+            patronymic=patronymic,
+        )
         author = await author_service.create_author(data.dict())
-        url = request.url_for("main_author")
+        if country_id:
+            await author_service.add_country(
+                author_id=author.author_id, country_id=country_id
+            )
+        url = request.url_for("main_item", type_model="author")
         return RedirectResponse(url)
     except HTTPException as e:
-        return teamlates.TemplateResponse(
-            "create_model.html",
-            context={
-                "request": request,
-                "data": data,
-                "err": e.detail,
-                "type_model": "author",
-            },
-        )
+        url = request.url_for("create_model", type_model="author", err=e.detail)
+        return RedirectResponse(url)
 
 
 @author_router.get("s/")
@@ -49,7 +64,7 @@ async def get_authors(
 @author_router.get("/profile/{actor_id}")
 async def get_author_id(
     author_id: UUID, author_service: AuthorService = Depends(get_author_service)
-) -> AuthorResponse:
+):
     author = await author_service.get_author_by_id(author_id)
     if not author:
         raise HTTPException(detail="Не найдено такой актёр", status_code=404)
@@ -74,6 +89,7 @@ async def update_author(
     bio: str = Form(None),
     birth_date: date = Form(None),
     patronymic: str = Form(None),
+    country_id: UUID = Form(default=None),
     author_service: AuthorService = Depends(get_author_service),
 ):
     try:
@@ -85,19 +101,15 @@ async def update_author(
             patronymic=patronymic,
         )
         author = await author_service.update_author(author_id, data.dict())
+        if country_id:
+            await author_service.add_country(author_id=author_id, country_id=country_id)
         url = request.url_for("view_item", env_type_model="author", item_id=author_id)
         return RedirectResponse(url)
     except HTTPException as e:
-        return teamlates.TemplateResponse(
-            "update_model.html",
-            context={
-                "request": request,
-                "data": data,
-                "err": e.detail,
-                "type_model": "author",
-                "model_id": author_id,
-            },
+        url = request.url_for(
+            "update_model", item_id=author_id, env_type_model="author", err=e.detail
         )
+        return RedirectResponse(url)
 
 
 @author_router.post("/delete/{author_id}")
@@ -109,7 +121,7 @@ async def delete_author(
 ):
     try:
         author = await author_service.delete_author(author_id)
-        url = request.url_for("main_author")
+        url = request.url_for("main_item", type_model="author")
         return RedirectResponse(url)
     except HTTPException as e:
         url = request.url_for("view_item", env_type_model="author", item_id=author_id)
