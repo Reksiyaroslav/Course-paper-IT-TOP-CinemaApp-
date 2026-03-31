@@ -38,6 +38,10 @@ NORMAL_CONFING = {
         "email": text_strip_lower,
         "password": no_change,
     },
+    "type_film": {"type_film_name": text_strip_lower},
+    "country": {
+        "country_name": text_strip_lower,
+    },
     "comment": {
         "description": text_strip,
     },
