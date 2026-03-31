@@ -19,8 +19,9 @@ async def uplodat_file(upload_file: UploadFile, film_name: str) -> str:
         file_path = f"{PATH_IMAGE}{file_name}"
         with open(file_path, "wb") as f:
             f.write(image_conetxt)
-        os.chdir("..")
-        os.chdir("..")
+
+    os.chdir("..")
+    os.chdir("..")
     return file_path
 
 
