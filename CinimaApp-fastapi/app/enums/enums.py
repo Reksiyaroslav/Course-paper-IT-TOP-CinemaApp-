@@ -7,7 +7,7 @@ class Role_User(Enum):
     Admin = "admin"
 
 
-class Type_Film(Enum):
+class TypeFilm(Enum):
     pass
 
 
