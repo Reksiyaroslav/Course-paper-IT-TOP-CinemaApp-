@@ -5,7 +5,7 @@ from typing import Optional, List
 import uuid
 import datetime
 from app.scheme.comment.model_coment import ComentResponse
-from app.scheme.film.model_film import FilmResponseBlocFilm, RatingFilmResponse
+from app.scheme.film.model_film import FilmBaseResponse, RatingFilmResponse
 from app.scheme.user.user_base import UserBase, UserBaseResponse, faker
 
 
@@ -22,7 +22,7 @@ class UserUpdateRequest(BaseModel):
     username: Optional[str] = Field(
         min_length=5, max_length=60, default_factory=faker.user_name
     )
-    email: Optional[EmailStr] = Field(default_factory=faker.email)
+    # email: Optional[EmailStr] = Field(default_factory=faker.email)
     password: Optional[str] = Field(
         min_length=8, max_length=15, default_factory=faker.password
     )
@@ -37,7 +37,7 @@ class UserResponse(UserBaseResponse):
     updated_at: Optional[datetime.datetime] = None
     coments: List["ComentResponse"] = []
     ratings: List["RatingFilmResponse"] = []
-    likefilms: List["FilmResponseBlocFilm"] = []
+    likefilms: List["FilmBaseResponse"] = []
     # friends: List[UserResponseFrends]=[]
     model_config = {"from_attributes": True}
 
@@ -50,7 +50,7 @@ class UserRensponseAdmin(UserBaseResponse):
     user_id: uuid.UUID
     coments: List["ComentResponse"] = []
     ratings: List["RatingFilmResponse"] = []
-    likefilms: List["FilmResponseBlocFilm"] = []
+    likefilms: List["FilmBaseResponse"] = []
     # friends: List[UserResponseFrends]=[]
     model_config = {"from_attributes": True}
 

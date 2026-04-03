@@ -8,10 +8,12 @@ from app.scheme.country.country_base import CountryShort
 
 
 class ActorBase(BaseModel):
-    fistname: str = Field(default_factory=faker.first_name)
-    lastname: str = Field(default_factory=faker.last_name)
+    fistname: str = Field(min_length=3, max_length=50, default_factory=faker.first_name)
+    lastname: str = Field(min_length=3, max_length=50, default_factory=faker.last_name)
     birth_date: datetime.date = Field(default_factory=faker.date_of_birth)
-    patronymic: str = Field(default_factory=faker.first_name)
+    patronymic: str = Field(
+        min_length=3, max_length=50, default_factory=faker.first_name
+    )
     star: int = Field(ge=1, le=10, default_factory=generator_star)
 
 
