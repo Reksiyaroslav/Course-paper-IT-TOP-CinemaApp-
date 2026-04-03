@@ -98,6 +98,9 @@ class ActorRepository:
         await self.session.refresh(actor)
         return actor
 
+    async def get_duble_actor(self, actor_id: uuid.UUID, fistname):
+        pass
+
     async def get_actorname_list(self, name: str) -> list[Actor] | None:
         "Получения актеров по имени или очеству которые совпадают"
         serhat_parametr = f"%{name}%"

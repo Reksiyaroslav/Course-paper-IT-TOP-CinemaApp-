@@ -1,4 +1,4 @@
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 from uuid import UUID
@@ -27,6 +27,29 @@ class TypeFilmReposit:
 
     async def get_type_film_by_id(self, type_film_id: UUID):
         return await self.session.get(TypeFilm, type_film_id)
+
+    async def is_double_not(self, name_type_film: str) -> bool:
+        if not name_type_film or not name_type_film.strip():
+            return False
+        clean_name = name_type_film.strip().lower()
+        smt = select(TypeFilm).where(func.lower(TypeFilm.type_film_name) == clean_name)
+        relut = await self.session.execute(smt)
+        return relut.scalars().first() is not None
+
+    async def update_is_double_not(
+        self, type_film_id: UUID, name_type_film: str
+    ) -> bool:
+        if not name_type_film or not name_type_film.strip():
+            return False
+        clean_name = name_type_film.strip().lower()
+        smt = select(TypeFilm).where(
+            and_(
+                func.lower(TypeFilm.type_film_name) == clean_name,
+                TypeFilm.type_film_id != type_film_id,
+            )
+        )
+        relut = await self.session.execute(smt)
+        return relut.scalars().first() is not None
 
     async def update_type_film(self, data: dict, type_film_id: UUID):
         try:

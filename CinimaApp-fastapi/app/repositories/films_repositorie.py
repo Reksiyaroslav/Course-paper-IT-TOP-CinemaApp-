@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete, and_
+from sqlalchemy import select, delete, and_, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import selectinload
 from uuid import UUID
@@ -335,6 +335,17 @@ class FilmRepository:
             film.release_date = row[5]
             film_list.append(film)
         return film_list
+
+    async def get_doble_title(self, title: str, film_id: UUID):
+        if not title or title.strip():
+            return False
+        clean_title = title.strip().lower()
+        smt = select(Film).where(
+            and_(Film.film_id != film_id, func.lower(Film.title) == clean_title)
+        )
+        relutt = await self.session.execute(smt)
+        films = relutt.scalars().first() is not None
+        return films
 
     async def get_film_title(self, film_titel) -> Film | None:
         """Получения данных по фильма с одинаковым или похожим названиям"""

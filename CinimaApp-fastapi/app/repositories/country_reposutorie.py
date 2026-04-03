@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, func, and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import selectinload
 from uuid import UUID
@@ -53,3 +53,20 @@ class CountryRepossitoried:
             print(Exception)
             await self.session.rollback()
             return False
+
+    async def update_country_not_double(self, country_id: UUID, name_country: str):
+        clean_name = name_country.strip().lower()
+        smt = select(Country).where(
+            and_(
+                Country.country_id != country_id,
+                func.lower(Country.country_name) == clean_name,
+            )
+        )
+        relult = await self.session.execute(smt)
+        return relult.scalars().first() is not None
+
+    async def is_country_not_double(self, name_country: str):
+        clean_name = name_country.strip().lower()
+        smt = select(Country).where(func.lower(Country.country_name) == clean_name)
+        relult = await self.session.execute(smt)
+        return relult.scalars().first() is not None
