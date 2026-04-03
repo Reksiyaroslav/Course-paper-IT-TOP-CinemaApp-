@@ -1,4 +1,4 @@
-from fastapi import Request, APIRouter, Form, Depends
+from fastapi import Request, APIRouter, Form, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from uuid import UUID
 from typing import Optional
@@ -9,6 +9,7 @@ from app.scheme.country.model_country import (
     CountryBaseResponse,
 )
 from app.utils.depencines import CountryService, get_country_service
+from app.handler.ui_api_route import teamlates
 
 country_router = APIRouter(prefix="/country", tags=["Country"])
 
@@ -19,9 +20,33 @@ async def create_country(
     name_country: str = Form(default=""),
     country_service: CountryService = Depends(get_country_service),
 ):
-    data = CountryCreateRequest(country_name=name_country)
-    country = await country_service.create_country(data=data.model_dump())
-    return country
+    try:
+        countrys_relut = await country_service.get_countrys()
+        countrys = countrys_relut.countrys
+        data = {}
+        len_name_country = len(name_country)
+        if not name_country:
+            raise HTTPException(detail="Не может быть ", status_code=400)
+        if len_name_country < 3:
+            raise HTTPException(detail="Минемальная длина 3", status_code=400)
+        if len_name_country > 20:
+            raise HTTPException(detail="Максимальное длина 20", status_code=400)
+        data = CountryCreateRequest(country_name=name_country)
+        country = await country_service.create_country(data=data.model_dump())
+        url = request.url_for("show_type_film_country")
+        return RedirectResponse(url=url)
+    except HTTPException as e:
+        return teamlates.TemplateResponse(
+            "type_film_and_countries.html",
+            context={
+                "request": request,
+                "data": data,
+                "type_model": "type_film",
+                "type_action": "create",
+                "err": e.detail,
+                "countrys": countrys,
+            },
+        )
 
 
 @country_router.post("/manager_country")
@@ -48,7 +73,7 @@ async def manager_country(
         url = request.url_for("delete_country", country_id=country_id)
         return RedirectResponse(url)
     if not country_id:
-        reaquest = urlencode({"messages": "Не нечго не оправили"})
+        reaquest = urlencode({"messages": "Не нечего не оправили"})
         url = f"{base_url}?{reaquest}"
         return RedirectResponse(url, status_code=303)
 
@@ -79,11 +104,36 @@ async def update_country(
     name_country: str = Form(default=""),
     country_service: CountryService = Depends(get_country_service),
 ):
-    data = CountryUpdateRequest(country_name=name_country)
-    country = await country_service.update_country(
-        data=data.model_dump(), country_id=country_id
-    )
-    return country
+    try:
+        data = {}
+        countrys_relut = await country_service.get_countrys()
+        countrys = countrys_relut.countrys
+        len_name_country = len(name_country)
+        if not name_country:
+            raise HTTPException(detail="Не может быть ", status_code=400)
+        if len_name_country < 3:
+            raise HTTPException(detail="Минемальная длина 3", status_code=400)
+        if len_name_country > 20:
+            raise HTTPException(detail="Максимальное длина 20", status_code=400)
+        data = CountryUpdateRequest(country_name=name_country)
+        country = await country_service.update_country(
+            data=data.model_dump(), country_id=country_id
+        )
+        url = request.url_for("show_type_film_country")
+        return RedirectResponse(url)
+    except HTTPException as e:
+        return teamlates.TemplateResponse(
+            "type_film_and_countries.html",
+            context={
+                "request": request,
+                "data": data,
+                "type_model": "country",
+                "type_action": "update",
+                "err": e.detail,
+                "item_id": country_id,
+                "countrys": countrys,
+            },
+        )
 
 
 @country_router.post("/delete_country/{country_id}/")
@@ -92,5 +142,17 @@ async def delete_country(
     country_id: UUID,
     country_service: CountryService = Depends(get_country_service),
 ):
-    country = await country_service.delete_country(country_id=country_id)
-    return country
+    try:
+        country = await country_service.delete_country(country_id=country_id)
+        url = request.url_for("show_type_film_country")
+        return RedirectResponse(url)
+    except HTTPException as e:
+        return teamlates.TemplateResponse(
+            "type_film_and_countries.html",
+            context={
+                "request": request,
+                "type_model": "type_film",
+                "type_action": "list",
+                "err": e.detail,
+            },
+        )

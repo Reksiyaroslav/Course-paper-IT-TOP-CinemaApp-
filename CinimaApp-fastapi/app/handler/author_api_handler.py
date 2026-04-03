@@ -32,6 +32,17 @@ async def create_author(
     country_service: CountryService = Depends(get_country_service),
 ):
     try:
+        len_fistname = len(fistname)
+        len_lastname = len(lastname)
+        len_patronymic = len(patronymic)
+        if not fistname or not lastname or not patronymic or birth_date:
+            raise HTTPException(
+                detail="Не может быть пустым имя фамилия отчества", status_code=400
+            )
+        if len_patronymic < 3 or len_lastname < 3 or len_fistname < 3:
+            raise HTTPException(detail="Минимальная длина 3", status_code=400)
+        if len_patronymic > 50 or len_lastname > 50 or len_fistname > 50:
+            raise HTTPException(detail="Максимальная длина 50", status_code=400)
         country_relut = await country_service.get_countrys()
         countrys = country_relut.countrys
         data = AuthorCreateRequest(
@@ -93,6 +104,18 @@ async def update_author(
     author_service: AuthorService = Depends(get_author_service),
 ):
     try:
+        len_fistname = len(fistname)
+        len_lastname = len(lastname)
+        len_patronymic = len(patronymic)
+        if not fistname or not lastname or not patronymic or not birth_date:
+            raise HTTPException(
+                detail="Не может быть пустыми имя фамилия отчества дата рождения",
+                status_code=400,
+            )
+        if len_patronymic < 3 or len_lastname < 3 or len_fistname < 3:
+            raise HTTPException(detail="Минимальная длина 3", status_code=400)
+        if len_patronymic > 50 or len_lastname > 50 or len_fistname > 50:
+            raise HTTPException(detail="Максимальная длина 50", status_code=400)
         data = AuthorUpdateRequest(
             fistname=fistname,
             lastname=lastname,

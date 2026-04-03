@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, Depends, Form, Request
-from typing import Dict, Annotated
 from fastapi.responses import RedirectResponse, HTMLResponse
 
 from uuid import UUID
@@ -10,6 +9,7 @@ from app.scheme.user.model_user import (
     UserLogin,
 )
 from app.handler.ui_api_route import teamlates
+from app.utils.router_help import get_curen_user
 
 user_router = APIRouter(prefix="/user", tags=["User"])
 
@@ -17,10 +17,34 @@ user_router = APIRouter(prefix="/user", tags=["User"])
 @user_router.post("/")
 async def create_user(
     reguest: Request,
-    data: Annotated[UserCreateRequest, Form()],
+    username: str = Form(None),
+    password: str = Form(None),
+    email: str = Form(default=None),
     user_servers: UserService = Depends(get_user_service),
-) -> HTMLResponse:
+):
     try:
+        if (
+            not username
+            or not password
+            or not username.strip()
+            or not password.strip()
+            or not email
+        ):
+            raise HTTPException(
+                detail="Поля Имя пользователя и пароль не могу быть пустыми",
+                status_code=400,
+            )
+        if len(username.strip()) < 5 or len(username.strip()) > 60:
+            raise HTTPException(
+                detail="Минемальная длина имени пользователя 5 и максимальная длина имени 60",
+                status_code=400,
+            )
+        if len(password.strip()) < 8 or len(password.strip()) > 15:
+            raise HTTPException(
+                detail="Минемальная длина пароля  пользователя 8 и максимальная длина пароля 15",
+                status_code=400,
+            )
+        data = UserCreateRequest(username=username, email=email, password=password)
         user = await user_servers.create_user(data.model_dump())
         url = reguest.url_for("log")
         return RedirectResponse(url)
@@ -76,24 +100,67 @@ async def get_user(
     return user
 
 
-@user_router.post("/update_user/{user_id}")
-@user_router.put("/{user_id}")
+@user_router.post("/update_user/{user_id}/")
+@user_router.put("/update_user/{user_id}/")
 async def update_user(
-    data: UserUpdateRequest,
+    reguest: Request,
     user_id: UUID,
+    username: str = Form(None),
+    password: str = Form(None),
     user_services: UserService = Depends(get_user_service),
+    user=Depends(get_curen_user),
 ):
-    user = await user_services.update_user(user_id, data.dict())
-    return user
+    try:
+        data = {}
+        if not username or not password or not username.strip() or not password.strip():
+            raise HTTPException(
+                detail="Поля Имя пользователя и пароль не могу быть пустыми",
+                status_code=400,
+            )
+        if len(username.strip()) < 5 or len(username.strip()) > 60:
+            raise HTTPException(
+                detail="Минемальная длина имени пользователя 5 и максимальная длина имени 60",
+                status_code=400,
+            )
+        if len(password.strip()) < 8 or len(password.strip()) > 15:
+            raise HTTPException(
+                detail="Минемальная длина пароля  пользователя 8 и максимальная длина пароля 15",
+                status_code=400,
+            )
+        data = UserUpdateRequest(username=username, password=password)
+        await user_services.update_user(user_id, data.dict())
+        url = reguest.url_for("view_item", item_id=user_id, env_type_model="user")
+        return RedirectResponse(url)
+    except HTTPException as e:
+        return teamlates.TemplateResponse(
+            "update_model.html",
+            context={
+                "request": reguest,
+                "data": data,
+                "err": e.detail,
+                "type_model": "user",
+                "model_id": user_id,
+                "user": user,
+            },
+        )
 
 
 @user_router.post("/delete/{user_id}")
 @user_router.delete("/delete/{user_id}")
 async def delete_user(
-    user_id: UUID, user_service: UserService = Depends(get_user_service)
-) -> Dict[str, str]:
-    user = await user_service.delete_user(user_id)
-    return user
+    reguest: Request,
+    user_id: UUID,
+    user_service: UserService = Depends(get_user_service),
+):
+    try:
+        user = await user_service.delete_user(user_id)
+        url = reguest.url_for("logout")
+        return RedirectResponse(url)
+    except HTTPException as e:
+        url = reguest.url_for(
+            "view_item", item_id=user_id, env_type_model="user", err=e.detail
+        )
+        return RedirectResponse(url)
 
 
 @user_router.post("/{user_id}/like_film/{film_id}")

@@ -6,7 +6,12 @@ from app.scheme.comment.model_coment import (
     ComentCreateRequest,
     ComentUpdateRequest,
 )
-from app.utils.depencines import ComentService, get_comment_service
+from app.utils.depencines import (
+    ComentService,
+    get_comment_service,
+    FilmService,
+    get_film_service,
+)
 from app.utils.router_help import get_curen_user
 from app.handler.ui_api_route import teamlates
 
@@ -21,20 +26,36 @@ async def create_comment(
     user_id: UUID,
     description: str = Form(""),
     coment_sev: ComentService = Depends(get_comment_service),
+    film_service: FilmService = Depends(get_film_service),
     user=Depends(get_curen_user),
 ):
+    data = {}
+    item = await film_service.get_film_by_id(film_id=film_id)
     try:
+        if not description:
+            raise HTTPException(
+                detail="Комментарий не может быть пустым", status_code=400
+            )
+
+        if len(description) < 20:
+            raise HTTPException(detail="Минимум 20 символов", status_code=400)
+
+        if len(description) > 4000:
+            raise HTTPException(detail="Максимум 4000 символов", status_code=400)
         data = ComentCreateRequest(description=description)
         await coment_sev.create_model(data.dict(), film_id, user_id)
         url = request.url_for("view_item", item_id=film_id, env_type_model="film")
         return RedirectResponse(url=url)
     except HTTPException as e:
         return teamlates.TemplateResponse(
-            "profile.html",
+            "profiles.html",
             context={
+                "request": request,
                 "item_id": film_id,
+                "item": item,
                 "env_type_model": "film",
                 "user": user,
+                "data": data,
                 "err": e.detail,
             },
         )
@@ -64,20 +85,34 @@ async def update_coment(
     coment_id: UUID,
     description: str = Form(""),
     coment_sev: ComentService = Depends(get_comment_service),
+    film_service: FilmService = Depends(get_film_service),
     user=Depends(get_curen_user),
 ):
+    data = {}
+    item = await film_service.get_film_by_id(film_id=film_id)
     try:
+        if not description:
+            raise HTTPException(
+                detail="Комментарий не может быть пустым", status_code=400
+            )
+        if len(description) < 20:
+            raise HTTPException(detail="Минимум 20 символов", status_code=400)
+        if len(description) > 4000:
+            raise HTTPException(detail="Максимум 4000 символов", status_code=400)
         data = ComentUpdateRequest(description=description)
         await coment_sev.update_coment(data=data.dict(), coment_id=coment_id)
         url = request.url_for("view_item", item_id=film_id, env_type_model="film")
         return RedirectResponse(url=url)
     except HTTPException as e:
         return teamlates.TemplateResponse(
-            "profile.html",
+            "profiles.html",
             context={
+                "request": request,
+                "item": item,
                 "item_id": film_id,
                 "env_type_model": "film",
                 "user": user,
+                "data": data,
                 "err": e.detail,
             },
         )

@@ -19,14 +19,16 @@ from app.utils.depencines import (
 )
 from app.enums.type_model import TypeModel
 from app.utils.router_help import get_curen_user
+from app.scheme.country.model_country import CountryBaseResponse
+from app.scheme.film.type_film import TypeFilmResponse
 
 
 ui_router = APIRouter(prefix="/frondet", tags=["Визуал"])
 teamlates = Jinja2Templates(directory="app/templates")
 
 
-@ui_router.post("/profile/{env_type_model}/{item_id}")
-@ui_router.get("/profile/{env_type_model}/{item_id}")
+@ui_router.post("/profile/{env_type_model}/{item_id}/")
+@ui_router.get("/profile/{env_type_model}/{item_id}/")
 async def view_item(
     request: Request,
     item_id: UUID,
@@ -79,6 +81,12 @@ async def show_type_film_country(
     types_film_relult = await film_service.get_types_film()
     types_film = types_film_relult.types_film
     countrys = countys_relult.countrys
+    update_data = None
+    if type_action == "update" and item_id:
+        if type_model == "country":
+            update_data = await country_service.get_country_by_id(country_id=item_id)
+        if type_model == "type_film":
+            update_data = await film_service.get_type_film_by_id(type_film_id=item_id)
     return teamlates.TemplateResponse(
         "type_film_and_countries.html",
         context={
@@ -90,6 +98,7 @@ async def show_type_film_country(
             "message": message,
             "item_id": item_id,
             "user": user,
+            "data": update_data,
         },
     )
 
@@ -274,6 +283,7 @@ async def create_model(
                 "countrys": countrys,
                 "type_model": type_model,
                 "err": err,
+                "user": user,
             },
         )
     else:
@@ -291,18 +301,28 @@ async def create_model(
 @ui_router.post(path="/serarcht_item/")
 async def serach_items(
     request: Request,
-    search_text: str = Form(""),
+    search_text: str = Form(None),
     film_service: FilmService = Depends(get_film_service),
     actor_service: ActorService = Depends(get_actor_service),
     author_service: AuthorService = Depends(get_author_service),
     user=Depends(get_curen_user),
 ):
-    films_relult = await film_service.get_film_titles(titles=search_text)
-    actors_relult = await actor_service.get_serahc_name_list(search_text)
-    authors_relult = await author_service.get_fistname_lastname_pat_list(search_text)
-    films = films_relult.films
-    actors = actors_relult.actors
-    authors = authors_relult.author
+    films = None
+    actors = None
+    authors = None
+    if not search_text or not search_text.strip():
+        films = []
+        actors = []
+        authors = []
+    else:
+        films_relult = await film_service.get_film_titles(titles=search_text)
+        actors_relult = await actor_service.get_serahc_name_list(search_text)
+        authors_relult = await author_service.get_fistname_lastname_pat_list(
+            search_text
+        )
+        films = films_relult.films
+        actors = actors_relult.actors
+        authors = authors_relult.author
     count_films: int = len(films)
     count_actors: int = len(actors)
     count_authors: int = len(authors)

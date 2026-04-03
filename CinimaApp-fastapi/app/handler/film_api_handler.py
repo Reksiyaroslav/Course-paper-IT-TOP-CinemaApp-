@@ -4,6 +4,7 @@ from typing import Dict, Optional
 from uuid import UUID
 from app.utils.depencines import get_film_service, FilmService
 from app.handler.ui_api_route import teamlates
+from app.utils.router_help import parse_data_or_none
 from app.scheme.film.model_film import (
     FilmCreateRequest,
     FilmUpdateRequest,
@@ -35,7 +36,7 @@ async def create_film(
     request: Request,
     title: str = Form(None),
     description: str = Form(None),
-    release_date: datetime.date = Form(),
+    release_date: str = Form(),
     image: UploadFile = File(None),
     actor_ids: list[UUID] = Form(default=[]),
     author_ids: list[UUID] = Form(default=[]),
@@ -44,8 +45,29 @@ async def create_film(
     film_sevice: FilmService = Depends(get_film_service),
 ) -> HTMLResponse | RedirectResponse:
     try:
+        paring_date = parse_data_or_none(
+            date_str=release_date, field_name="release_date"
+        )
+        if not paring_date:
+            raise HTTPException(
+                detail="Не могут быть пуcтым поля Дата релиза", status_code=400
+            )
+        if not title or not description:
+            raise HTTPException(
+                detail="Не могут быть пуcтыми полями название описание", status_code=400
+            )
+        if len(title.strip()) < 10 or len(title.strip()) > 1000:
+            raise HTTPException(
+                detail="Минимальное количество  10 и максимальное 1000 количество  сиволов  у название",
+                status_code=400,
+            )
+        if len(description.strip()) < 10 or len(description.strip()) > 1000:
+            raise HTTPException(
+                detail="Минимальное количество  10 и максимальное 1000 количество сиволов описание",
+                status_code=400,
+            )
         data: FilmCreateRequest = FilmCreateRequest(
-            title=title, description=description, release_date=release_date
+            title=title, description=description, release_date=paring_date
         )
         message = await film_sevice.create_film(data.model_dump(), image)
         if isinstance(message, FilmResponse):
@@ -132,9 +154,9 @@ async def get_film_titles(
 async def update_film(
     film_id: UUID,
     request: Request,
-    title: str = Form(None),
-    description: str = Form(None),
-    release_date: datetime.date = Form(),
+    title: Optional[str] = Form(None),
+    description: Optional[str] = Form(None),
+    release_date: Optional[str] = Form(None),
     image: UploadFile = File(None),
     actor_ids: Optional[list[UUID]] = Form(default=[]),
     author_ids: list[UUID] = Form(default=[]),
@@ -143,8 +165,29 @@ async def update_film(
     film_service: FilmService = Depends(get_film_service),
 ):
     try:
+        paring_date = parse_data_or_none(
+            date_str=release_date, field_name="release_date"
+        )
+        if not paring_date:
+            raise HTTPException(
+                detail="Не могут быть пуcтым поля Дата релиза", status_code=400
+            )
+        if not title or not description:
+            raise HTTPException(
+                detail="Не могут быть пуcтыми полями название описание", status_code=400
+            )
+        if len(title.strip()) < 10 or len(title.strip()) > 1000:
+            raise HTTPException(
+                detail="Минимальное количество  10 и максимальное 1000 количество  сиволов  у название",
+                status_code=400,
+            )
+        if len(description.strip()) < 10 or len(description.strip()) > 1000:
+            raise HTTPException(
+                detail="Минимальное количество  10 и максимальное 1000 количество сиволов описание",
+                status_code=400,
+            )
         data = FilmUpdateRequest(
-            description=description, title=title, release_date=release_date
+            description=description, title=title, release_date=paring_date
         )
         await film_service.update_film(film_id, data.model_dump(), image=image)
         if actor_ids:

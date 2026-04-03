@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Form, Request, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
+from typing import Optional
 from app.scheme.actor.model_actor import (
     ActorCreateRequest,
     ActorUpdateRequest,
@@ -7,6 +8,7 @@ from app.scheme.actor.model_actor import (
     datetime,
 )
 from app.utils.comon import Depends
+from app.utils.router_help import parse_data_or_none
 from app.utils.depencines import ActorService, get_actor_service
 from uuid import UUID
 
@@ -18,17 +20,39 @@ async def create_actor(
     request: Request,
     fistname: str = Form(None),
     lastname: str = Form(None),
-    birth_date: datetime.date = Form(None),
+    birth_date: str = Form(None),
     patronymic: str = Form(None),
     star: int = Form(1),
     country_id: UUID = Form(default=None),
     actor_service: ActorService = Depends(get_actor_service),
 ) -> RedirectResponse | HTMLResponse:
     try:
+        len_fistname = len(fistname)
+        len_lastname = len(lastname)
+        len_patronymic = len(patronymic)
+        parse_date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
+        if not fistname:
+            raise HTTPException(detail="Не может быть пустым Имя", status_code=400)
+        if not lastname:
+            raise HTTPException(
+                detail="Не может быть пустым  Фамилия ", status_code=400
+            )
+        if not patronymic:
+            raise HTTPException(
+                detail="Не может быть пустым  Отчества ", status_code=400
+            )
+        if not parse_date:
+            raise HTTPException(
+                detail="Не может быть пустым  Дата рождения ", status_code=400
+            )
+        if len_patronymic < 3 or len_lastname < 3 or len_fistname < 3:
+            raise HTTPException(detail="Минимальная длина 3", status_code=400)
+        if len_patronymic > 50 or len_lastname > 50 or len_fistname > 50:
+            raise HTTPException(detail="Максимальная длина 50", status_code=400)
         data = ActorCreateRequest(
             fistname=fistname,
             lastname=lastname,
-            birth_date=birth_date,
+            birth_date=parse_date,
             patronymic=patronymic,
             star=star,
         )
@@ -82,6 +106,18 @@ async def update_actor(
     actor_service: ActorService = Depends(get_actor_service),
 ):
     try:
+        len_fistname = len(fistname)
+        len_lastname = len(lastname)
+        len_patronymic = len(patronymic)
+        if not fistname or not lastname or not patronymic:
+            raise HTTPException(
+                detail="Не может быть пустым имя фамилия отчества и дата рождения",
+                status_code=400,
+            )
+        if len_patronymic < 3 or len_lastname < 3 or len_fistname < 3:
+            raise HTTPException(detail="Минимальная длина 3", status_code=400)
+        if len_patronymic > 50 or len_lastname > 50 or len_fistname > 50:
+            raise HTTPException(detail="Максимальная длина 50", status_code=400)
         data = ActorUpdateRequest(
             fistname=fistname,
             lastname=lastname,

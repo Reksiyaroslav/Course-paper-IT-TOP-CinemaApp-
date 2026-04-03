@@ -21,6 +21,16 @@ async def create_film_type(
     film_sevice: FilmService = Depends(get_film_service),
 ) -> HTMLResponse | RedirectResponse:
     try:
+        data = {}
+        type_relut = await film_sevice.get_types_film()
+        types_film = type_relut.types_film
+        len_type_name = len(type_film_name)
+        if not type_film_name:
+            raise HTTPException(detail="Не может быть ", status_code=400)
+        if len_type_name < 5:
+            raise HTTPException(detail="Минемальная длина 5", status_code=400)
+        if len_type_name > 40:
+            raise HTTPException(detail="Максимальное длина 40", status_code=400)
         data = TypeFilmCreateRequest(type_film_name=type_film_name)
         message = await film_sevice.create_type_film(data.model_dump())
         if isinstance(message, TypeFilmResponse):
@@ -34,6 +44,7 @@ async def create_film_type(
                 "data": data,
                 "type_model": "type_film",
                 "type_action": "create",
+                "types_film": types_film,
                 "err": str(e),
             },
         )
@@ -62,7 +73,7 @@ async def manager_type_film(
         return RedirectResponse(url)
     if action_type == "update":
         if not type_film_id:
-            reaquest = urlencode({"messages": "Не нечго не оправили"})
+            reaquest = urlencode({"err": "Не нечего не оправили"})
             url = f"{base_url}?{reaquest}"
             return RedirectResponse(url, status_code=303)
         reaquest = urlencode(
@@ -76,7 +87,7 @@ async def manager_type_film(
         return RedirectResponse(url, status_code=303)
     if action_type == "delete":
         if not type_film_id:
-            reaquest = urlencode({"messages": "Не нечго не оправили"})
+            reaquest = urlencode({"err": "Не нечего не оправили"})
             url = f"{base_url}?{reaquest}"
             return RedirectResponse(url, status_code=303)
         url = request.url_for("delete_film_type", type_film_id=type_film_id)
@@ -107,6 +118,16 @@ async def update_type_film(
     film_service: FilmService = Depends(get_film_service),
 ):
     try:
+        data = {}
+        type_relut = await film_service.get_types_film()
+        types_film = type_relut.types_film
+        len_type_name = len(type_film_name)
+        if not type_film_name:
+            raise HTTPException(detail="Не может быть ", status_code=400)
+        if len_type_name < 5:
+            raise HTTPException(detail="Минемальная длина 5", status_code=400)
+        if len_type_name > 40:
+            raise HTTPException(detail="Максимальное длина 40", status_code=400)
         data = TypeFilmUpdateRequest(type_film_name=type_film_name)
         film = await film_service.update_type_film(
             type_film_id=type_film_id, data=data.model_dump()
@@ -123,6 +144,7 @@ async def update_type_film(
                 "err": e.detail,
                 "type_action": "update",
                 "item_id": type_film_id,
+                "types_film": types_film,
             },
         )
 
