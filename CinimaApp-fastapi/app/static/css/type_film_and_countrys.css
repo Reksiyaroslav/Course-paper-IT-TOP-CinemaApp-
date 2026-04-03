@@ -1,0 +1,89 @@
+.df{
+    display: flex;
+}
+.info_block{
+    flex-direction: column;
+    background-color: rgb(13, 151, 151);
+    gap: 10px;
+    width: 50%;
+    height: 50%;
+    border-radius: 20px;
+    text-align: center;
+}
+.varibal_form{
+    background-color: rgb(17, 144, 121);
+    color: black;
+    flex-direction: row;
+    margin: 10px 20px 10px 5px;
+    width: 99%;
+    height: 70%;
+    /* min-height: 40px; */
+    border-radius: 20px;
+    align-items: center;
+}
+.varibal_form button{
+    width: 20%;
+    height: 20%;
+    border-radius: 20px;
+    background-color: rgb(98, 208, 171);
+    color: white;
+}
+.varibal_form select{
+    width: 5%;
+    height: 5%;
+    border-radius: 20px;
+    background-color: rgb(31, 4, 94);
+    color: white;
+    
+}
+.varibal_form option{
+    opacity: 0.5;
+    color: white;
+    
+}
+.form_create, .form_update{
+    flex-direction: column;
+    width: 50%;
+    height: 40%;
+    min-height: 400px;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(19, 169, 185);
+}
+.form_create button,.form_update button{
+    background-color: rgb(217, 153, 75);
+    transition: 0.7s;
+    border-radius: 20px;
+
+}
+.form_create input, .form_update input{
+    background-color: rgb(134, 9, 84);
+    transition: 0.7s;
+    border-radius: 20px;
+    color: white;
+
+}
+.form_create input::placeholder, .form_update input::placeholder{
+    color: white;
+
+}
+.form_create button:hover, .form_update button:hover{
+    transition: 0.4s;
+    transform: scaleX(20px);
+    opacity: 0.5;
+}
+.err {
+  margin: 10px 0;
+  padding: 12px 16px;
+  background-color: #fee;
+  border: 1px solid #f66;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #c00;
+  line-height: 1.4;
+}
+
+.err p {
+  margin: 0;
+  padding: 0;
+}

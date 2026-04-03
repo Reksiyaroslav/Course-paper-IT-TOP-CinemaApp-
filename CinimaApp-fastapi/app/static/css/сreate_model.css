@@ -1,0 +1,87 @@
+.df{
+    display: flex;
+}
+.form{
+    flex-direction: column;
+    justify-content: center;
+    border: solid 20px seagreen ;
+    align-items: center;
+    border-radius: 40px;
+    width: 110%;
+    height: 110%;
+    background: rgb(42, 153, 232);
+}
+
+.form select{
+    width: 20%;
+    border-radius: 30px;
+    margin: 10px;
+    text-align: center;
+    background-color: rgb(22, 143, 199);
+    
+}
+
+.form input{
+    width: 30%;
+    margin: 10px;
+    height:  30%;
+    border-radius: 10pX;
+    text-align: center;
+    background-color: rgb(22, 143, 199);
+}
+.form input::placeholder{
+    width: 30%;
+    margin: 10px;
+    height:  30%;
+    border-radius: 10pX;
+    text-align: center;
+    
+}
+
+label{
+    font-size: 18px;
+
+}
+
+.form textarea{
+    width: 30%;
+    height:  54px;
+    border-radius: 10PX;
+    text-align: center;
+    background-color: rgb(22, 143, 199);
+   
+}
+.form textarea::placeholder,input::placeholder{
+    color: black;
+}
+.form button{
+    width: 10%;
+    height: 14%;
+    border-radius: 10PX;
+    text-align: center;
+    background-color: rgb(22, 143, 199);
+   
+}
+.coment_glav{
+    flex-direction: column;
+    
+}
+.err {
+  margin: 10px 0;
+  padding: 12px 16px;
+  background-color: #fee;
+  border: 1px solid #f66;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #c00;
+  line-height: 1.4;
+}
+
+.err p {
+  margin: 0;
+  padding: 0;
+}
+
+/* body{
+    background: blue;
+} */
