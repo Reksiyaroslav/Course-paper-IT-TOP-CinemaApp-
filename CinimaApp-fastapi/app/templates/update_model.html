@@ -3,25 +3,25 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- <link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/update_model.css')}}"> -->
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/update_model.css')}}">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.6.0/css/all.css">
 	<title>Изменение</title>
 </head>
 <body>
-		{% if user.user_role=="admin"or user.user_role=="author"%}
+	{% if user.role_user=="admin" or user.role_user=="author"%}
 		<h1>Изменение</h1>
 		{%if type_model=="user"%}
         <div class="form_user form">
             <form action="{{url_for("update_user",user_id=model_id)}}" method="post">
 			<div class="input_box">
 				<i class="fa-solid fa-user"></i>
-				<input type="text"  name = "username"placeholder="Имя пользователя">
+				<input type="text"  name = "username"placeholder="Имя пользователя" value="{{data.username if data.username else ""}}">
 				
 			</div>
 			
             <div class="input_box">
 				<i class="fa-regular fa-envelope"></i>
-				<input type="password" placeholder="Новый пароль" name="password">
+				<input type="password" placeholder="Новый пароль" name="password" value="{{data.password if data.password else ""}}">
 				
 			</div>
 			<button type="submit">Изменить </button>
@@ -31,24 +31,24 @@
 		</form>
         </div>
 		{%elif type_model == "film"%}
-        <div class="form_films form">
+        <div class="form_film form df">
 
             <form action="{{url_for("update_film",film_id = model_id)}}" method="post" enctype="multipart/form-data">
-			<div class="input_box">
-				<i class="fa-solid fa-user"></i>
-				<input type="text"  name = "title"placeholder="Название фильма" value="{{data.title if data.title else ""}}">
+			<label>Название</label>
+				<div class="input_box">
+				<input type="text"  name = "title"placeholder="Название фильма"  minlength="10"  maxlength="1000"  value="{{data.title if data.title else ""}}">
 				
 			</div>
-			
+			<label>Описание</label>
             <div class="input_box">
-				<i class="fa-regular fa-envelope"></i>
-				<textarea placeholder="Ввдедите описание" name="description"> {{data.description if data.description else ""}}</textarea>
+				<textarea placeholder="Ввдедите описание"    minlength="20"  maxlength="4000"  name="description"> {{data.description if data.description else ""}}</textarea>
 			</div>
+			<label>Дата релиза</label>
 			<div class="input_box">
-				<i class="fa-regular fa-envelope"></i>
 				<input type="date" placeholder="Измените дату релиза " name="release_date" value="{{data.release_date if data.release_date else "" }}">
 			</div>
 			{%if actors%}
+			<label>Акторы{Зажмите Ctrl, чтобы выбрать нескольких}</label>
 			<select name="actor_ids" multiple>
             {%for actor  in actors%}
             <option value="{{actor.actor_id}}" {% if  actor in data.actors %}selected{% endif %}>{{actor.fistname}} {{actor.lastname}}</option>
@@ -57,21 +57,24 @@
 				</select>
 			{%endif%}
 			{%if authors %}
+			<label>Авторы{Зажмите Ctrl, чтобы выбрать нескольких}</label>
 			<select name="author_ids" multiple>
 				{%for author  in authors%}
 				<option value="{{author.author_id}}" {% if  author in data.authors %}selected{% endif %}>{{author.fistname}} {{author.lastname}}</option>
 				{%endfor%}
-				<small>Зажмите Ctrl, чтобы выбрать нескольких</small>
+				
 			</select>
 			{%endif%}
 			{%if types_film%}
+			<label>Жанер{Зажмите Ctrl, чтобы выбрать нескольких}</label>
 			<select name="types_id" multiple>
 				{%for type_film  in types_film%}
 				<option value="{{type_film.type_film_id}}" {% if  type_film in data.types_film %}selected{% endif %}>{{type_film.type_film_name.title()}}</option>
 				{%endfor%}
-				<small>Зажмите Ctrl, чтобы выбрать нескольких</small>
+				
 			</select>
 			{%endif%}
+			<label>Страна</label>
 			{%if countrys %}
 			<select name="country_id" >
 				<option value=""  disabled>Создан фильм</option>
@@ -81,36 +84,37 @@
 				<small>Зажмите Ctrl, чтобы выбрать нескольких</small>
 			</select>
 			{%endif%}
+			<label>Фотография для лога</label>
 			<input type="file" name="image" placeholder="Главный банер ">
 			<button type="submit">Изменить </button>
 		</form>
         </div>
         {%elif type_model == "actor"%}
-        <div class="form_actor form ">
+        <div class="form_actor form df">
              <form action="{{url_for("update_actor",actor_id = model_id)}}" method="post">
+			<label>Имя</label>
 			<div class="input_box">
-				<i class="fa-solid fa-user"></i>
-				<input type="text"  name = "fistname"placeholder="Имя актера" value="{{data.fistname if data.fistname else ""}}">
+				<input type="text"  name = "fistname"placeholder="Имя актера"  maxlength="3" minlength="50"value="{{data.fistname if data.fistname else ""}}">
 				
 			</div>
-			
+			<label>Фамилия</label>
             <div class="input_box">
-				<i class="fa-regular fa-envelope"></i>
-				<input type="text" placeholder="Ввдедите фамилию" name="lastname"  value="{{data.lastname if data.lastname else ""}}">
+				<input type="text" placeholder="Ввдедите фамилию" name="lastname"   pattern="[A-Za-zA-Яа-яЁё\s]+" maxlength="3" minlength="50" title="Только буквы"  value="{{data.lastname if data.lastname else ""}}">
 			</div>
+			<label>Отчества</label>
             <div class="input_box">
-				<i class="fa-regular fa-envelope"></i>
-				<input type="text" placeholder="Ввдедите очества" name="patronymic"value="{{data.patronymic if data.patronymic else ""}}">
+				<input type="text" placeholder="Ввдедите очества" name="patronymic"   pattern="[A-Za-zA-Яа-яЁё\s]+" maxlength="3" minlength="50" title="Только буквы"value="{{data.patronymic if data.patronymic else ""}}">
 			</div>
+			<label>Количества звезд</label>
 			 <div class="input_box">
-				<i class="fa-regular fa-envelope"></i>
 				<input type="number" placeholder="Ввдедите количестов звёст" name="star"value="{{data.start if data.start else ""}}">
 			</div>
+			<label>Дата рождения</label>
 			<div class="input_box">
-				<i class="fa-regular fa-envelope"></i>
 				<input type="date" placeholder="Ввдедите год рождения" name="birth_date"value="{{data.birth_date if data.birth_date else ""}}">
 			</div>
 			{%if countrys %}
+			<label>Страна</label>
 			<select name="country_id">
 				<option value="" disabled>Вы берете где автор</option>
 				{%for country  in countrys%}
@@ -123,34 +127,34 @@
 		</form>
         </div>
        {%elif type_model == "author"%}
-        <div class="form_author form ">
+        <div class="form_author form df">
             <form action="{{url_for("update_author",author_id = model_id)}}" method="post">
-			<div class="input_box">
-				<i class="fa-solid fa-user"></i>
-				<input type="text"  name = "fistname"placeholder="Имя автора" value="{{data.fistname if data.fistname else ""}}"> 
+			<label>Имя</label>
+				<div class="input_box">
+				<input type="text"  name = "fistname"  pattern="[A-Za-zA-Яа-яЁё\s]+" maxlength="3" minlength="50" title="Только буквы"placeholder="Имя автора" value="{{data.fistname if data.fistname else ""}}"> 
 			</div>
-			
+			<label>Фамилия</label>
             <div class="input_box">
-				<i class="fa-regular fa-envelope"></i>
-				<input type="text" placeholder="Ввдедите фамилию" name="lastname"value="{{data.lastname if data.lastname else ""}}">
+				<input type="text" placeholder="Ввдедите фамилию"   pattern="[A-Za-zA-Яа-яЁё\s]+" maxlength="3" minlength="50" title="Только буквы" name="lastname"value="{{data.lastname if data.lastname else ""}}">
 				
 			</div>
+			<label>Отчества</label>
             <div class="input_box">
-				<i class="fa-regular fa-envelope"></i>
-				<input type="text" placeholder="Ввдедите очества" name="patronymic"value="{{data.patronymic if data.patronymic else ""}}">
+				<input type="text" placeholder="Ввдедите очества"  pattern="[A-Za-zA-Яа-яЁё\s]+" maxlength="3" minlength="50" title="Только буквы"name="patronymic"value="{{data.patronymic if data.patronymic else ""}}">
 				
 			</div>
+			<label>Дата рождения</label>
 			<div class="input_box">
-				<i class="fa-regular fa-envelope"></i>
 				<input type="date" placeholder="Ввдедите год рождения" name="birth_date"value="{{data.birth_date if data.birth_date else ""}}">
 
 			</div>
+			<label>BIO</label>
             <div class="input_box">
-				<i class="fa-regular fa-envelope"></i>
 				<textarea placeholder="Введите био автора" name="bio">{{data.bio if data.bio else ""}}</textarea>
 				
 			</div>
 			{%if countrys %}
+			<label>Страна</label>
             <select name="country_id">
 				<option value="" disabled>Вы берете где автор</option>
 				{%for country  in countrys%}
@@ -162,13 +166,14 @@
 			<button type="submit">Изменить </button>
 		</form>
 		{%endif%}
-		{%else%}
-		<h1>Нет доступа</h1>
-		 <a href="{{url_for("main_item",type_model="film")}}">Обратно</a>
-		 {%endif%}
-		{%if err==""%}
-		{%else%}
+	{%else%}
+	<h1>Нет доступа</h1>
+		<a href="{{url_for("main_item",type_model="film")}}">Обратно</a>
+	{%endif%}
+		{%if err%}
+		<div class="err">
 		<p>{{err}}</p>
+		</div>
 		{%endif%}
        
          

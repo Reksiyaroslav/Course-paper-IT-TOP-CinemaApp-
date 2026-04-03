@@ -3,142 +3,214 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- <link rel="stylesheet" type="text/css" href="{{url_for('static',path="css/profilses.css")}}"> -->
-	
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path="css/profilses.css")}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/header.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/footer.css')}}">
 	<title>Профильм</title>
 </head>
 <body>
-	 <div id="header"></div>
-	 <div class="wrapper df">
-		<div class="wrapper_header df ">
-			{% include "header.html"%}
+	{% include "header.html"%}
+	{%if err%}
+		<div class="err">
+		<p>{{err}}</p>
 		</div>
+	{%endif%}
 		{%if item.username%}
+		<div class="profile_user">
 			<h1 id="username">{{item.username}}</h1>
-			<h2 id = "datanow">{{item.datanow}}</h2>
-			{%if user.role_user=="admin" and item.role_user=="admin"%}
-				<a href="{{url_for("update_form_role_user")}}">Изменеия ролик у user</a>	
-			{%endif%}
+			<h2 id = "datanow">{{item.created_at}}</h2>
+			
+		
 			{%if  user.role_user=="admin"%}
 			<h2>{{item.role_user}}</h2>
 			{%endif%}
-			{%if item.likefilm%}
-			{%for film in item.likefilm %}
-			<h1>{{film.title.title()}}</h1>
-			<a href="{{url_for("viem_item",env_type_model="film",item_id=film.film_id)}}">Профиль фильма</a>
-			{%endfor%}
-			{%else%}
-			<h1>Не у пользователя фильмов</h1>
+			<div class="film_block df">
+				{%if item.likefilms%}
+				{%for film in item.likefilms %}
+				<img src="{{url_for("static",path=film.path_image)}}">
+				<div class="text_box df">
+					<h1>{{film.title.title()}}</h1>
+
+					<a href="{{url_for("view_item",env_type_model="film",item_id=film.film_id)}}">Профиль фильма</a>
+				</div>
+				
+				
+				{%endfor%}
+				{%else%}
+				<h1>Не у пользователя фильмов</h1>
+				{%endif%}
+			</div>
+			{%if user.role_user=="admin" and item.role_user=="admin"%}
+				<a href="{{url_for("update_form_role_user")}}">Изменеия ролик у user</a>	
+			{%endif%}
+		</div>
+		
+			<div class="update_delete button df">
+			{%if user and (user.role_user=="admin" or user.user_id==item_id)%}
+			<form action="{{url_for("update_model",env_type_model="user",item_id=item_id )}}" method="get">
+			<button type="submit">Изменить</button>
+			</form>
+			<form action="{{url_for("delete_user",user_id=item_id)}}" method="post">
+				<button type="submit">Удалить</button>
+			</form>
 			{%endif%}
 
-
+		
 		{%elif item.title%}
-			<data>{{item.release_date}}</data>
-			<span>{{item.avg_rating}}</span>
+			<div class="film_profile df">		
+			
+			
 			{%if user and not rating_user  %}
 			<form  action="{{url_for("create_rating",film_id=item.film_id,user_id=user.user_id)}}" method="post">
+				<div class="rating_form">
+					<h2>Создание ратинга</h2>
 				<select name="rating" >
 					{%for i in range(1,11)%}
 					<option value="{{i}}">{{i}}</option>
 					{%endfor%}	
 				</select>
 				<button type="submit">Создать ретинг</button>
+				</div>
 			</form>
 			{%elif rating_user and user.user_id %}
-			<h2>Ваш ратинг:{{rating_user.rating}}/10</h2>
+
+			
+			<div class="rating_form">
+				<h2>Ваш ратинг:{{rating_user.rating}}/10</h2>
 			<form  action="{{url_for("update_rating_user_id",film_id=item.film_id,user_id=user.user_id)}}" method="post">
+				
 				<select name="rating" >
 					{%for i in range(1,11)%}
 					<option value="{{i}}">{{i}}</option>
 					{%endfor%}	
 				</select>
 				<button type="submit">Обновить  ретинг</button>
+				
 			</form>
 			<form  action="{{url_for("delete_rating",rating_id = rating_user.rating_id,film_id=item.film_id)}}" method="post">
 				<button type="submit">удалить ратин твой </button>
 			</form>
+			</div>
 			{%endif%}
-			<h1 id="titile">{{item.title.title()}}</h1>
-			<p id = "description">{{item.description}}</p>
-			{%if item.country%}
-			<h2>{{item.country.country_name.title()}}</h2>
-			{%else%}
-			<h1>Пока нет страны </h1>
-			{%endif%}
-			{%if item.types_film%} 
-			{%for type_film in  item.types_film%}
-				<h4>{{type_film.type_film_name.title()}}</h4>
-			{%endfor%}
-			{%else%}
-			<h5>Нет жанра в у фильма</h5>
-			{%endif%}
-			<img src="{{url_for('static',path=item.path_image)}}" alt="">
-			<h1>Actors</h1>
-			{%if item.actors %}
-			
-			{%for actor in item.actors%}
-			<a href="{{url_for("view_item",env_type_model='actor',item_id = actor.actor_id)}}" id="actor">{{actor.firstname}} {{actor.lastname}} {{actor.patronymic}}<br></a>
-			{%endfor%}
-			{%else%}
-			<p>Пока не сказали кастинг </p>
-			{%endif%}
-			<h2>Authors</h2>
-			{%if item.authors%}
-			{%for author in item.authors%}
-			<a href="{{url_for("view_item",env_type_model='author',item_id = author.author_id)}}" id="author">
-				{{author.firstname}} {{author.lastname}} {{author.patronymic}}<br>
-			</a>
-			{%endfor%}
-			{% else%}
-			<h2>Not author </h2>
-			{%endif%}
+			<div class="card_film df">
+				<div class="rating_str">
+				<span>{{item.avg_rating}}</span>
+				</div>
+				<img src="{{url_for('static',path=item.path_image)}}" alt="">
+				<div class="info df ">
+					<label>Название</label>
+					<h1 id="titile">{{item.title.title()}}</h1>
+					<label>Описание</label>
+					<p id = "description">{{item.description}}</p>
+					<data>{{item.release_date}}</data>
+					<label>Страна произвоства</label>
+					{%if item.country%}
+					<h2>{{item.country.country_name.title()}}</h2>
+					{%else%}
+					<h1>Пока нет страны </h1>
+					{%endif%}
+					<label>Жанры</label>
+					{%if item.types_film%} 
+					{%for type_film in  item.types_film%}
+						<h4>{{type_film.type_film_name.title()}}</h4>
+					{%endfor%}
+					{%else%}
+					<h5>Нет жанра в у фильма</h5>
+					{%endif%}
+					
+					<h1>Actors</h1>
+					{%if item.actors %}
+					
+					{%for actor in item.actors%}
+					<a href="{{url_for("view_item",env_type_model='actor',item_id = actor.actor_id)}}" id="actor">{{actor.firstname}} {{actor.lastname}} {{actor.patronymic}}<br></a>
+					{%endfor%}
+					{%else%}
+					<p>Пока не сказали кастинг </p>
+					{%endif%}
+					<h2>Authors</h2>
+					{%if item.authors%}
+					{%for author in item.authors%}
+					<a href="{{url_for("view_item",env_type_model='author',item_id = author.author_id)}}" id="author">
+						{{author.firstname}} {{author.lastname}} {{author.patronymic}}<br>
+					</a>
+					{%endfor%}
+					{% else%}
+					<h2>Not author </h2>
+					{%endif%}
+					</div>
+				</div>
 			{%if user%}
+			<div class="coment_glav df">
+			
 			<form action="{{url_for("create_comment",user_id=user.user_id,film_id=item.film_id)}}" method="post">
-				<textarea name="description" id="" placeholder="Текст кометария"></textarea>
+				<div class="coment_form df">
+				<textarea name="description" id="" minlength="20" maxlength="4000" placeholder="Текст кометария"></textarea>
+				
 				<button type="submit">Создать новый комент</button>
+				</div>
 			</form>
+		
 			{%endif%}
-			<h2>Comment</h2>
-			{%if item.coments%}
+			<div class="coment_block df">
+				<h1>Comments</h1>
+				{%if item.coments%}
+				
+				{%for coment in item.coments%}
+				<h2>{{coment.user.username}}</h2>
+				<p> Описние  {{coment.description}}</p>
+				<h3> Лайки {{coment.countheart}}</h3>
+				{%if user%}
+				<div class="recens_form df">
+					<form action="{{url_for("update_coment_type_rec" 
+					,coment_id=coment.coment_id,
+					film_id=item.film_id,
+					user_id = user.user_id, type_rec = "like")}}" method="post">
+						<button>💖</button>
+					</form>
+					</div>
+					{%endif%}
+				
+				<h3>Дизлайки {{coment.countdemon}}</h3>
+				{%if user%}
 			
-			{%for coment in item.coments%}
-			<h3>{{coment.user.username}}</h3>
-			<p> Описние  {{coment.description}}</p>
-			<p> Лайки {{coment.countheart}}</p>
+				<div class="recens_form df">
+					<form action="{{url_for("update_coment_type_rec" 
+					,coment_id=coment.coment_id,
+					film_id=item.film_id,
+					user_id = user.user_id, type_rec = "unlike")}}" method="post">
+						<button>💩</button>
+					</form>
+				</div>
 			
-
-
-			{%if user%}
-			<form action="{{url_for("update_coment_type_rec" 
-			,coment_id=coment.coment_id,
-			film_id=item.film_id,
-			user_id = user.user_id, type_rec = "like")}}" method="post">
-				<button>💖Лайк</button>
-			</form>
-			{%endif%}
-			<p>Дизлайки {{coment.countdemon}}</p>
-			{%if user%}
-			<form action="{{url_for("update_coment_type_rec" 
-			,coment_id=coment.coment_id,
-			film_id=item.film_id,
-			user_id = user.user_id, type_rec = "unlike")}}" method="post">
-				<button>💩Дизлайк</button>
-			</form>
-			{%endif%}
-			{%if (user.user_id == coment.user.user_id) or (user and user.role_user=="admin")%}
-				<form action="{{url_for("update_coment",coment_id=coment.coment_id,film_id=item.film_id)}}" method="post">
-					<textarea name="description" id="" placeholder="Текст кометария"></textarea>
-					<button type="submit">Обновить   коментарий</button>
-				</form>
-				<form action="{{url_for("delete_coment",coment_id=coment.coment_id,film_id=item.film_id)}}" method="post">
-					<button type="submit" onclick="return confirm('Вы уверены')">Удалить</button>
-				</form>
+			
+				{%if (user.user_id == coment.user.user_id) or (user and user.role_user=="admin")%}
+				<div class="coment_delete_update df">	
+					<form action="{{url_for("update_coment",coment_id=coment.coment_id,film_id=item.film_id)}}" method="post">
+							<textarea name="description" id="" minlength="20" maxlength="4000" placeholder="Текст кометария"></textarea>
+							<br>
+							<button type="submit">Обновить   коментарий</button>
+						</form>
+					
+						<form action="{{url_for("delete_coment",coment_id=coment.coment_id,film_id=item.film_id)}}" method="post">
+							<button type="submit" onclick="return confirm('Вы уверены')">Удалить</button>
+						</form>
+				</div>	
+				{%endif%}
 			{%endif%}
 			{%endfor%}
+			</div>
+			
+				
+				
+				
+			
 			{%else%}
+			
 			
 			<p>Кометарий не написаны  </p>
+			</div>
 			{%endif%}
+			<div class="update_delete button">
 				{%if user and (user.role_user=="admin" or user.role_user=="author" )%}
 				<form action="{{url_for("update_model",env_type_model="film",item_id=item_id)}}" method="get">
 					<button type="submit">Изменить</button>
@@ -147,73 +219,105 @@
 					<button type="submit">Удалить</button>
 				</form>
 				{%endif%}
+			</div>
+		
 		{% elif item.bio %}
-			<h1>{{item.lastname }} {{item.firtname}} {{item.patronymic}}</h1>
+			
+	<div class="profile_actor df">
+		<div class="info df">
+			<label>ФИО</label>
+			<h1> {{item.lastname }} {{item.firtname}} {{item.patronymic}}</h1>
+			<label>Дата рождение</label>
 			<h2>{{item.birth_date}}</h2>
+			<label>Био</label>
 				{%if item.bio%}
 				<p>{{item.bio}}</p>
 				{%else%}
 				<p>Автор не стал сообшать историю о себе</p>
 				{%endif%}
+			<label for="">Страна</label>
 			{%if item.country%}
 			<h1>{{item.country.country_name.title()}}</h1>
 			{%else%}
+		
 			<h2>Нет где родился</h2>
 			{%endif%}
+		
+			
+		<div class="film_card df">
+			
 			{%if item.films_authored%}
+			<label for="">Название фильмо</label>
 			{%for film in item.films_authored%}
+			
 			<h3>{{film.title.title()}}</h3>
+			<a href="{{url_for("view_item",env_type_model="film",item_id=film.film_id)}}">профиль фильма</a>
 			{%endfor%}
 			{%else%}
 			<h2>Нет работ у него</h2>
 			{%endif%}
+		</div>
+	</div>
 			{%if user and (user.role_user=="admin" or user.role_user=="author" )%}
-			<form action="{{url_for("update_model",env_type_model="author",item_id=item_id)}}" method="get">
-			<button type="submit">Изменить</button>
-			</form>
-				<form action="{{url_for("delete_author",author_id=item_id)}}" method="post">
-					<button type="submit">Удалить</button>
+			<div class="update_delete button df">
+				<form action="{{url_for("update_model",env_type_model="author",item_id=item_id)}}" method="get">
+				<button type="submit">Изменить</button>
+				</form>
+					<form action="{{url_for("delete_author",author_id=item_id)}}" method="post">
+						<button type="submit">Удалить</button>
 					</form>
+			</div>
 			{%endif%}
 			{% else %}
+		<div class="profile_author df">
+			<div class="info df">
+			<label>ФИО</label>
 			<h1>{{item.lastname }} {{item.firtname}} {{item.patronymic}}</h1>
+			<label>Дата рождение</label>
 			<h2>{{item.birth_date}}</h2>
-				{%if item.star%}
+			<label>Количество звест</label>	
+			{%if item.star%}
+
 				<p>{{item.star}}</p>
 				{%else%}
 				<p>Актера нет звест</p>
 				{%endif%}
 				{%if item.country%}
+			<label>Страна </label>
 			<h1>{{item.country.country_name.title()}}</h1>
 			{%else%}
 			<h2>Нет где родился</h2>
 			{%endif%}
-			{%if item.films_acted%}
-			{%for film in item.films_acted%}
-			<h3>{{film.title.title()}}</h3>
-			{%endfor%}
-			{%else%}
-			<h2>Нет работ у него</h2>
-			{%endif%}
-				{%if user and (user.role_user=="admin" or user.role_user=="author" )%}
-				<form action="{{url_for("update_model",env_type_model="actor",item_id=item_id )}}" method="get">
-				<button type="submit">Изменить</button>
-				</form>
-				<form action="{{url_for("delete_actor",actor_id=item_id)}}" method="post">
-					<button type="submit">Удалить</button>
-				</form>
+			</div>
+		
+			<div class="film_card df">
+				{%if item.films_acted%}
+				{%for film in item.films_acted%}
+				<label>Название</label>
+				<h3>{{film.title.title()}}</h3>
+				<a href="{{url_for("view_item",env_type_model="film",item_id=film.film_id)}}">профиль фильма</a>
+				{%endfor%}
+				{%else%}
+				<h2>Нет работ у него</h2>
 				{%endif%}
-			{%endif%}
-			{%if err%}
-			<p>{{err}}</p>
-			{%endif%}
-		<div class="wrapper_footear df ">
-			{%include "footer.html"%}
+			</div>
+		
+		<div class="update_delete button df">
+			{%if user and (user.role_user=="admin" or user.role_user=="author" )%}
+			<form action="{{url_for("update_model",env_type_model="actor",item_id=item_id )}}" method="get">
+			<button type="submit">Изменить</button>
+			</form>
+			<form action="{{url_for("delete_actor",actor_id=item_id)}}" method="post">
+				<button type="submit">Удалить</button>
+			</form>
 		</div>
 		
+			{%endif%}
+			{%endif%}
+			
 		
-		
-	 </div>
-	 <div id="footear"></div>
+	</div>
+	{%include "footer.html"%}
+	
 </body>
 </html>

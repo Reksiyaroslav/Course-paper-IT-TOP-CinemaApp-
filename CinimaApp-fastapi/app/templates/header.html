@@ -9,19 +9,16 @@
 <body>
 	<header class="df">
         <h1>
-            Cinema_app
+           Film_App
         </h1>
         <div class ="seracht_film df">
             <form action="{{url_for("serach_items")}}" method="post">
-                <input  minlength="3" max="100"   name="search_text" placeholder="Поиск что вам нужно" value="{{search_text if search_text else ""}}">
+                <input  minlength="3" maxlength="100"   name="search_text" placeholder="Поиск что вам нужно" value="{{search_text if search_text else ""}}">
                 <button type="submit">Поиск</button>
             </form>
         </div>
         <div class="action_list_a">
             <li>
-                <a href="">
-                    Разрабочики
-                </a>
                 <a href="{{url_for('main_item',type_model="film")}}">
                     Фильмы
                 </a>
@@ -32,13 +29,17 @@
                     Авторы
                 </a>
                 {%if user%}
-                 <h2>{{user.username}}</h2>
-                <a href="{{url_for("view_item",env_type_model="user",item_id= user.user_id)}}">
-                    Профиль
-                </a>
-                <form action="{{url_for("logout")}}" method="post" >
-                    <button type="submit">Выход</button>
-                </form>
+                <div class="user_mini_ob df">
+                    <h2>{{user.username}}</h2>
+                    <a href="{{url_for("view_item",env_type_model="user",item_id= user.user_id)}}">
+                        Профиль
+                    </a>
+                        <div class="logut">
+                        <form action="{{url_for("logout")}}" method="post" >
+                            <button type="submit">Выход</button>
+                        </form>
+                        </div>
+                </div>
                     {%if user.role_user == "admin" or user.role_user=="author"%}
                     <a href="{{url_for("create_model",type_model="film")}}">Создание фильма</a>
                     <a href="{{url_for("create_model",type_model="actor")}}">Создание актёра</a>
