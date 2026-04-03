@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from faker import Faker
 from random import randint
 from uuid import UUID
-
+from fastapi import HTTPException, status
 
 from app.db.engine import get_session
 from app.search_class.list_searhc import (
@@ -16,6 +16,15 @@ from app.search_class.list_searhc import (
 from app.enums.type_model import TypeModel
 from app.enums.serach_fileld import SerachFiled
 
+Confgi_dict = {
+    "fistname": {"min_len": 3, "max_len": 50},
+    "lastname": {"min_len": 3, "max_len": 50},
+    "patronymic": {"min_len": 3, "max_len": 50},
+    "title": {"min_len": 10, "max_len": 1000},
+    "description": {"min_len": 20, "max_len": 4000},
+    "type_film": {"min_len": 5, "max_len": 40},
+    "country_name": {"min_len": 3, "max_len": 20},
+}
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 faker = Faker()
 YEARS_FILMS = 30
@@ -107,3 +116,28 @@ def auth_password(password_user: str, password_api: str):
     return bcrypt.checkpw(
         password=password_api_byte, hashed_password=password_user_byte
     )
+
+
+def len_fields(value_files: str, config_type: str) -> bool:
+    config = Confgi_dict.get(config_type)
+    if not config:
+        return False
+    if not value_files or not value_files.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Поля не могу быть пустыми"
+        )
+    clear_name_filed = value_files.strip()
+    len_filen = len(clear_name_filed)
+    min_len = config["min_len"]
+    max_len = config["max_len"]
+    if len_filen < min_len:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Поля не может быть меньше чем минальное{min_len} ",
+        )
+    if len_filen > max_len:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Поля не может быть больше чем  максимальное{max_len} ",
+        )
+    return True

@@ -1,4 +1,5 @@
-from fastapi import Request, Depends
+from fastapi import Request, Depends, HTTPException
+from datetime import date
 from app.utils.depencines import get_user_service, UserService
 from app.scheme.user.model_user import UserResponse
 from app.utils.depencines import (
@@ -52,3 +53,16 @@ async def get_data_form(
         types_film = type_film_relult.types_film
         data["types_film"] = types_film
     return data
+
+
+def parse_data_or_none(date_str: str, field_name: str = "date"):
+    clean_date_str = date_str.strip()
+    if not date_str or not clean_date_str:
+        return None
+    try:
+        return date.fromisoformat(clean_date_str)
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Неверный формат '{field_name}'. Ожидается YYYY-MM-DD.",
+        )
