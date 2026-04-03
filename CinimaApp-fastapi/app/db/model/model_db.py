@@ -239,8 +239,8 @@ class User(Base):
 
     email: Mapped[str] = mapped_column(nullable=False)
     role_user: Mapped[str] = mapped_column(VARCHAR(40), default=Role_User.User.value)
-    datetimenow: Mapped[datetime.datetime] = mapped_column(
-        default=datetime.datetime.now
+    datetimenow: Mapped[datetime.date] = mapped_column(
+        default=datetime.date.today()
     )
     coments: Mapped[list["Coment"]] = relationship(
         "Coment", back_populates="user", cascade="all, delete-orphan"
