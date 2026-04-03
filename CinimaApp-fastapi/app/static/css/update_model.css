@@ -1,82 +1,142 @@
-.form_user{
-    background: linear-gradient(90deg, #00b0b0,#937e38);  
-    opacity: 1; 
-                                            
+.df {
+    display: flex;
 }
-.wrapper{
-	
-	width: 420px;
-	background: linear-gradient(177deg, #00c3f2,#84de75);   
-	border: 2px solid rgb(244, 244, 242,.2);
-	border-radius: 60px;
-	padding: 10px 20px;
 
-	                                      
+/* ========== ОСНОВНЫЕ ФОРМЫ ========== */
+.form_film, .form_actor, .form_author, .form_user {
+    display: flex;           /* ДОБАВИЛ */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;     /* Центрирует всё по горизонтали */
+    background-color: rgb(9, 90, 117);
+    /* color: rgb(50, 109, 158); */
+    width: 100%;
+    min-height: 100%;        /* Лучше min-height */
+    padding: 30px;           /* Внутренние отступы */
+    border-radius: 20px;
+    gap: 20px;               /* Отступ между элементами */
 }
-.form{
-	width: 420px; 
-	border: 2px solid rgb(244, 244, 242,.2);
-	border-radius: 60px;
-	padding: 10px 20px;
+
+/* ========== INPUT И TEXTAREA ========== */
+textarea {
+    min-width: 300px;
+    min-height: 90px;
+    max-width: 600px;        /* Чтобы не растягивался слишком сильно */
+    padding: 15px;
+	color: rgb(50, 109, 158);
+    text-align: center;      /* Текст по центру */
 }
-.form_actor{
-	background: linear-gradient(90deg, #008eff,#00bece,#64e1ad);/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */                                             
-}
-.form_films{
-  background: linear-gradient(90deg, #b445d1,#b36e7a);/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */                                             
-}
-.form_author{
-	 background: linear-gradient(90deg, #772b34,#b36e7a);                                           
-}
-.wrapper h1{
+label{
+	font-size:20px ;
 	text-align: center;
-	font-size: 20px;
-
+	color: black;
 }
-.wrapper .input_box{
- width: 100%;
- height: 50px;
-	margin: 20px 0;
-	position: relative;
-}
-.wrapper a{
-	text-decoration: none;
-	
-}
-.input_box input{
-	width: 100%;
-	height: 100%;
- 	border: none;
-	background: transparent;
-	border: 2px solid rgb(244, 244, 242,.2);
-	border-radius: 40px;
-
+input, textarea {
+    background-color: rgb(45, 162, 201);
+    color: black;
+    border-radius: 20px;
+    border: 2px solid rgb(30, 120, 160);
+    font-size: 16px;
 }
 
-input::placeholder{
-	color: lightcoral;
+/* Центрируем input */
+input[type="text"],
+input[type="date"],
+input[type="email"],
+input[type="password"] {
+    min-width: 300px;
+    max-width: 600px;
+    padding: 12px;
+    text-align: center;      /* Текст по центру */
 }
-input::placeholder{
-	color: lightcoral;
+
+/* ========== SELECT ========== */
+select {
+    background-color: rgb(45, 162, 201);
+    color: black;
+    border-radius: 20px;
+    min-width: 300px;        /* Фиксированная ширина */
+    max-width: 600px;
+    min-height: 45px;
+    padding: 10px 15px;
+    text-align: center;
+    text-align-last: center; /* Центрирует текст в select */
+    border: 2px solid rgb(30, 120, 160);
+    cursor: pointer;
 }
-.wrapper a:hover{
-	color: rgb(112, 128, 8);
+
+select:hover {
+    background-color: rgb(55, 172, 211);
+    border-color: rgb(40, 140, 180);
 }
-.wrapper button{
-	width: 30%;
-	outline :none;
-	border: none;
-	background: aqua;
-	color:rgb(10, 78, 123);
-	box-shadow: 0 0 10px rgb(4, 4, 5,0.2);
- 	font-size: 15px;
-	cursor: pointer;
-	border-radius: 60px;
+
+select:focus {
+    border-color: rgb(0, 100, 150);
+    box-shadow: 0 0 10px rgba(45, 162, 201, 0.5);
+    outline: none;
 }
-.input_box  i {
-	position: absolute;
-	right: 20px;
-	top: 50%;
-	transform: translateY(-50%);
-	
+
+option:checked {
+    background-color: rgb(56, 10, 99);
+    color: white;
+}
+
+option:hover {
+    background-color: rgb(45, 162, 201);
+    color: white;
+}
+
+/* ========== КНОПКИ ========== */
+button {
+    border-radius: 20px;
+    background-color: rgb(45, 162, 201);
+    color: black;
+    border: none;
+    padding: 12px 30px;
+    font-size: 16px;
+    cursor: pointer;
+    min-width: 150px;        /* Минимальная ширина */
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: rgb(55, 172, 211);
+    transform: translateY(-2px);
+}
+textarea::placeholder,input::placeholder{
+	color: black;
+}
+/* Если кнопки в форме - центрируем их */
+.form_film button,
+.form_actor button,
+.form_author button,
+.form_user button {
+    align-self: center;      /* Центрирует кнопку */
+}
+
+/* Если несколько кнопок подряд */
+.form_film form,
+.form_actor form,
+.form_author form,
+.form_user form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+.err {
+  margin: 10px 0;
+  padding: 12px 16px;
+  background-color: #fee;
+  border: 1px solid #f66;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #c00;
+  line-height: 1.4;
+}
+
+.err p {
+  margin: 0;
+  padding: 0;
 }

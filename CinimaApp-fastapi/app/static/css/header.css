@@ -8,22 +8,67 @@ header{
     flex-direction: row;
     border-radius: 40px;
     padding: 10px 20px;
-    background: linear-gradient(90deg, #bc2673,#8bbb06);
+    background: linear-gradient(90deg, #59819e,#70a1c4);
 }
 header a{
     padding: 10px 20px;
     text-decoration: none;
     font-size: 17px;
-    color: blueviolet;
+    color: #0d304a;
+}
+.seracht_film{
+    flex-direction: row;
+    margin-left: 20px;
+    align-items: center;
+
+    
+}
+.seracht_film input{
+    width: 100%;
+    height: 70%;
+    border-radius: 50px;
+    text-align: center;
+    background: rgb(11, 82, 133);
+    color: #2db44b;
+}
+.seracht_film input::placeholder{
+   
+    color: rgb(26, 163, 5);
+}
+.seracht_film button{
+    width: 40%;
+    height: 20%;
+    border-radius: 20px;
+    text-align: center;
+    background: #4283b1;
+}
+
+.user_mini_ob{
+    min-height: 120px;
+    min-width: 170px;
+    flex-direction: row;
+    align-items: center;
+   
+}
+.user_mini_ob h2{
+   font-size: 20px;
+   
+   
+}
+.user_mini_ob button{
+     min-height: 6cap;
+    min-width: 70px;
+    border-radius: 20px;
+    background: #59819e;
 }
 header h1{
     font-size: 30px;
-    color: cadetblue;
+
     transition: 1.2s;
 }
 header a:hover{
     font-size: 18px;
-    color: chocolate;
+    color: #095c1b;
     transition: 1.7s;
 }
 header li{

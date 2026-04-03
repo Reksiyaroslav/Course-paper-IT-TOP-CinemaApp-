@@ -1,39 +1,360 @@
 .df{
     display: flex;
 }
-.wrapper{
-    justify-content: right;
-    align-items: center;
+.profile_user{
     flex-direction: column;
-    background: linear-gradient(90deg, #007275,#5f4390);    
-    border-radius: 40px;      
-                
+    background: #038612;
+    border-radius: 20px  ;
+    color: white;
 }
-.wrapper_header{
+.profile_user a{
     
-    border-radius: 40px;
+    color: white;
+    text-decoration: none;
+    transition: 0.6s;
+}
+.profile_user a:hover{
+    transition: 0.7s;
+    transform:  scaleX(20px);
+    color: aqua;
+}
+.film_block {
     flex-direction: row;
-    background: #0a5b13;
-
+    justify-content: space-between;
 }
-.wrapper_footear{
+.film_block .text_box{
     flex-direction: column;
-    border-radius: 20px ;
-    background-color: aquamarine;
+    justify-self:center ;
+    align-items: center;
+    margin: 10px 20px 10px 5px;
+    color: white;
 }
-h1 {
-    font-size: 30px;
-    color: chocolate;
-    padding: 20px 10px;
+.film_block img{
+    width: 20%;
+    height: 29%;
+    border-radius: 30px;
+    justify-self: flex-start;
 }
-h2{
-    font-size: 20px;
-    color:rgb(33, 236, 236)
+.film_profile{
+    width: 100%;
+    height: auto;
+    flex-direction: column;
+    gap: 20px;
+    border-radius: 20px;
+    background: #007275;
+    /* max-width: 1000px;  */
 }
- img{
-    width: 100px;
-    height: 150px;
-    display: block;
-    object-fit: cover;
+.film_profile .card_film{
+    padding: 20px;
+    border-radius: 10px;
+    gap: 20px;
+    align-items: flex-start;
+    max-width: 1500px; 
+   
+   
+}
+.film_profile .info{
+    flex-direction: column;
+    flex: 1;
+    min-width: 150px;
+    min-height: 200px;
+    background: black;
+    color: aqua;
+    border-radius: 20px;
 
+   
+}
+.rating_form{
+    flex-direction: column;
+    min-height: 180px;
+    max-width: 250px;
+    background-color: #51c513;
+    border-radius: 20px;
+}
+.rating_form select{
+    border-radius: 20px;
+    background-color: #0a5b13;
+    min-height: 30px;
+    min-width: 50px;
+    color: white;
+
+}
+.rating_form button{
+    min-height: 50px;
+    min-width: 80px;
+    background-color: aqua;
+    border-radius: 20px;
+    transition: 0.8s;
+
+}
+.rating_form button:hover{
+    background-color: orange;
+    opacity: 0.8;
+    transform: scaleX(10px);
+
+}
+.rating_str{
+    color: yellow;
+    font-size: 30px;
+    text-align: center;
+}
+.info p{
+    word-break: break-all;
+    
+}
+.info a{
+    text-decoration: none;
+    color: beige;   
+    transition: 0.2ms
+}
+.info a:hover{
+    color: aqua;
+    transition: 0.4ms;
+    
+}
+.profile_user a {
+    color: white;
+    transition: 0.7s;
+text-align: center;
+padding: 20px;
+
+}
+.profile_user a:hover{
+    color: aqua;
+    transition: 0.7s;
+    opacity: 0.5;
+    text-align: center;
+}
+.film_profile img {
+    width: 100%;            /* На всю ширину контейнера */
+    max-width: 400px;       /* Но не больше 400px */
+    height: auto;
+    object-fit: contain;
+    border-radius: 20px;
+    margin-right: 20px;
+    margin-bottom: 15px; 
+}
+.coment_block{
+
+ background-color: #0a5b13;
+ border-radius: 20px;
+ margin: 20px;
+ flex-direction: column;
+    color: white;
+}
+.coment_block p{
+    font-size: 30px;
+    text-align: center;
+    
+}
+.coment_block h3{
+    font-size: 25px;
+   
+    
+}
+.coment_block h2{
+    font-size: 30px;
+    text-align: center;
+    
+}
+.coment_block button:hover{
+    background-color: blue;
+    opacity: 0.8;
+    transform: scaleX(10px);
+}
+.recens_form {
+    min-width: 400px;
+    min-height: 100px;
+    flex: 2;
+
+}
+
+.recens_form button{
+    min-width: 100px;
+    min-height: 70px;
+    max-width: 100px;
+    max-height: 300px;
+    border-radius: 20px;
+    background-color: #0a5b13;
+    width: 20%;
+    height: 20%;
+    transition: 0.5s;
+}
+.coment_form{
+    min-width: 400px;
+    min-height: 200px;
+    border-radius: 20px;
+    background-color: #038612;
+    flex-direction: column;
+    flex: 2;
+    align-items: center;
+}
+.coment_delete_update{
+    min-width: 400px;
+    min-height: 100px;
+    flex-direction: column;
+    align-items: center;
+    background: #51c513;
+    border-radius:20px ;
+    flex: 2;
+}
+.coment_delete_update textarea{
+    color: azure;
+    background: #0f2802;
+    max-width: 200px;
+    max-height: 200px;  
+    min-width: 250px;
+    min-height: 100px;
+    border-radius: 20px;
+    text-align: center;
+}
+.coment_delete_update button{
+    min-width: 100px;
+    min-height: 50px;
+
+    border-radius: 30px;
+    background-color: #038612;
+    transition: 0.8s;
+    
+}
+
+.coment_form ,.coment_delete_update textarea::placeholder{
+    
+    color: aliceblue;
+}
+.coment_glav{
+    flex-direction: column;
+   gap: 10px;
+   border-radius: 20px;
+   
+    
+}
+.coment_form textarea{
+    min-height: 100px;
+    min-width: 250px;
+
+    text-align: center;
+   
+    
+    border-radius: 20px;
+}
+label{
+    font-size: 20px;
+}
+.coment_form  button{
+    min-width: 200px;
+    min-height: 30px;
+    background: forestgreen;
+    color: white;
+    border-radius: 20px;
+    /* height: 30px;
+    width: 40%; */
+    transition: 0.7s;
+}
+.coment_form  button:hover{
+    background-color: lavender;
+    border-radius: 20px;
+    transition: 0.5s;
+    color: black;
+    transform:scaleX(20px);
+}
+.coment_delete_update  button:hover{
+    background-color: lavender;
+    border-radius: 20px;
+    transition: 0.5s;
+    transform: scaleY(20px);
+}
+
+.profile_actor, .profile_author {
+    flex-direction: column;  /* Элементы друг под другом */
+    max-width: 97%;
+    width: 100%;  
+    background-color: rgb(10, 72, 139);
+    border-radius: 20px;
+    padding: 20px;
+    gap: 20px; 
+    
+}
+
+
+.info {       /* <--- ДОБАВИТЬ! */
+    flex-direction: column;
+    background-color: rgb(29, 167, 167);
+    border-radius: 20px;
+    padding: 20px;
+    width: 97%; 
+    color: white;
+}
+
+.film_card {         /* <--- ДОБАВИТЬ! */
+    flex-direction: column;
+    min-width: 200px;
+    min-height: 100px;
+    padding: 20px;
+    width: 97%;
+    background-color: rgb(36, 210, 152);
+    border-radius: 20px;
+}
+.film_card a{
+    text-decoration: none;
+    color: brown;
+}
+.film_card a:hover{
+    color: green;
+}
+.update_delete {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px auto;
+    padding: 15px;
+}
+
+.update_delete button {
+    padding: 10px 25px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    min-width: 100px;
+}
+
+.update_delete button:first-child {
+    background: #007275;
+    color: white;
+}
+
+.update_delete button:last-child {
+    background: #e74c3c;
+    color: white;
+}
+
+.update_delete button:hover {
+    opacity: 0.8;
+}
+.err {
+  margin: 10px 0;
+  padding: 12px 16px;
+  background-color: #fee;
+  border: 1px solid #f66;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #c00;
+  line-height: 1.4;
+}
+.err {
+  margin: 10px 0;
+  padding: 12px 16px;
+  background-color: #fee;
+  border: 1px solid #f66;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #c00;
+  line-height: 1.4;
+}
+
+.err p {
+  margin: 0;
+  padding: 0;
 }

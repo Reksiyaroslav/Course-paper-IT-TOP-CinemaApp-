@@ -4,7 +4,7 @@
 .mini_film{
     flex-direction: row;
     border-radius: 20px;
-    background: magenta;
+    background: #40627a;
     
    
    
@@ -13,8 +13,8 @@
     flex-direction: column;
     padding: 20px 20px;
     justify-content: center;
-    border: 10px dashed chartreuse;
-    background: mediumaquamarine;
+    border: 10px dashed #446074;
+    background: #6aabd9;
     margin-right: 20px;
     margin-left: 10px;
     border-radius:20px ;
@@ -34,7 +34,7 @@
     flex-direction: row;
     border: 10px solid transparent;
     border-radius: 40px;
-    background: blueviolet;
+    background: #82bee8;
     margin: 20px 10px;
     gap: 30px;
 }
@@ -49,11 +49,24 @@
 }
 .actor_block
 {
-    width: 10%;
-    height: 20%;
+    width: 98%;
+    height: 60%;
     flex-direction: column;
     border-radius: 20px;
     padding: 20px;
+    background: #82bee8;
+}
+.actor_block a{
+    text-decoration: none;
+    color: black;
+    transition: 0.7s;
+    font-size: 15px;
+}
+.actor_block a:hover{
+    color: brown;
+    font-size: 20px;
+    transform: scaleY(20px);
+     transition: 0.5s;
 }
 .actor_bloc_text
 {
@@ -75,12 +88,11 @@ h2{
 .text_dect h1 {
     font-size: 50px;
     margin-bottom: 20px;
-    color: aquamarine;
+   
     text-align: center;
 }
 .text_dect p {
     font-size: 45px ;
-    color:burlywood ;
     text-align: justify; 
 }
 
