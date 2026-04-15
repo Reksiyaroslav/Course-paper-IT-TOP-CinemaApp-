@@ -2,7 +2,12 @@ from fastapi import APIRouter, Depends, UploadFile, File, Form, Request, HTTPExc
 from fastapi.responses import RedirectResponse, HTMLResponse
 from typing import Dict, Optional
 from uuid import UUID
-from app.utils.depencines import get_film_service, FilmService
+from app.utils.depencines import (
+    get_film_service,
+    FilmService,
+    CountryService,
+    get_country_service,
+)
 from app.handler.ui_api_route import teamlates
 from app.utils.router_help import parse_data_or_none
 from app.scheme.film.model_film import (
@@ -156,7 +161,7 @@ async def update_film(
     request: Request,
     title: Optional[str] = Form(None),
     description: Optional[str] = Form(None),
-    release_date: Optional[str] = Form(None),
+    release_date_str: Optional[str] = Form(None),
     image: UploadFile = File(None),
     actor_ids: Optional[list[UUID]] = Form(default=[]),
     author_ids: list[UUID] = Form(default=[]),
@@ -165,10 +170,10 @@ async def update_film(
     film_service: FilmService = Depends(get_film_service),
 ):
     try:
-        paring_date = parse_data_or_none(
-            date_str=release_date, field_name="release_date"
+        release_date = parse_data_or_none(
+            date_str=release_date_str, field_name="release_date"
         )
-        if not paring_date:
+        if not release_date:
             raise HTTPException(
                 detail="Не могут быть пуcтым поля Дата релиза", status_code=400
             )
@@ -187,7 +192,7 @@ async def update_film(
                 status_code=400,
             )
         data = FilmUpdateRequest(
-            description=description, title=title, release_date=paring_date
+            description=description, title=title, release_date=release_date
         )
         await film_service.update_film(film_id, data.model_dump(), image=image)
         if actor_ids:
@@ -207,6 +212,61 @@ async def update_film(
             "update_model", env_type_model="film", item_id=film_id, err=e.detail
         )
         return RedirectResponse(url)
+
+
+@film_router.post("/seracht_profile/")
+async def search_proifle(
+    request: Request,
+    min_rating_str: Optional[str] = Form(""),
+    max_rating_str: Optional[str] = Form(""),
+    country_name: Optional[str] = Form(default=None),
+    min_date_str: Optional[str] = Form(None),
+    max_date_str: Optional[str] = Form(None),
+    types_film: Optional[list[str]] = Form(default=None),
+    film_service: FilmService = Depends(get_film_service),
+    country_service: CountryService = Depends(get_country_service),
+):
+    try:
+        films = []
+        relult = await country_service.get_countrys()
+        countrys = relult.countrys
+        relult = await film_service.get_types_film()
+        types_film_form = relult.types_film
+        min_rating = float(min_rating_str) if min_rating_str else 0.0
+        max_rating = float(max_rating_str) if max_rating_str else 0.0
+        min_date = parse_data_or_none(date_str=min_date_str)
+        max_date = parse_data_or_none(date_str=max_date_str)
+
+        films = await film_service.get_serach_profile(
+            min_rating=min_rating,
+            max_rating=max_rating,
+            country_name=country_name,
+            types_film=types_film,
+            min_date=min_date,
+            max_date=max_date,
+        )
+        return teamlates.TemplateResponse(
+            "profile_search.html",
+            context={
+                "request": request,
+                "types_film": types_film_form,
+                "countrys": countrys,
+                "films": films.films,
+                "type_model": "фильм",
+            },
+        )
+    except HTTPException as e:
+        return teamlates.TemplateResponse(
+            "profile_search.html",
+            context={
+                "request": request,
+                "types_film": types_film_form,
+                "countrys": countrys,
+                "films": films,
+                "err": e.detail,
+                "type_model": "фильм",
+            },
+        )
 
 
 @film_router.post("/add_authors_actors/{film_id}/")

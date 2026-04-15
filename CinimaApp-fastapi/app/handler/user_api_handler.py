@@ -9,7 +9,7 @@ from app.scheme.user.model_user import (
     UserLogin,
 )
 from app.handler.ui_api_route import teamlates
-from app.utils.router_help import get_curen_user
+from app.utils.router_help import get_curen_user, clean_url_redirect
 
 user_router = APIRouter(prefix="/user", tags=["User"])
 
@@ -20,6 +20,7 @@ async def create_user(
     username: str = Form(None),
     password: str = Form(None),
     email: str = Form(default=None),
+    next: str = Form(""),
     user_servers: UserService = Depends(get_user_service),
 ):
     try:
@@ -46,23 +47,24 @@ async def create_user(
             )
         data = UserCreateRequest(username=username, email=email, password=password)
         user = await user_servers.create_user(data.model_dump())
-        url = reguest.url_for("log")
+        url = reguest.url_for("main")
         return RedirectResponse(url)
     except HTTPException as e:
-        return teamlates.TemplateResponse(
-            "reg.html", context={"request": reguest, "data": data, "err": e.detail}
-        )
+        url = clean_url_redirect(e.detail, next, "error_reg")
+        return RedirectResponse(url=url)
 
 
-@user_router.post("/login")
-async def get_user_login_password(
+@user_router.post("/login/")
+async def get_user_login_email_password(
     reguest: Request,
-    email: str = Form(None),
+    email_or_login: str = Form(None),
     password: str = Form(None),
     user_service: UserService = Depends(get_user_service),
+    next: str = Form(""),
 ):
     try:
-        data = UserLogin(email=email, password=password)
+        clean_login_or_email = email_or_login.strip().lower()
+        data = UserLogin(email=clean_login_or_email, password=password)
         user = await user_service.get_password_and_email(data.model_dump())
         reguest.session["user_id"] = str(user.user_id)
         reguest.session["email"] = user.email
@@ -70,9 +72,8 @@ async def get_user_login_password(
         url = reguest.url_for("main_item", type_model="film")
         return RedirectResponse(url=url)
     except HTTPException as e:
-        return teamlates.TemplateResponse(
-            "log.html", context={"request": reguest, "data": data, "err": e.detail}
-        )
+        url = clean_url_redirect(e.detail, next, "error_login")
+        return RedirectResponse(url=url)
 
 
 @user_router.get("s/")
@@ -145,8 +146,8 @@ async def update_user(
         )
 
 
-@user_router.post("/delete/{user_id}")
-@user_router.delete("/delete/{user_id}")
+@user_router.post("/delete/{user_id}/")
+@user_router.delete("/delete/{user_id}/")
 async def delete_user(
     reguest: Request,
     user_id: UUID,
@@ -163,19 +164,29 @@ async def delete_user(
         return RedirectResponse(url)
 
 
-@user_router.post("/{user_id}/like_film/{film_id}")
+@user_router.post("/{user_id}/like_film/{film_id}/")
 async def add_likefilm(
-    user_id: UUID, film_id: UUID, user_servers: UserService = Depends(get_user_service)
+    reguest: Request,
+    user_id: UUID,
+    film_id: UUID,
+    user_servers: UserService = Depends(get_user_service),
 ):
-    user = await user_servers.add_film(user_id, film_id)
-    return user
+    try:
+        user = await user_servers.add_film(user_id, film_id)
+        url = reguest.url_for("view_item", item_id=film_id, env_type_model="film")
+        return RedirectResponse(url)
+    except HTTPException as e:
+        url = reguest.url_for(
+            "view_item", item_id=film_id, env_type_model="film", err=e.detail
+        )
+        return RedirectResponse(url)
 
 
-@user_router.post("/update_role_user/{user_admin_id}/")
+@user_router.post("/update_role_user/{user_admin_id}/{user_id}/")
 async def update_user_role(
     request: Request,
     user_admin_id: UUID,
-    user_id: UUID = Form(None),
+    user_id: UUID,
     update_role_user: str = Form(""),
     user_servers: UserService = Depends(get_user_service),
 ):
@@ -196,9 +207,28 @@ async def update_user_role(
         )
 
 
-@user_router.get("/likefilm/{user_id}")
+@user_router.get("/likefilm/{user_id}/")
 async def get_list_likelilm(
     user_id: UUID, user_service: UserService = Depends(get_user_service)
 ):
     films = await user_service.get_list_likefilm(user_id)
     return films
+
+
+@user_router.post("/likefilm/{user_id}/{film_id}/")
+async def delete_likelilm(
+    reguest: Request,
+    user_id: UUID,
+    film_id: UUID,
+    user_service: UserService = Depends(get_user_service),
+):
+    try:
+        films = await user_service.delete_like_film(user_id=user_id, film_id=film_id)
+        url = reguest.url_for("view_item", item_id=film_id, env_type_model="film")
+        return RedirectResponse(url)
+    except HTTPException as e:
+
+        url = reguest.url_for(
+            "view_item", item_id=film_id, env_type_model="film", err=e.detail
+        )
+        return RedirectResponse(url)

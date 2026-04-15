@@ -40,6 +40,9 @@ async def view_item(
     ratting_service: RatingFilmService = Depends(get_rating_service),
     user=Depends(get_curen_user),
 ) -> dict:
+    like_film_ids = (
+        {film.film_id for film in user.likefilms} if user and user.likefilms else set()
+    )
     service = {
         TypeModel.Actor: actor_service.get_actor_by_id,
         TypeModel.Film: film_service.get_film_by_id,
@@ -61,6 +64,7 @@ async def view_item(
             "item_id": item_id,
             "user": user,
             "rating_user": rating_user,
+            "like_film_ids": like_film_ids,
         },
     )
 
@@ -296,6 +300,27 @@ async def create_model(
                 "err": err,
             },
         )
+
+
+@ui_router.get(path="/profile_seracht/")
+async def profile_serach(
+    request: Request,
+    film_service: FilmService = Depends(get_film_service),
+    country_service: CountryService = Depends(get_country_service),
+):
+    countrys_relult = await country_service.get_countrys()
+    countrys = countrys_relult.countrys
+    types_film_relult = await film_service.get_types_film()
+    types_film = types_film_relult.types_film
+    return teamlates.TemplateResponse(
+        "profile_search.html",
+        context={
+            "request": request,
+            "countrys": countrys,
+            "types_film": types_film,
+            "type_model": "фильм",
+        },
+    )
 
 
 @ui_router.post(path="/serarcht_item/")
