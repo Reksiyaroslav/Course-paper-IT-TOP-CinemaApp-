@@ -5,10 +5,17 @@
     flex-direction: column;
     background-color: rgb(13, 151, 151);
     gap: 10px;
-    width: 50%;
-    height: 50%;
+    width:calc(70% - 20px) ;
+    height: 70%;
     border-radius: 20px;
     text-align: center;
+}
+.info{
+    gap: 30px;
+    flex-direction: row;
+    margin-left: 20px;
+    
+
 }
 .varibal_form{
     background-color: rgb(17, 144, 121);
@@ -86,4 +93,15 @@
 .err p {
   margin: 0;
   padding: 0;
+}
+.a a{
+    text-decoration: none;
+    color: black;
+    transition: 0.6s;
+}
+.a a:hover{
+    text-decoration: none;
+    color: blue;
+    transition: 0.6s;
+    
 }

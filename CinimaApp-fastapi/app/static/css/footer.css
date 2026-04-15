@@ -6,19 +6,29 @@ footer{
     border-radius: 40px;
     background:   linear-gradient(90deg, #00bfff,#cbca4b) ;
     margin-top: auto;
-    
+    width: 106%;
    
 }
 footer i{
-    color: blue;
+    color: rgb(4, 4, 94);
     transition: 1.5s;
     font-size: 40px;
     padding: 10px 20px;
 }
 footer i:hover{
-    color: aquamarine;
+    color: rgb(9, 79, 56);
     transform: translateY(-10px);
     transition: 0.5s;
+}
+footer a {
+    text-decoration: none;
+    color: black;
+    transition: 0.5s;
+}
+footer a:hover {
+    text-decoration: none;
+    color: olive;
+     transition: 0.5s;
 }
 .df{
     display: flex;;

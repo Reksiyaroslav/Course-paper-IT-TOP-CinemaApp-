@@ -5,19 +5,22 @@
     flex-direction: row;
     border-radius: 20px;
     background: #40627a;
-    
+    flex-wrap: nowrap;
+    width: 106%;
    
    
 }
 .mini_bloc_film{
     flex-direction: column;
-    padding: 20px 20px;
+    padding: 10px 10px 10px 10px;
     justify-content: center;
-    border: 10px dashed #446074;
+    border: 10px dashed #1a2d3b;
     background: #6aabd9;
-    margin-right: 20px;
-    margin-left: 10px;
+    margin-right: 5px;
+    margin-left: 11px;
     border-radius:20px ;
+    width: 100%;
+    
 }
 .mini_bloc_film img{
     width: 100px;
@@ -37,6 +40,7 @@
     background: #82bee8;
     margin: 20px 10px;
     gap: 30px;
+    width: 100%;
 }
 .bloc_film img{
     width: 200px;
@@ -55,6 +59,7 @@
     border-radius: 20px;
     padding: 20px;
     background: #82bee8;
+    margin-bottom: 10px ;
 }
 .actor_block a{
     text-decoration: none;

@@ -3,7 +3,7 @@ body{
 
 	margin: 0;
 	padding: 0;
-	background: yellowgreen;
+	background: rgb(6, 19, 69);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -42,11 +42,12 @@ body{
 	background: transparent;
 	border: 2px solid rgb(244, 244, 242,.2);
 	border-radius: 40px;
+	color: rgb(71, 77, 48);
 
 }
 
 input::placeholder{
-	color: rebeccapurple;
+	color: rgb(65, 3, 126);
 }
 .wrapper a:hover{
 	color: rgb(112, 128, 8);
@@ -60,7 +61,7 @@ input::placeholder{
 	box-shadow: 0 0 10px rgb(4, 4, 5,0.2);
  	font-size: 15px;
 	cursor: pointer;
-	border-radius: 60px;
+	border-radius: 5px;
 }
 .input_box  i {
 	position: absolute;

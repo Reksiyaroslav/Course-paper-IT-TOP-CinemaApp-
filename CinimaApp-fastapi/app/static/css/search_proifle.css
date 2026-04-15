@@ -1,0 +1,101 @@
+.df{
+    display: flex;
+}
+.profile_search{
+    gap: 100px;
+    height: 80%;
+    width: 70%;
+    background-color: aqua;
+    text-decoration: none;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 20px;
+}
+.film_block{
+    flex-direction: column;
+    background-color: blue;
+
+    color: white;
+    border-radius: 20px;
+    width: 60%;
+    flex-wrap: nowrap;
+    
+    
+}
+.film_block a{
+  
+    text-decoration: none;
+
+    color: white;
+    transition: 0.5s;
+}
+.film_block a:hover{
+  
+    
+     transition: 0.5s;
+    color: aquamarine;
+    transform: scaleX(40px);
+    
+}
+.film_block span{
+    width: 10%;
+    background-color:  green;
+    color: yellow;
+    
+    
+}
+.film_block img{
+    width: 30%;
+    height: 30%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    
+    
+}
+.form{
+    background-color: brown;
+    color: white;
+    border-radius: 20px;
+    height: 70%;
+    flex: 1;
+   align-items: center;
+   justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+     padding: 10px 15px; 
+}
+.form input,select{
+    background-color: brown;
+    
+    border-radius: 20px;
+    color: azure;
+    transition: 0.6s;
+}
+.form input:hover,input:focus{
+    background-color: goldenrod;
+    color: azure;
+    transition: 0.6s;
+}
+.form select:hover,select:focus{
+    background-color: goldenrod;
+    color: azure;
+    transition: 0.6s;
+}
+.form button:hover{
+    background-color: goldenrod;
+    color: azure;
+    transition: 0.6s;
+}
+.form button{
+    background-color: brown;
+    color: azure;
+    transition: 0.6s;
+    border-radius: 20px;
+    height: 50%;
+    width: 40%;
+}
+.group_check{
+    flex-shrink: 0;
+    gap: 5px;
+   
+}

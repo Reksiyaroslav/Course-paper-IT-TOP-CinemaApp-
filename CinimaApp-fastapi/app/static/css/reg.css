@@ -3,7 +3,7 @@ body{
 
 	margin: 0;
 	padding: 0;
-	background: rgb(35, 198, 226);
+	background: rgb(11, 76, 87);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -13,7 +13,7 @@ body{
 .wrapper{
 	
 	width: 420px;
-	background: linear-gradient(177deg, #88b7eb,#00b2d9);                                           
+	background: linear-gradient(177deg, #88b7eb,#045b6f);                                           
 	border: 2px solid rgb(244, 244, 242,.2);
 	border-radius: 60px;
 	padding: 10px 20px;
@@ -46,14 +46,15 @@ body{
 }
 
 input::placeholder{
-	color: rebeccapurple;
+	color: rgb(88, 12, 164);
 }
 .wrapper a:hover{
 	color: rgb(112, 128, 8);
 }
 .wrapper button{
 	width: 50%;
-  padding: 20px 10px;
+  	padding: 20px 10px;
+	height: 40%;
 	outline :none;
 	border: none;
 	background: green;
@@ -61,7 +62,12 @@ input::placeholder{
 	box-shadow: 0 0 10px rgb(4, 4, 5,0.2);
  	font-size: 15px;
 	cursor: pointer;
-	border-radius: 60px;
+	border-radius: 5px;
+	transition: 0.6s;
+}
+.wrapper button:hover{
+	transition: 0.6s;
+	opacity: 0.7;
 }
 .input_box  i {
 	position: absolute;
@@ -69,7 +75,7 @@ input::placeholder{
 	top: 50%;
 	transform: translateY(-50%);
     font-size: 20px;
-	
+	color: #c00;
 }
 .err {
   margin: 10px 0;

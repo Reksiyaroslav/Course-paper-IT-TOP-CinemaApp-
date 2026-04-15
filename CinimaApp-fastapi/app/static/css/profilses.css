@@ -6,6 +6,8 @@
     background: #038612;
     border-radius: 20px  ;
     color: white;
+    padding: 20px 20px;
+  
 }
 .profile_user a{
     
@@ -19,8 +21,11 @@
     color: aqua;
 }
 .film_block {
-    flex-direction: row;
+    background-color: #0f2802;
+    flex-direction: column;
+    margin-bottom: 20px;
     justify-content: space-between;
+    border-radius: 10px;
 }
 .film_block .text_box{
     flex-direction: column;
@@ -36,7 +41,7 @@
     justify-self: flex-start;
 }
 .film_profile{
-    width: 100%;
+    width: 103%;
     height: auto;
     flex-direction: column;
     gap: 20px;
@@ -64,12 +69,28 @@
 
    
 }
+.film_profile .info button{
+    width: 40%;
+    height: 50%;
+    min-height: 50%;
+    color: aqua;
+    background-color: rgb(2, 49, 22);
+    margin-top: 10px;
+    border-radius: 5px;
+    transition: 0.6s;
+    gap: 5px;
+}
+.film_profile .info button:hover{
+    opacity: 0,7;
+    transition: 0.6s;
+
+}
 .rating_form{
     flex-direction: column;
-    min-height: 180px;
-    max-width: 250px;
+    width: 30%;
     background-color: #51c513;
     border-radius: 20px;
+    align-items: center;
 }
 .rating_form select{
     border-radius: 20px;
@@ -79,11 +100,14 @@
     color: white;
 
 }
+.form_corect{
+    flex-direction: column;
+}
 .rating_form button{
     min-height: 50px;
     min-width: 80px;
     background-color: aqua;
-    border-radius: 20px;
+    border-radius: 5px;
     transition: 0.8s;
 
 }
@@ -118,6 +142,7 @@
 text-align: center;
 padding: 20px;
 
+
 }
 .profile_user a:hover{
     color: aqua;
@@ -141,6 +166,18 @@ padding: 20px;
  margin: 20px;
  flex-direction: column;
     color: white;
+}
+.coment_block a {
+
+ color: white;
+ transition: 0.6s;
+ text-decoration: none;
+}
+.coment_block a:hover {
+
+   
+ transition: 0.6s;
+ opacity: 0.7;
 }
 .coment_block p{
     font-size: 30px;
@@ -174,7 +211,7 @@ padding: 20px;
     min-height: 70px;
     max-width: 100px;
     max-height: 300px;
-    border-radius: 20px;
+    border-radius: 5px;
     background-color: #0a5b13;
     width: 20%;
     height: 20%;
@@ -190,14 +227,16 @@ padding: 20px;
     align-items: center;
 }
 .coment_delete_update{
-    min-width: 400px;
-    min-height: 100px;
+    /* min-width: 400px;
+    min-height: 100px; */
     flex-direction: column;
     align-items: center;
     background: #51c513;
     border-radius:20px ;
     flex: 2;
+    justify-content: center;
 }
+
 .coment_delete_update textarea{
     color: azure;
     background: #0f2802;
@@ -212,10 +251,17 @@ padding: 20px;
     min-width: 100px;
     min-height: 50px;
 
-    border-radius: 30px;
+    border-radius: 5px;
     background-color: #038612;
     transition: 0.8s;
     
+}
+.coment_delete_update form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    width: 100%;                /* Равномерное распределение */
 }
 
 .coment_form ,.coment_delete_update textarea::placeholder{
@@ -246,7 +292,7 @@ label{
     min-height: 30px;
     background: forestgreen;
     color: white;
-    border-radius: 20px;
+    border-radius: 5px;
     /* height: 30px;
     width: 40%; */
     transition: 0.7s;
@@ -277,22 +323,22 @@ label{
 }
 
 
-.info {       /* <--- ДОБАВИТЬ! */
+.info {      
     flex-direction: column;
-    background-color: rgb(29, 167, 167);
+    background-color: rgb(12, 99, 99);
     border-radius: 20px;
     padding: 20px;
     width: 97%; 
     color: white;
 }
 
-.film_card {         /* <--- ДОБАВИТЬ! */
+.film_card {        
     flex-direction: column;
     min-width: 200px;
     min-height: 100px;
     padding: 20px;
     width: 97%;
-    background-color: rgb(36, 210, 152);
+    background-color: rgb(62, 153, 123);
     border-radius: 20px;
 }
 .film_card a{
@@ -315,7 +361,7 @@ label{
     padding: 10px 25px;
     font-size: 16px;
     border: none;
-    border-radius: 10px;
+    border-radius: 5px;
     cursor: pointer;
     min-width: 100px;
 }
