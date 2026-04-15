@@ -4,8 +4,11 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/main.css')}}">
+
 	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/header.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/footer.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/reg_log.css')}}">
+	
 	<link rel="shortcut icon" href="{{url_for('static',path='icong_web.svg')}}">
 	<title>Главная страница</title>
 </head>
@@ -19,7 +22,11 @@
 					<img src="{{url_for('static',path=film.path_image)}}">
 				</a>
 				<p id = titel>{{film.title.title()}}</p>
+				{%if film.avg_rating>0.0%}
 				<p>{{film.avg_rating}}</p>
+				{%else%}
+				<p>Нет пока оценок</p>
+				{%endif%}
 				<p>{{ film.release_date if film.release_date else "Дата не указана" }}</p>
 			</div>	
 			{% endfor  %}
@@ -60,13 +67,12 @@
 		{% endfor %}
 	
 	{%endif%}
-
-	
+		{% include"reg_log_modal.html"%}
 	{%if not films and not actors%}
 	<h1>Сдесь пока не чего нет </h1>	
 	{%endif%}
 	<div id="footer">{% include"footer.html"%}</div>
-		
+	<script src="{{ url_for('static', path='model.js') }}"></script>   
 	
 	
 </body>

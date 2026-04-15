@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal</title>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/reg_log.css')}}">
+</head>
+<body>
+    <div id="reg_modal">
+              <a href="#" class="close-btn" title="Закрыть">✕</a>  
+			<form action="{{url_for('create_user')}}" method="post">
+                 <h1>Регестрация</h1>
+                <input type="hidden" name="next" value="{{request.url}}">
+			<div class="input_box">
+				<i class="fa-solid fa-user"></i>
+				<input type="text" placeholder="Ввод имя пользователя " name="username" required>
+				
+			</div>
+			<div class="input_box">
+				<i class="fa-regular fa-envelope"></i>
+				<input type="text" placeholder="Ввод почты" name="email" required>
+				
+			</div>
+			<div class="input_box">
+				<i class="fa-solid fa-key"></i>
+				<input type="password"  placeholder="Пароль" name="password" class="pass-input" required>
+                <i class="fa-solid fa-eye  toggle-password"  style="cursor: pointer;"></i>
+			</div>
+            <input type="hidden" name="next" value="{{request.url}}">
+			<button type = "submit"class="btn">Зарегистрироваться </button>
+		</form>
+        </div>
+    </div>
+	<div id="log_modal">
+        <a href="#" class="close-btn" title="Закрыть">✕</a>
+         <div class="body_model">
+		
+		<form action="{{url_for("get_user_login_email_password")}}" method="post">
+            <h1>Вход</h1>
+			<div class="input_box">
+				<i class="fa-solid fa-user"></i>
+				<input type="text"   name = "email_or_login"placeholder="Почта пользователя или логин">
+				
+			</div>
+			<div class="input_box">
+				<i class="fa-solid fa-key"></i>
+				<input type="password"  name ="password"placeholder="Пароль " class="pass-input">
+                <i class="fa-solid fa-eye toggle-password" style="cursor: pointer;"></i>
+			</div>
+            <input type="hidden" name="next" value="{{request.url}}">
+		<div class="button_a">
+				<button type ="submit" class="btn">Войти</button>
+				<a href="#reg_modal">Регестрация</a>
+		</div>
+			
+		</form>
+	</div>
+    {%if err%}
+    <p>{{err}}</p>
+    {%endif%}
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded",()=>{
+            document.querySelectorAll(".toggle-password").forEach(bth=>{
+                bth.addEventListener("click",function(){
+                    const input = this.closest('.input_box').querySelector('.pass-input');
+                    if(input){
+                        input.type = input.type === 'password' ? 'text' : 'password';
+                    // Меняем иконку
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

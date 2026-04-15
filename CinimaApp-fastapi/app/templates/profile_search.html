@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for("static",path = "css/search_proifle.css")}}">
+    <link rel="shortcut icon" href="{{url_for('static',path='icong_web.svg')}}">
+    <title>Профильный поиск</title>
+</head>
+<body>
+    <div class="profile_search df">
+    <h1>Профильный поиск по {{type_model.title()}}</h1>
+    
+    <form action="{{url_for("search_proifle")}}" method="post">
+        <div class="form df">
+            <input name="min_rating_str" type="number" min="1.0" max="10.0"   placeholder="1.0">
+            <input name="max_rating_str" type="number" min="1.0" max="10.0" placeholder="10.0">
+            <input name="min_date_str"  type="date" placeholder="19.12.2015">
+            <input name="max_date_str"  type="date" placeholder="19.12.2015">
+            {%if countrys %}
+            <select name="country_name">
+                <option value="">Выберите страну</option>
+                {%for country in countrys%}
+                <option value="{{country.country_name}}">{{country.country_name.title()}}</option>        
+                {%endfor%}
+
+            </select>
+            {%endif%}
+            {%if types_film %}
+            <div class="group_check df">
+            {%for type_film in types_film%}
+                    <label for="">
+                        <input  name="types_film" type="checkbox" value="{{type_film.type_film_name}}">
+                        {{type_film.type_film_name.title()}}</label>
+                    {%endfor%}
+                </div>
+            {%endif%}
+
+            <button type="submit">Начать поиск</button>
+        </div>
+    </form>
+   
+    <div class="film_block df">
+    {%if films%}
+    {%for film in films%}
+        <span>{{film.avg_rating}}</span>
+       
+        <h2>{{film.title}} / {{film.release_date}}/</h2>
+        <a href="{{url_for("view_item",item_id=film.film_id,env_type_model="film")}}">Профиль</a>
+        <a href="{{url_for("view_item",item_id=film.film_id,env_type_model="film")}}"><img src="{{url_for("static",path=film.path_image)}}"></a> 
+        
+    {%endfor%}
+    </div>
+    {%else%}
+    <h1>Пока поиск не сделан </h1>
+    </div>
+    {%endif%}
+    </div>
+</body>
+</html>

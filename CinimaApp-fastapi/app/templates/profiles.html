@@ -6,6 +6,8 @@
 	<link rel="stylesheet" type="text/css" href="{{url_for('static',path="css/profilses.css")}}">
 	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/header.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/footer.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/reg_log.css')}}">
+	
 	<title>Профильм</title>
 </head>
 <body>
@@ -16,33 +18,41 @@
 		</div>
 	{%endif%}
 		{%if item.username%}
-		<div class="profile_user">
+		<div class="profile_user df">
+			<label for="">Имя пользователя</label>
 			<h1 id="username">{{item.username}}</h1>
-			<h2 id = "datanow">{{item.created_at}}</h2>
+			<h2 id = "datanow">{{item.created_at.strftime("%Y-%m-%d:%H:%M:%S")}}</h2>
 			
 		
 			{%if  user.role_user=="admin"%}
 			<h2>{{item.role_user}}</h2>
+		
+			<form action="{{url_for("update_user_role",user_admin_id=user.user_id,user_id=item_id)}}" method="post">
+			<select name="update_role_user" id="">
+				<option value="admin">Admin</option>
+				<option value="author">Author</option>
+				<option value="user">User</option>
+			</select>
+			<button type="submit">Обновить роль </button>
+			</form>
 			{%endif%}
+			{%for film in item.likefilms %}
 			<div class="film_block df">
 				{%if item.likefilms%}
-				{%for film in item.likefilms %}
+				
 				<img src="{{url_for("static",path=film.path_image)}}">
 				<div class="text_box df">
 					<h1>{{film.title.title()}}</h1>
 
 					<a href="{{url_for("view_item",env_type_model="film",item_id=film.film_id)}}">Профиль фильма</a>
 				</div>
-				
-				
-				{%endfor%}
 				{%else%}
 				<h1>Не у пользователя фильмов</h1>
+				</div>
 				{%endif%}
-			</div>
-			{%if user.role_user=="admin" and item.role_user=="admin"%}
-				<a href="{{url_for("update_form_role_user")}}">Изменеия ролик у user</a>	
-			{%endif%}
+		</div>
+			{%endfor%}
+
 		</div>
 		
 			<div class="update_delete button df">
@@ -62,7 +72,7 @@
 			
 			{%if user and not rating_user  %}
 			<form  action="{{url_for("create_rating",film_id=item.film_id,user_id=user.user_id)}}" method="post">
-				<div class="rating_form">
+				<div class="rating_form df">
 					<h2>Создание ратинга</h2>
 				<select name="rating" >
 					{%for i in range(1,11)%}
@@ -75,26 +85,36 @@
 			{%elif rating_user and user.user_id %}
 
 			
-			<div class="rating_form">
+			<div class="rating_form df">
 				<h2>Ваш ратинг:{{rating_user.rating}}/10</h2>
 			<form  action="{{url_for("update_rating_user_id",film_id=item.film_id,user_id=user.user_id)}}" method="post">
-				
-				<select name="rating" >
+				<div class="form_corect df">
+				<select name="rating">
 					{%for i in range(1,11)%}
 					<option value="{{i}}">{{i}}</option>
 					{%endfor%}	
 				</select>
-				<button type="submit">Обновить  ретинг</button>
+				
+				<button type="submit">Обновить  ратинг</button>
+				</div>
 				
 			</form>
 			<form  action="{{url_for("delete_rating",rating_id = rating_user.rating_id,film_id=item.film_id)}}" method="post">
-				<button type="submit">удалить ратин твой </button>
+				<div class="form_corect df">
+				<button type="submit">Удалить ратинг </button>
+				</div>
 			</form>
 			</div>
 			{%endif%}
 			<div class="card_film df">
+				
+
 				<div class="rating_str">
+				{%if item.avg_rating>0.0%}
 				<span>{{item.avg_rating}}</span>
+				{%else%}
+				<span>Нет ратинга</span>
+				{%endif%}
 				</div>
 				<img src="{{url_for('static',path=item.path_image)}}" alt="">
 				<div class="info df ">
@@ -102,6 +122,7 @@
 					<h1 id="titile">{{item.title.title()}}</h1>
 					<label>Описание</label>
 					<p id = "description">{{item.description}}</p>
+					<label for="">Дата релиза</label>
 					<data>{{item.release_date}}</data>
 					<label>Страна произвоства</label>
 					{%if item.country%}
@@ -137,6 +158,17 @@
 					{% else%}
 					<h2>Not author </h2>
 					{%endif%}
+						{%if user%}
+							{%if item.film_id in like_film_ids%}
+							<form  method="post" action="{{url_for("delete_likelilm",user_id=user.user_id,film_id=item.film_id)}}">
+								<button type="submit">Удалить фильм </button>
+							</form>
+							{%else%}
+							<form  method="post" action="{{url_for("add_likefilm",user_id=user.user_id,film_id=item.film_id)}}">
+								<button type="submit">Добавить  в избранное </button>
+							</form>
+							{%endif%}
+						{%endif%}
 					</div>
 				</div>
 			{%if user%}
@@ -156,7 +188,7 @@
 				{%if item.coments%}
 				
 				{%for coment in item.coments%}
-				<h2>{{coment.user.username}}</h2>
+				<h2><a href="{{url_for("view_item",env_type_model="user",item_id=coment.user.user_id)}}">{{coment.user.username}}</a></h2>
 				<p> Описние  {{coment.description}}</p>
 				<h3> Лайки {{coment.countheart}}</h3>
 				{%if user%}
@@ -185,15 +217,17 @@
 			
 				{%if (user.user_id == coment.user.user_id) or (user and user.role_user=="admin")%}
 				<div class="coment_delete_update df">	
+				
 					<form action="{{url_for("update_coment",coment_id=coment.coment_id,film_id=item.film_id)}}" method="post">
 							<textarea name="description" id="" minlength="20" maxlength="4000" placeholder="Текст кометария"></textarea>
 							<br>
-							<button type="submit">Обновить   коментарий</button>
+							<button type="submit">Обновить коментарий</button>
 						</form>
 					
 						<form action="{{url_for("delete_coment",coment_id=coment.coment_id,film_id=item.film_id)}}" method="post">
 							<button type="submit" onclick="return confirm('Вы уверены')">Удалить</button>
 						</form>
+					
 				</div>	
 				{%endif%}
 			{%endif%}
@@ -220,7 +254,7 @@
 				</form>
 				{%endif%}
 			</div>
-		
+			</div>
 		{% elif item.bio %}
 			
 	<div class="profile_actor df">
@@ -243,7 +277,7 @@
 			<h2>Нет где родился</h2>
 			{%endif%}
 		
-			
+		</div>
 		<div class="film_card df">
 			
 			{%if item.films_authored%}
@@ -317,7 +351,8 @@
 			
 		
 	</div>
+	{% include"reg_log_modal.html"%}
 	{%include "footer.html"%}
-	
+	<script src="{{ url_for('static', path='model.js') }}"></script>   
 </body>
 </html>

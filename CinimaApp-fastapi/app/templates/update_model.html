@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/update_model.css')}}">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.6.0/css/all.css">
+	<link rel="shortcut icon" href="{{url_for('static',path='icong_web.svg')}}">
 	<title>Изменение</title>
 </head>
 <body>
@@ -94,16 +95,16 @@
              <form action="{{url_for("update_actor",actor_id = model_id)}}" method="post">
 			<label>Имя</label>
 			<div class="input_box">
-				<input type="text"  name = "fistname"placeholder="Имя актера"  maxlength="3" minlength="50"value="{{data.fistname if data.fistname else ""}}">
+				<input type="text"  name = "fistname"placeholder="Имя актера"  minlength="3" maxlength="50"value="{{data.fistname if data.fistname else ""}}">
 				
 			</div>
 			<label>Фамилия</label>
             <div class="input_box">
-				<input type="text" placeholder="Ввдедите фамилию" name="lastname"   pattern="[A-Za-zA-Яа-яЁё\s]+" maxlength="3" minlength="50" title="Только буквы"  value="{{data.lastname if data.lastname else ""}}">
+				<input type="text" placeholder="Ввдедите фамилию" name="lastname"   pattern="[A-Za-zA-Яа-яЁё\s]+" minlength="3" maxlength="50" title="Только буквы"  value="{{data.lastname if data.lastname else ""}}">
 			</div>
 			<label>Отчества</label>
             <div class="input_box">
-				<input type="text" placeholder="Ввдедите очества" name="patronymic"   pattern="[A-Za-zA-Яа-яЁё\s]+" maxlength="3" minlength="50" title="Только буквы"value="{{data.patronymic if data.patronymic else ""}}">
+				<input type="text" placeholder="Ввдедите очества" name="patronymic"   pattern="[A-Za-zA-Яа-яЁё\s]+" minlength="3" maxlength="50" title="Только буквы"value="{{data.patronymic if data.patronymic else ""}}">
 			</div>
 			<label>Количества звезд</label>
 			 <div class="input_box">
@@ -131,16 +132,16 @@
             <form action="{{url_for("update_author",author_id = model_id)}}" method="post">
 			<label>Имя</label>
 				<div class="input_box">
-				<input type="text"  name = "fistname"  pattern="[A-Za-zA-Яа-яЁё\s]+" maxlength="3" minlength="50" title="Только буквы"placeholder="Имя автора" value="{{data.fistname if data.fistname else ""}}"> 
+				<input type="text"  name = "fistname"  pattern="[A-Za-zA-Яа-яЁё\s]+" minlength="3" maxlength="50" title="Только буквы"placeholder="Имя автора" value="{{data.fistname if data.fistname else ""}}"> 
 			</div>
 			<label>Фамилия</label>
             <div class="input_box">
-				<input type="text" placeholder="Ввдедите фамилию"   pattern="[A-Za-zA-Яа-яЁё\s]+" maxlength="3" minlength="50" title="Только буквы" name="lastname"value="{{data.lastname if data.lastname else ""}}">
+				<input type="text" placeholder="Ввдедите фамилию"   pattern="[A-Za-zA-Яа-яЁё\s]+" minlength="3" maxlength="50" title="Только буквы" name="lastname"value="{{data.lastname if data.lastname else ""}}">
 				
 			</div>
 			<label>Отчества</label>
             <div class="input_box">
-				<input type="text" placeholder="Ввдедите очества"  pattern="[A-Za-zA-Яа-яЁё\s]+" maxlength="3" minlength="50" title="Только буквы"name="patronymic"value="{{data.patronymic if data.patronymic else ""}}">
+				<input type="text" placeholder="Ввдедите очества"  pattern="[A-Za-zA-Яа-яЁё\s]+" minlength="3" maxlength="50" title="Только буквы"name="patronymic"value="{{data.patronymic if data.patronymic else ""}}">
 				
 			</div>
 			<label>Дата рождения</label>

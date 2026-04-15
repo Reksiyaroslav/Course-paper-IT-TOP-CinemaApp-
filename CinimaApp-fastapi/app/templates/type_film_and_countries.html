@@ -4,43 +4,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/header.css')}}">
     <link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/type_film_and_countrys.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/footer.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/reg_log.css')}}">
+    <link rel="shortcut icon" href="{{url_for('static',path='icong_web.svg')}}">
     <title>Всё типы фильма и страны </title>
 </head>
 
     {%include "header.html"%}
-    <div class="info_block df">
-    <H1>Типы фильмаов</H1>
-    {%if not types_film%}
-    <h2>Нет типаов фильма</h2>
-    {%else%}
-        {%for type_film in types_film%}
-    
-        <h3>{{type_film.type_film_name.title()}}</h3>
-        {%endfor%}
-        </div>
-    {%endif%}
-    
+    <div class="info df">
+        <div class="info_block df">
+            <H1>Типы фильмаов</H1>
+            {%if not types_film%}
+            <h2>Нет типаов фильма</h2>
+            {%else%}
+                {%for type_film in types_film%}
+            
+                <h3>{{type_film.type_film_name.title()}}</h3>
+                {%endfor%}
+                </div>
+            {%endif%}
+        
+        
+        <div class="info_block df">
+            <H1>Страны</H1>
+            
+            {%if not countrys%}
+            <h2>Нет стран</h2>
+                </div>
+            {%else%}
+                {%for country in countrys%}
+                <h3>{{country.country_name.title()}}</h3>
+                {%endfor%}
+            </div>
+            {%endif%}
     </div>
-     <div class="info_block df">
-     <H1>Страны</H1>
-      
-     {%if not countrys%}
-     <h2>Нет стран</h2>
-        </div>
-    {%else%}
-        {%for country in countrys%}
-        <h3>{{country.country_name.title()}}</h3>
-        {%endfor%}
-    </div>
-    {%endif%}
+    
     <!-- {%if not types_film and not countrys %}
     <div" class="info_block df">  
     <h2>Нет типа фильма и нет </h2>
         </div>
     {%endif%} -->
+    {%if err%}
     <div class="err">
     <p>{{err}}</p>
     </div>
+    {%endif%}
 
     {%if  type_action== "list" and user and (user.role_user=="admin" or user.role_user=="author")%}
     <div class="varibal_form">
@@ -89,7 +97,9 @@
        
         
         {%endif%}
+        <div class="a">
         <a href="{{url_for("show_type_film_country")}}">Обратно</a>
+        </div>
     {%elif type_action=="update"%}
         {%if   type_model=="country"%}
         
@@ -109,10 +119,13 @@
         </form>
         
         {%endif%}
+        <div class="a">
         <a href="{{url_for("show_type_film_country")}}">Обратно</a>
+        </div>
      {%endif%}
-    
-   
+     {% include"reg_log_modal.html"%}
+    <div id="footer">{% include"footer.html"%}</div>
+     <script src="{{ url_for('static', path='model.js') }}"></script>   
     
     
 </body>

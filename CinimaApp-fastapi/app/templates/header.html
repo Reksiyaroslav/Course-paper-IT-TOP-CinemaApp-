@@ -28,6 +28,8 @@
                 <a href="{{url_for('main_item',type_model="author")}}">
                     Авторы
                 </a>
+                 <a href="{{url_for("show_type_film_country")}}">Типы фильма и страны</a>
+            </li> 
                 {%if user%}
                 <div class="user_mini_ob df">
                     <h2>{{user.username}}</h2>
@@ -40,18 +42,24 @@
                         </form>
                         </div>
                 </div>
+                <li>
                     {%if user.role_user == "admin" or user.role_user=="author"%}
                     <a href="{{url_for("create_model",type_model="film")}}">Создание фильма</a>
                     <a href="{{url_for("create_model",type_model="actor")}}">Создание актёра</a>
                     <a href="{{url_for("create_model",type_model="author")}}">Создание сценариста</a>
                     {%endif%}
+                </li>
                 {%else%}
-                <a href="{{url_for("reg")}}"> Регестрация</a>
-                <a href="{{url_for("log")}}"> Вход</a>
+                <li>
+                <a href="#reg_modal"> Регестрация</a> 
+                <!-- {{url_for("reg")}} -->
+                <a href="#log_modal"> Вход</a>
+                <!-- {{url_for("log")}} -->
+                </li>
                 {%endif%}
                 
-                <a href="{{url_for("show_type_film_country")}}">Все типы фильма и страны</a>
-            </li> 
+               
+            
         </div>
     </header>
 </body>
