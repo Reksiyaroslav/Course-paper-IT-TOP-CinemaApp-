@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.model.model_db import Author, Country
-from sqlalchemy import select, or_, delete
+from sqlalchemy import select, or_, delete, and_, func
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
 from uuid import UUID
@@ -100,6 +100,25 @@ class AuthorRepository:
             print(str(e))
             await self.session.rollback()
             return False
+
+    async def get_duble_author(
+        self, author_id: UUID, fistname: str, lastname: str, pat: str
+    ):
+        clean_first, clean_last, clea_pat = (
+            fistname.strip().lower(),
+            lastname.strip().lower(),
+            pat.strip().lower(),
+        )
+        smt = select(Author).where(
+            and_(
+                Author.author_id != author_id,
+                func.lower(Author.fistname) == clean_first,
+                func.lower(Author.lastname) == clean_last,
+                func.lower(Author.patronymic) == clea_pat,
+            )
+        )
+        result = await self.session.execute(smt)
+        return result.scalars().first() is not None
 
     async def get_author_fistname_latname_pat_list(
         self, author_name: str

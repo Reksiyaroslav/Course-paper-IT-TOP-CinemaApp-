@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.model.model_db import Actor, uuid, Country
-from sqlalchemy import select, or_, delete
+from sqlalchemy import select, or_, delete, func, and_
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -98,8 +98,24 @@ class ActorRepository:
         await self.session.refresh(actor)
         return actor
 
-    async def get_duble_actor(self, actor_id: uuid.UUID, fistname):
-        pass
+    async def get_duble_actor(
+        self, actor_id: uuid.UUID, fistname: str, lastname: str, pat: str
+    ):
+        clean_first, clean_last, clea_pat = (
+            fistname.strip().lower(),
+            lastname.strip().lower(),
+            pat.strip().lower(),
+        )
+        smt = select(Actor).where(
+            and_(
+                Actor.actor_id != actor_id,
+                func.lower(Actor.fistname) == clean_first,
+                func.lower(Actor.lastname) == clean_last,
+                func.lower(Actor.patronymic) == clea_pat,
+            )
+        )
+        result = await self.session.execute(smt)
+        return result.scalars().first() is not None
 
     async def get_actorname_list(self, name: str) -> list[Actor] | None:
         "Получения актеров по имени или очеству которые совпадают"

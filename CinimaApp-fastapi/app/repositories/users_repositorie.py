@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, and_, or_
 from sqlalchemy.exc import SQLAlchemyError
-from app.db.model.model_db import User, Coment, RatingFilm, Film
+from app.db.model.model_db import User, Coment, RatingFilm, Film, user_film_like
 from app.utils.comon import hath_password, auth_password
 from sqlalchemy.orm import selectinload
 from uuid import UUID
@@ -92,7 +92,7 @@ class UserRepository:
     async def get_username_password(self, data: dict) -> User | None:
         email: str = data.get("email")
         password: str = data.get("password")
-        smt = select(User).where(User.email == email)
+        smt = select(User).where(or_(User.email == email, User.username == email))
         result = await self.session.execute(smt)
         user = result.scalars().first()
         if not user:
@@ -138,6 +138,22 @@ class UserRepository:
         else:
             raise ValueError("Уже есть в списке пользователя")
         return user
+
+    async def delete_likefilm(self, user_id: UUID, film_id: UUID):
+        try:
+            smt = delete(user_film_like).where(
+                and_(
+                    user_film_like.c.user_id == user_id,
+                    user_film_like.c.film_id == film_id,
+                )
+            )
+            relult = await self.session.execute(smt)
+            await self.session.commit()
+            return True
+        except SQLAlchemyError as e:
+            print(e._message)
+            await self.session.rollback()
+            return False
 
     async def get_list_licefilm(self, user_id: UUID):
         film_repo = FilmRepository(self.session)

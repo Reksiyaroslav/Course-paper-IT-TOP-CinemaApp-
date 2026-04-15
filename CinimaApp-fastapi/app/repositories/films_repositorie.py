@@ -1,10 +1,11 @@
+from os import name
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete, and_, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import selectinload
 from uuid import UUID
 from typing import List
-
+from datetime import date
 from app.db.model.model_db import (
     Film,
     RatingFilm,
@@ -354,6 +355,37 @@ class FilmRepository:
         films = relutt.scalars().all()
         if not films:
             return None
+        return films
+
+    async def get_film_ratings_date_country_type_film(
+        self,
+        min_rating: float = None,
+        max_rating: float = None,
+        country_name: str = None,
+        type_film: list[str] = None,
+        min_date: date = None,
+        max_date: date = None,
+    ):
+        "Для поиска фильмов по коретным требованием"
+        smt = select(Film)
+        pravila: list = []
+        if min_rating is not None and min_rating > 0.0:
+            pravila.append(Film.avg_rating >= min_rating)
+        if max_rating is not None and max_rating > 0.0:
+            pravila.append(Film.avg_rating <= max_rating)
+        if country_name is not None and len(country_name) >= 3:
+            smt = smt.join(Film.country)
+            pravila.append(func.lower(Country.country_name) == country_name.lower())
+        if type_film:
+            pravila.append(Film.types_film.any(TypeFilm.type_film_name.in_(type_film)))
+        if min_date:
+            pravila.append(Film.release_date >= min_date)
+        if max_date:
+            pravila.append(Film.release_date <= max_date)
+        if pravila:
+            smt = smt.where(*pravila)
+        relut = await self.session.execute(smt)
+        films = relut.scalars().all()
         return films
 
     async def get_list_actor(self, film_id: UUID) -> List[Actor] | None:
