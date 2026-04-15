@@ -5,7 +5,11 @@ from typing import Optional, List
 import uuid
 import datetime
 from app.scheme.comment.model_coment import ComentResponse
-from app.scheme.film.model_film import FilmBaseResponse, RatingFilmResponse
+from app.scheme.film.model_film import (
+    FilmBaseResponse,
+    RatingFilmResponse,
+    FilmBaseList,
+)
 from app.scheme.user.user_base import UserBase, UserBaseResponse, faker
 
 
@@ -14,7 +18,7 @@ class UserCreateRequest(UserBase):
 
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
 
