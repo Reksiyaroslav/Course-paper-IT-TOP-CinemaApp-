@@ -14,15 +14,16 @@ from app.scheme.user.model_user import (
     UserResponse,
     UserListResponse,
     UserListAdminResponse,
-    FilmResponseBlocFilm,
+    FilmBaseResponse,
+    FilmBaseList,
 )
 
 
 class UserService(Base_Service):
     def __init__(self, session):
         super().__init__(session)
-        self.user_repo = UserRepository(self.session)
-        self.film_repo = FilmRepository(self.session)
+        self.user_repo: UserRepository = UserRepository(self.session)
+        self.film_repo: FilmRepository = FilmRepository(self.session)
 
     async def create_user(self, data, name_title_value=None):
         clean_data: dict = normalize_data(data=data, model_type=TypeModel.User.value)
@@ -96,9 +97,13 @@ class UserService(Base_Service):
         return await self.user_repo.get_name(username)
 
     async def add_film(self, user_id: UUID, film_id: UUID):
-        film = await self.film_repo.get_id_by_film(film_id)
-        user = await self.user_repo.add_licefilm(user_id, film)
-        return UserResponse.from_orm(user)
+        try:
+            film = await self.film_repo.get_film_by_id(film_id=film_id)
+            user = await self.user_repo.add_licefilm(user_id, film)
+            user = await self.get_user_by_id(user_id=user_id)
+            return UserResponse.from_orm(user)
+        except ValueError as e:
+            raise HTTPException(detail=str(e), status_code=400)
 
     async def add_friend(self, user_id: UUID, friend_id: UUID):
         return await self.user_repo.add_frinde(user_id, friend_id)
@@ -114,8 +119,21 @@ class UserService(Base_Service):
         return user_good
 
     async def get_list_likefilm(self, user_id: UUID):
-        film = await self.user_repo.get_list_licefilm(user_id)
-        return FilmResponseBlocFilm.from_orm(film)
+        filmS = await self.user_repo.get_list_licefilm(user_id)
+        return FilmBaseList(films=filmS)
+
+    async def delete_like_film(self, user_id: UUID, film_id):
+        film = await self.film_repo.get_film_by_id(film_id=film_id)
+        user = await self.get_user_by_id(user_id=user_id)
+        if not user:
+            raise HTTPException(detail="Нет пользователя с id", status_code=404)
+        if not film:
+            raise HTTPException(detail="Нет такого фильма ", status_code=404)
+        relult = await self.user_repo.delete_likefilm(film_id=film_id, user_id=user_id)
+        if relult:
+            return film
+        else:
+            raise HTTPException(status_code=400, detail="Удаления не прошло")
 
     async def user_update_role(
         self, user_id_admin: UUID, user_id_user: UUID, update_role_user: str

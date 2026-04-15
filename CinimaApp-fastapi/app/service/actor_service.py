@@ -7,6 +7,7 @@ from app.utils.comon import (
     is_fistname_lastname,
     validet_star_rating,
     validate_is_data_range,
+    len_fields,
 )
 from ..db.model.model_db import Actor
 from app.repositories.actors_repositorie import ActorRepository
@@ -23,10 +24,12 @@ class ActorService(Base_Service):
         super().__init__(session)
         self.actor_repo = ActorRepository(self.session)
 
-    async def create_actor(self, data, name_title_value=None):
+    async def create_actor(self, data: dict, name_title_value=None):
         print(data)
         filed_data = SerachFiled.Date.value[1]
         filed_rating = SerachFiled.Rating.value[0]
+        for key, value in data.items():
+            len_fields(value, key)
         clean_data: dict = normalize_data(data=data, model_type=TypeModel.Actor.value)
         print(clean_data)
         if not await validate_is_data_range(
@@ -51,6 +54,8 @@ class ActorService(Base_Service):
     async def update_actor(self, actor_id: UUID, data):
         filed_data = SerachFiled.Date.value[1]
         filed_rating = SerachFiled.Rating.value[0]
+        for key, value in data.items():
+            len_fields(value, key)
         clean_data: dict = normalize_data(data=data, model_type=TypeModel.Actor.value)
         if filed_data in data and data[filed_data] is not None:
             if not await validate_is_data_range(
@@ -66,7 +71,12 @@ class ActorService(Base_Service):
                     detail="Что не так с оценкой возможно не находится в дипозоне 1 от 7",
                     status_code=402,
                 )
-        if not await is_fistname_lastname(Actor, self.actor_repo.session, clean_data):
+        pat = clean_data.get("patronymic")
+        lasname = clean_data.get("lastname")
+        fistname = clean_data.get("fistname")
+        if await self.actor_repo.get_duble_actor(
+            actor_id, fistname=fistname, lastname=lasname, pat=pat
+        ):
             raise HTTPException(detail="Такой актёр уже есть ", status_code=400)
         update_actor = await self.actor_repo.update_actor(
             data=clean_data, actor_id=actor_id

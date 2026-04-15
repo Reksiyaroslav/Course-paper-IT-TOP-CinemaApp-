@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from uuid import UUID
-from app.utils.comon import is_fistname_lastname, validate_is_data_range
+from app.utils.comon import is_fistname_lastname, validate_is_data_range, len_fields
 from ..db.model.model_db import Author
 from app.repositories.author_repositore import AuthorRepository
 from app.enums.serach_fileld import SerachFiled
@@ -21,6 +21,8 @@ class AuthorService(Base_Service):
 
     async def create_author(self, data, name_title_value=None):
         filed_date = SerachFiled.Date.value[1]
+        for key, value in data.items():
+            len_fields(value, key)
         clean_data: dict = normalize_data(data=data, model_type=TypeModel.Author.value)
         if not validate_is_data_range(data[filed_date], TypeModel.Author.value):
             raise HTTPException(
@@ -41,16 +43,22 @@ class AuthorService(Base_Service):
 
     async def update_author(self, author_id, data):
         filed_date = SerachFiled.Date.value[1]
+        for key, value in data.items():
+            len_fields(value, key)
         clean_data: dict = normalize_data(data=data, model_type=TypeModel.Author.value)
+        pat = clean_data.get("patronymic")
+        lasname = clean_data.get("lastname")
+        fistname = clean_data.get("fistname")
         if not validate_is_data_range(data[filed_date], TypeModel.Author.value):
             raise HTTPException(
                 detail="Что не так сдадой рождения возможно не находится дипозоне 1945-2025",
                 status_code=400,
             )
-        elif not await is_fistname_lastname(
-            Author, self.author_repo.session, clean_data
+
+        elif self.author_repo.get_duble_author(
+            author_id=author_id, fistname=fistname, lastname=lasname, pat=pat
         ):
-            raise HTTPException(detail="Тайокй автор существует", status_code=400)
+            raise HTTPException(detail="Такой автор есть уже ", status_code=409)
         update_author = await self.author_repo.update_author(clean_data, author_id)
         if not update_author:
             raise HTTPException(

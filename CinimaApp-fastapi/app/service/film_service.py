@@ -22,7 +22,7 @@ from app.repositories.ratingfilm_repositore import (
     RatingFilmRepository,
     RatingFilm as rating_model,
 )
-from app.utils.comon import is_name_title, validate_is_data_range
+from app.utils.comon import is_name_title, validate_is_data_range, len_fields
 from app.utils.upload_file import uplodat_file, delete_file
 
 
@@ -36,6 +36,8 @@ class FilmService(Base_Service):
     async def create_film(
         self, data: dict, image: UploadFile, name_title_value=None
     ) -> FilmResponse:
+        for key, value in data.items():
+            len_fields(value, key)
         clean_data: dict = normalize_data(data=data, model_type=TypeModel.Film.value)
         filed_name = SerachFiled.Name.value[3]
         filed_date = SerachFiled.Date.value[0]
@@ -66,14 +68,23 @@ class FilmService(Base_Service):
         return film
 
     async def create_type_film(self, data: dict):
-        try:
-            clean_data = normalize_data(data=data, model_type=TypeModel.TypeFilm.value)
-            new_type_film = await self.type_film_repo.create_type_film(data=clean_data)
-            return TypeFilmResponse.from_orm(new_type_film)
-        except HTTPException:
+        for key, value in data.items():
+            len_fields(value, key)
+
+        clean_data = normalize_data(data=data, model_type=TypeModel.TypeFilm.value)
+        name_type_film = data.get("type_film_name")
+        if await self.type_film_repo.is_double_not(name_type_film=name_type_film):
+            raise HTTPException(
+                detail="Найден дубликат нельзя создавать с таким именем",
+                status_code=408,
+            )
+        new_type_film = await self.type_film_repo.create_type_film(data=clean_data)
+        if not new_type_film:
             raise HTTPException(
                 status_code=500, detail="Ошибка при создании типа фильма"
             )
+
+        return TypeFilmResponse.from_orm(new_type_film)
 
     async def get_types_film(self):
         types_film = await self.type_film_repo.get_types_film()
@@ -89,7 +100,17 @@ class FilmService(Base_Service):
         return TypeFilmResponse.from_orm(type_film)
 
     async def update_type_film(self, data, type_film_id):
+        for key, value in data.items():
+            len_fields(value, key)
         clean_data = normalize_data(data=data, model_type=TypeModel.TypeFilm.value)
+        name_type_film = data.get("type_film_name")
+        if await self.type_film_repo.update_is_double_not(
+            type_film_id=type_film_id, name_type_film=name_type_film
+        ):
+            raise HTTPException(
+                detail="Найден дубликат нельзя создавать с таким именем",
+                status_code=408,
+            )
         update_type_film = await self.type_film_repo.update_type_film(
             data=clean_data, type_film_id=type_film_id
         )
@@ -109,12 +130,16 @@ class FilmService(Base_Service):
         return FilmResponse.from_orm(film)
 
     async def get_list_film(self):
-        return await self.film_repo.get_films()
+        films = await self.film_repo.get_films()
+        return FilmBaseList(films=films)
 
     async def update_film(self, film_id, data, image: UploadFile):
+        for key, value in data.items():
+            len_fields(value, key)
         clean_data: dict = normalize_data(
             data=data, model_type=TypeModel.TypeFilm.value
         )
+        title = clean_data.get("title")
         filed_name = SerachFiled.Name.value[3]
         filed_date = SerachFiled.Date.value[0]
         if not await validate_is_data_range(
@@ -124,12 +149,8 @@ class FilmService(Base_Service):
                 detail="Что не так с датой  возможно ненаходится в дипозоне от 1995-2025",
                 status_code=400,
             )
-        elif not await is_name_title(
-            model=Film,
-            session=self.film_repo.session,
-            name_filed=filed_name,
-            name_or_title_value=clean_data[filed_name],
-        ):
+        elif await self.film_repo.get_doble_title(film_id=film_id, title=title):
+
             raise HTTPException(
                 status_code=409,
                 detail="Фильм с таким названием есть уже существует",
@@ -145,7 +166,7 @@ class FilmService(Base_Service):
             if image_pat:
                 if image_pat != "images/cat.jpg":
                     await delete_file(image_pat)
-                image_file_path = await uplodat_file(image, clean_data.get("title"))
+                image_file_path = await uplodat_file(image, title)
                 clean_data["path_image"] = image_file_path
 
         update_film = await self.film_repo.update_film(film_id=film_id, data=clean_data)
@@ -257,6 +278,37 @@ class FilmService(Base_Service):
                 status_code=400,
                 detail="Не надено по модеям  есть только rating ,coment,actor,author",
             )
+
+    async def get_serach_profile(
+        self,
+        min_rating: float = None,
+        max_rating: float = None,
+        country_name: str = None,
+        types_film: list[str] = None,
+        min_date=None,
+        max_date=None,
+    ):
+        if (
+            min_rating == 0.0
+            and max_rating == 0.0
+            and not country_name
+            and not types_film
+            and not min_date
+            and not max_date
+        ):
+            films = await self.get_list_film()
+            if not films:
+                raise HTTPException(status_code=400, detail="База пустая")
+            return films
+        films = await self.film_repo.get_film_ratings_date_country_type_film(
+            min_rating=min_rating,
+            max_rating=max_rating,
+            country_name=country_name,
+            type_film=types_film,
+            min_date=min_date,
+            max_date=max_date,
+        )
+        return FilmBaseList(films=films)
 
     # async def get_list_actor(self, film_id: UUID):
     #     return await self.film_repo.get_list_actor(film_id)

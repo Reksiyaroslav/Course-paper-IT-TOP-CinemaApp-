@@ -4,7 +4,7 @@ from app.service.base_service import Base_Service
 from app.repositories.coment_repositoried import ComentRepository, Type_Rec
 from app.repositories.reco_repo import RecoRepository
 
-from app.utils.comon import validet_text_coment
+from app.utils.comon import validet_text_coment, len_fields
 
 from app.enums.serach_fileld import SerachFiled
 from app.enums.type_model import TypeModel
@@ -27,7 +27,10 @@ class ComentService(Base_Service):
         name_title_value=None,
     ):
         filed_des = SerachFiled.Des.value[0]
+
         clean_data = normalize_data(data, TypeModel.Comment.value)
+        for key, value in data.items():
+            len_fields(value, key)
         if not await validet_text_coment(data, filed_des):
             raise HTTPException(
                 detail="Использовали не нужное слова в тексте", status_code=404
@@ -52,6 +55,8 @@ class ComentService(Base_Service):
     async def update_coment(self, coment_id, data):
         filed_des = SerachFiled.Des.value[0]
         clean_data = normalize_data(data, TypeModel.Comment.value)
+        for key, value in data.items():
+            len_fields(value, key)
         if not await validet_text_coment(data, filed_des):
             raise HTTPException(
                 detail="Использовали не нужное слова в тексте", status_code=404

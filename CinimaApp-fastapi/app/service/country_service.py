@@ -8,7 +8,7 @@ from app.scheme.country.model_country import (
 from app.repositories.country_reposutorie import CountryRepossitoried
 from app.service.base_service import Base_Service
 from app.utils.noramliz_text import normalize_data
-
+from app.utils.comon import len_fields
 from app.enums.type_model import TypeModel
 
 
@@ -18,12 +18,17 @@ class CountryService(Base_Service):
         self.country_repo: CountryRepossitoried = CountryRepossitoried(self.session)
 
     async def create_country(self, data: dict):
-        try:
-            clean_data = normalize_data(data=data, model_type=TypeModel.Country.value)
-            new_contry = await self.country_repo.create_country(data=clean_data)
-            return CountryBaseResponse.from_orm(new_contry)
-        except HTTPException:
+        for key, value in data.items():
+            len_fields(value, key)
+
+        clean_data = normalize_data(data=data, model_type=TypeModel.Country.value)
+        country_name = clean_data.get("country_name")
+        if await self.country_repo.is_country_not_double(name_country=country_name):
+            raise HTTPException(status_code=408, detail="Найдена страна с таким именем")
+        new_contry = await self.country_repo.create_country(data=clean_data)
+        if not new_contry:
             raise HTTPException(status_code=500, detail="Ошибка при создании  страны")
+        return CountryBaseResponse.from_orm(new_contry)
 
     async def get_countrys(self):
         countrys = await self.country_repo.get_countrys()
@@ -39,8 +44,17 @@ class CountryService(Base_Service):
         return CountryBaseResponse.from_orm(country)
 
     async def update_country(self, data, country_id):
+        for key, value in data.items():
+            len_fields(value, key)
+
+        clean_data = normalize_data(data=data, model_type=TypeModel.Country.value)
+        country_name = clean_data.get("country_name")
+        if await self.country_repo.update_country_not_double(
+            country_id=country_id, name_country=country_name
+        ):
+            raise HTTPException(status_code=408, detail="Найдена страна с таким именем")
         update_type_film = await self.country_repo.update_country(
-            data=data, country_id=country_id
+            data=clean_data, country_id=country_id
         )
         return CountryBaseResponse.from_orm(update_type_film)
 
