@@ -1,6 +1,6 @@
 import uuid
 import datetime
-from sqlalchemy import ForeignKey, UUID
+from sqlalchemy import ForeignKey, UUID, desc
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
@@ -9,14 +9,7 @@ from sqlalchemy.orm import (
     declared_attr,
 )
 
-from sqlalchemy import (
-    Table,
-    Column,
-    DateTime,
-    func,
-    Integer,
-    VARCHAR,
-)
+from sqlalchemy import Table, Column, DateTime, func, Integer, VARCHAR, Boolean
 
 from app.enums.enums import Role_User
 
@@ -134,6 +127,27 @@ class Coment(Base):
     recos: Mapped[list["Recone"]] = relationship("Recone", back_populates="coment")
 
 
+class Review(Base):
+    review_id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, unique=True, default=uuid.uuid4
+    )
+    description: Mapped[str]
+    rating_histrory: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    rating_musing: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    rating_persons: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    rating_atmosphere: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    avg_rating: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    is_reviewer: Mapped[bool] = mapped_column(Boolean, default=False)
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False
+    )
+    film_id: Mapped[UUID] = mapped_column(
+        ForeignKey("films.film_id", ondelete="CASCADE")
+    )
+    user: Mapped["User"] = relationship("User", back_populates="reviews")
+    film: Mapped["Film"] = relationship("Film", back_populates="reviews")
+
+
 class Author(Base):
     author_id: Mapped[uuid.UUID] = mapped_column(
         primary_key=True, unique=True, nullable=False, default=uuid.uuid4
@@ -210,8 +224,14 @@ class Film(Base):
     actors: Mapped[list[Actor]] = relationship(
         secondary=film_actor, back_populates="films_acted"
     )
+    reviews: Mapped[list[Review]] = relationship(
+        "Review", back_populates="film", cascade="all,delete-orphan"
+    )
     coments: Mapped[list[Coment]] = relationship(
-        "Coment", back_populates="film", cascade="all, delete-orphan"
+        "Coment",
+        back_populates="film",
+        cascade="all, delete-orphan",
+        order_by=desc(Coment.created_at),
     )
     rating_films: Mapped[list["RatingFilm"]] = relationship(
         "RatingFilm", back_populates="film", cascade="all, delete-orphan"
@@ -220,6 +240,7 @@ class Film(Base):
         "User", secondary=user_film_like, back_populates="likefilms"
     )
     path_image: Mapped[str] = mapped_column(nullable=True)
+    path_video :Mapped[str] = mapped_column(nullable=True)
     types_film: Mapped[list["TypeFilm"]] = relationship(
         "TypeFilm", secondary=film_type_film, back_populates="films"
     )
@@ -242,6 +263,9 @@ class User(Base):
     datetimenow: Mapped[datetime.date] = mapped_column(default=datetime.date.today())
     coments: Mapped[list["Coment"]] = relationship(
         "Coment", back_populates="user", cascade="all, delete-orphan"
+    )
+    reviews: Mapped[list[Review]] = relationship(
+        "Review", back_populates="user", cascade="all,delete-orphan"
     )
     rating_users: Mapped[list["RatingFilm"]] = relationship(
         "RatingFilm", back_populates="user", cascade="all, delete-orphan"
