@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for("static",path = "css/search_proifle.css")}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/header.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/footer.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/reg_log.css')}}">
     <link rel="shortcut icon" href="{{url_for('static',path='icong_web.svg')}}">
     <title>Профильный поиск</title>
 </head>
 <body>
+    {% include "header.html"%}
     <div class="profile_search df">
     <h1>Профильный поиск по {{type_model.title()}}</h1>
     
@@ -44,8 +48,17 @@
     {%if films%}
     {%for film in films%}
         <span>{{film.avg_rating}}</span>
-       
+        
         <h2>{{film.title}} / {{film.release_date}}/</h2>
+        <div class="zaner df">
+            {%if film.types_film%}
+            {%for type_film in film.types_film%}
+            <h1>{{type_film.type_film_name.title()}},</h1>
+            {%endfor%} 
+            {%else%}
+            <h2>Нет жанра</h2>
+            {%endif%}
+        </div>
         <a href="{{url_for("view_item",item_id=film.film_id,env_type_model="film")}}">Профиль</a>
         <a href="{{url_for("view_item",item_id=film.film_id,env_type_model="film")}}"><img src="{{url_for("static",path=film.path_image)}}"></a> 
         
@@ -56,5 +69,8 @@
     </div>
     {%endif%}
     </div>
+    {% include"reg_log_modal.html"%}
+	{% include"footer.html"%}
+     
 </body>
 </html>

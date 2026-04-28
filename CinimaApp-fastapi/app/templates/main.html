@@ -14,9 +14,9 @@
 </head>
 <body>
 	<div id="header">{% include "header.html"%}</div>
-	{%if films%}
+	{%if micro_films%}
 	<div class="mini_film  df">
-			{% for film in films %}
+			{% for film in micro_films %}
 			<div class="mini_bloc_film df">
 				<a href="{{url_for('view_item',env_type_model='film',item_id = film.film_id)}}" id="film">
 					<img src="{{url_for('static',path=film.path_image)}}">
@@ -31,16 +31,16 @@
 			</div>	
 			{% endfor  %}
 		</div>
-	{%endif%}	
-	{%if actors%}	
-	{% for actor in actors %}
+	{%endif%}
+	{%if people_list%}
+	{% for people in people_list %}	
 		<div class="actor_block">
 			<div class="actor_block_text">
-				<h1>{{actor.lastname.title()}} {{actor.fistname.title()}}</h1>
-				{%if actor.star%}
-				<a href="{{url_for("view_item",env_type_model="actor",item_id=actor.actor_id)}}">Профиль актёра</a>
+				<h1>{{people.lastname.title()}} {{people.fistname.title()}}</h1>
+				{%if people.star%}
+				<a href="{{url_for("view_item",env_type_model="actor",item_id=people.actor_id)}}">Профиль актёра</a>
 				{%else%}
-				<a href="{{url_for("view_item",env_type_model="author",item_id=actor.author_id)}}">Профиль автора</a>
+				<a href="{{url_for("view_item",env_type_model="author",item_id=people.author_id)}}">Профиль автора</a>
 				{%endif%}
 			</div>
 			
@@ -51,7 +51,11 @@
 	{%if films%}
 	{% for film in films %}
 		<div class="bloc_film df ">
-			<a href="{{url_for('view_item',env_type_model='film',item_id = film.film_id)}}" id="film"><img src="{{url_for('static',path=film.path_image)}}"></a>
+			<div class="img_rating df">
+				<a href="{{url_for('view_item',env_type_model='film',item_id = film.film_id)}}" id="film"><img src="{{url_for('static',path=film.path_image)}}"></a>
+				<p>{{film.avg_rating}}</p>
+			</div>
+			
 			<div class="text_dect df">
 				<h1>
 					{{film.title.title()}}
@@ -59,7 +63,7 @@
 				<p>
 					{{film.description}}
 				</p>
-				<p>{{film.avg_rating}}</p>
+				
 				
 			</div>
 			
@@ -67,8 +71,32 @@
 		{% endfor %}
 	
 	{%endif%}
+	<div class="pages">
+	{%if films and (films| length)==limit_film%}
+		<form action="{{url_for("main_item",pages=pages+1,type_model="film")}}" method="get"></form>
+	{%elif people_list and people_list|length==limit_actor_and_author%}
+		{%if type_model=='actor'%}
+		<form action="{{url_for("main_item",pages=pages+1,type_model="actor")}}" method="get">
+		{%elif type_model=='author'%}
+		<form action="{{url_for("main_item",pages=pages+1,type_model="author")}}">
+		{%endif%}
+		<button type="submit">Ещё {{type_model}} {{pages+1}}</button>
+		</form>
+	{%elif pages>1%}
+		{%if type_model=="film"%}
+		<form action="{{url_for("main_item",pages=pages-1,type_model="film")}}" method="get">
+		{%elif type_model=="actor"%}
+		<form action="{{url_for("main_item",pages=pages-1,type_model="actor")}}" method="get">
+		{%else%}
+		<form action="{{url_for("main_item",pages=pages-1,type_model="actor")}}" method="get">
+		{%endif%}
+		<button type="submit">Назад {{type_model}} {{pages-1}} </button>
+		</form>
+
+	</div>
+	{%endif%}
 		{% include"reg_log_modal.html"%}
-	{%if not films and not actors%}
+	{%if not films and not people_list and not micro_films%}
 	<h1>Сдесь пока не чего нет </h1>	
 	{%endif%}
 	<div id="footer">{% include"footer.html"%}</div>

@@ -7,7 +7,13 @@
 	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/header.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/footer.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/reg_log.css')}}">
-	
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='css/playr.css')}}">
+	<link rel="shortcut icon" href="{{url_for('static',path='icong_web.svg')}}">
+	<!-- Plyr CSS -->
+	<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
+	<!-- Plyr JS -->
+	<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 	<title>Профильм</title>
 </head>
 <body>
@@ -21,21 +27,24 @@
 		<div class="profile_user df">
 			<label for="">Имя пользователя</label>
 			<h1 id="username">{{item.username}}</h1>
-			<h2 id = "datanow">{{item.created_at.strftime("%Y-%m-%d:%H:%M:%S")}}</h2>
+			<h2 id = "datanow">{{item.datetimenow.strftime("%Y-%m-%d")}}</h2>
 			
-		
+			<a href="{{url_for("user_info",user_id=item.user_id)}}" download="user_info.json">Даные ваши</a>
 			{%if  user.role_user=="admin"%}
 			<h2>{{item.role_user}}</h2>
-		
+			
 			<form action="{{url_for("update_user_role",user_admin_id=user.user_id,user_id=item_id)}}" method="post">
-			<select name="update_role_user" id="">
+			<div class="update_user_role df">
+				<select name="update_role_user" id="">
 				<option value="admin">Admin</option>
 				<option value="author">Author</option>
 				<option value="user">User</option>
-			</select>
-			<button type="submit">Обновить роль </button>
+				</select>
+				<button type="submit">Обновить роль </button>
+			</div>
 			</form>
 			{%endif%}
+			{%if item.likefilms%}
 			{%for film in item.likefilms %}
 			<div class="film_block df">
 				{%if item.likefilms%}
@@ -50,8 +59,10 @@
 				<h1>Не у пользователя фильмов</h1>
 				</div>
 				{%endif%}
+			
 		</div>
 			{%endfor%}
+			{%endif%}
 
 		</div>
 		
@@ -68,7 +79,14 @@
 		
 		{%elif item.title%}
 			<div class="film_profile df">		
-			
+			<div class="button_view df">
+				<form action="{{url_for("view_item",item_id=item.film_id,env_type_model="film",type_view="comment")}}" method="get">
+					<button type="submit">Кометарий</button>
+				</form>
+				<form action="{{url_for("view_item",item_id=item.film_id,env_type_model="film",type_view="review")}}" method="get">
+					<button type="submit">Рецензий</button>
+				</form>
+			</div>
 			
 			{%if user and not rating_user  %}
 			<form  action="{{url_for("create_rating",film_id=item.film_id,user_id=user.user_id)}}" method="post">
@@ -171,6 +189,20 @@
 						{%endif%}
 					</div>
 				</div>
+			{%if item.video_path%}
+			<div class=".video-container">
+				<video id="player" controls >
+					<source src="{{url_for("static" ,path=item.video_path)}}" type="video/mp4">
+				</video>
+			</div>
+			{%else%}
+			<div class="video-container">
+				<video id="player" controls >
+					<source src="{{url_for("static" ,path="video/mass-for-the-dead-overlord-moewalls-com.mp4")}}" type="video/mp4">
+				</video>
+			</div>
+			{%endif%}
+			{%if type_view =="comment"%}
 			{%if user%}
 			<div class="coment_glav df">
 			
@@ -222,11 +254,11 @@
 							<textarea name="description" id="" minlength="20" maxlength="4000" placeholder="Текст кометария"></textarea>
 							<br>
 							<button type="submit">Обновить коментарий</button>
-						</form>
+					</form>
 					
-						<form action="{{url_for("delete_coment",coment_id=coment.coment_id,film_id=item.film_id)}}" method="post">
-							<button type="submit" onclick="return confirm('Вы уверены')">Удалить</button>
-						</form>
+					<form action="{{url_for("delete_coment",coment_id=coment.coment_id,film_id=item.film_id)}}" method="post">
+						<button type="submit" onclick="return confirm('Вы уверены')">Удалить</button>
+					</form>
 					
 				</div>	
 				{%endif%}
@@ -243,6 +275,140 @@
 			
 			<p>Кометарий не написаны  </p>
 			</div>
+			{%endif%}
+			{%else%}
+
+				{%if user%}
+						<form action="{{url_for("create_review",film_id=item.film_id,user_id=user.user_id)}}" method="post">
+							<div class="create_review df">
+							<label>Историй</label>
+							<select name="rating_histrory_str">
+								{%for i in range(1,11)%}
+								<option value="{{i}}">{{i}}</option>
+								{%endfor%}
+							</select>
+							<label>Атмосферы</label>
+							<select name="rating_atmosphere_str">
+								{%for i in range(1,11)%}
+								<option value="{{i}}">{{i}}</option>
+								{%endfor%}
+							</select>
+							<label>Музыки</label>
+							<select name="rating_musing_str">
+								{%for i in range(1,11)%}
+								<option value="{{i}}">{{i}}</option>
+								{%endfor%}
+							</select>
+							<label>Персонажи</label>
+							<select name="rating_persons_str">
+								{%for i in range(1,11)%}
+								<option value="{{i}}">{{i}}</option>
+								{%endfor%}
+							</select>
+							
+							
+							<textarea name="description" placeholder="Написите мысли твой" maxlength="500" minlength="50"></textarea>
+							<button type="submit">Создать </button>
+							</div>
+						</form>
+				{%endif%}
+			
+			<div class="review df">
+				<h1>Review</h1>
+			{%if item.reviews%}
+				
+				{%for review in  item.reviews%}
+					
+					<div class="info df ">
+						<div class="username">
+							<h1>{{review.user.username}}</h1>
+						</div>
+						<div class="rating_model df">
+						{% set ratings = {
+							"История": review.rating_histrory,
+							"Атмосфера": review.rating_atmosphere,
+							"Музыка": review.rating_musing,
+							"Персонажи": review.rating_persons
+						} %}
+						{%for name,val in ratings.items()%}
+						{%if val <=4%}
+						<div class="nover df">
+						{%elif val  <=6%}
+						<div class="mobel df">
+						
+						{%else%}
+						<div class="good df">
+						
+						{%endif%}
+						<label>{{name}} </label>
+						<span>{{val}}/10 </span>
+						</div>
+						
+						{%endfor%}
+						</div>
+						<div class="avg df">
+						{%if review.avg_rating  <= 4%}
+						<div class="avg_red">
+						{%elif review.avg_rating <=6%}
+						<div class="avg_grey">
+						{%else%}
+						<div class="avg_green">
+						{%endif%}	
+						<label for="">Ратинг ренцезий</label>
+						<span>{{review.avg_rating}}/10</span>
+						
+						</div>
+							
+						</div>
+						<div class="dessi">
+							<p>{{review.description}}</p>
+						</div>
+
+					</div>
+					{%if review.user.user_id==user.user_id or user.role_user=="admin" %}
+					<form action="{{url_for("update_review",film_id=item.film_id,review_id=review.review_id)}}" method="post">
+						<div class="update_delete_form df">
+							<label> История</label>
+								<select name="rating_histrory_str">
+									{%for i in range(1,11)%}
+									<option value="{{i}}" {%if i== review.rating_histrory%} selected{%endif%}  > {{i}}</option>
+									{%endfor%}
+								</select>
+								<label>Атмосферы</label>
+								<select name="rating_atmosphere_str">
+									{%for i in range(1,11)%}
+									<option value="{{i}}" {%if i== review.rating_atmosphere%} selected{%endif%} >{{i}}</option>
+									{%endfor%}
+								</select>
+								<label>Музыки</label>
+								<select name="rating_musing_str">
+									{%for i in range(1,11)%}
+									<option value="{{i}}" {%if i== review.rating_musing%} selected{%endif%}>{{i}}</option>
+									{%endfor%}
+								</select>
+								<label>Персонажи</label>
+								<select name="rating_persons_str">
+									{%for i in range(1,11)%}
+									<option value="{{i}}" {%if i== review.rating_persons%} selected{%endif%}>{{i}}</option>
+									{%endfor%}
+								</select>
+								
+								
+								<textarea name="description"  maxlength="500" minlength="50" placeholder="Написите мысли твой" >{{ review.description }}</textarea>
+								<button type="submit"> Обновить </button> 
+							</form>
+							<form action="{{url_for("delete_review",film_id=item_id,review_id=review.review_id)}}" method="post">
+								<button type="submit">Удаления</button>
+							</form>
+						</div>
+						{%endif%}
+						
+					{%endfor%}
+						</div>
+			{%else%}
+			<p>Нет рецензий</p>
+			</div>
+			{%endif%}
 			{%endif%}
 			<div class="update_delete button">
 				{%if user and (user.role_user=="admin" or user.role_user=="author" )%}
@@ -354,5 +520,6 @@
 	{% include"reg_log_modal.html"%}
 	{%include "footer.html"%}
 	<script src="{{ url_for('static', path='model.js') }}"></script>   
+	<script src="{{ url_for('static', path='playr.js') }}"></script>   
 </body>
 </html>
