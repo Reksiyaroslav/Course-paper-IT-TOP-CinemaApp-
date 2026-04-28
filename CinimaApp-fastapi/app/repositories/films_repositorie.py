@@ -1,6 +1,6 @@
 from os import name
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete, and_, func
+from sqlalchemy import select, delete, and_, func, extract
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import selectinload
 from uuid import UUID
@@ -14,10 +14,12 @@ from app.db.model.model_db import (
     Author,
     TypeFilm,
     Country,
+    Review,
     film_type_film,
     film_actor,
     author_cinema,
 )
+from app.utils.dict import SESON_FILM
 
 
 class FilmRepository:
@@ -46,6 +48,7 @@ class FilmRepository:
                 selectinload(Film.rating_films),
                 selectinload(Film.types_film),
                 selectinload(Film.country),
+                selectinload(Film.reviews).selectinload(Review.user),
             )
             .filter(Film.film_id == film_id)
         )
@@ -78,13 +81,70 @@ class FilmRepository:
             await self.session.rollback()
             return False
 
-    async def get_films(self) -> List[Film]:
-        smt = select(Film).options(
-            selectinload(Film.actors),
-            selectinload(Film.authors),
-            selectinload(Film.coments),
-            selectinload(Film.rating_films),
-            selectinload(Film.types_film),
+    async def get_films(self, limit: int = 25, page: int = 1) -> List[Film]:
+        smt_count = select(func.count()).select_from(Film)
+        total_film = (await self.session.execute(smt_count)).scalar()
+        # total_pages = (total_film+limit-1)//limit if total_film > 0 else 0
+        offset = (page - 1) * limit
+        smt = (
+            select(Film)
+            .options(
+                selectinload(Film.actors),
+                selectinload(Film.authors),
+                selectinload(Film.coments),
+                selectinload(Film.rating_films),
+                selectinload(Film.types_film),
+                selectinload(Film.reviews).selectinload(Review.user),
+            )
+            .limit(limit)
+            .offset(offset)
+            .order_by(Film.film_id)
+        )
+        relult = await self.session.execute(smt)
+        films = relult.scalars().all()
+        return films
+
+    async def get_films_month(
+        self, page: int = 1, limit: int = 25, seseon: str = "winter"
+    ):
+        if seseon not in SESON_FILM:
+            return None
+        months = SESON_FILM[seseon]
+        smt = select(Film).where(
+            and_(
+                Film.release_date != None,
+                extract("month", Film.release_date).in_(months),
+            )
+        )
+        offset = (page - 1) * limit
+        smt = smt.limit(limit).offset(offset).order_by(Film.avg_rating.desc())
+        relult = await self.session.execute(smt)
+        films = relult.scalars().all()
+        return films
+
+    async def get_films_micro_block(
+        self, limit=10, strat_month: int = 12, end_month: int = 2
+    ):
+        toda_years = date.today().year
+        new_start = 0
+        new_end = 0
+        if strat_month == 12:
+            new_start = end_month
+            new_end = strat_month
+        else:
+            new_start = strat_month
+            new_end = end_month
+
+        smt = (
+            select(Film)
+            .where(
+                and_(
+                    extract("years", Film.release_date) == toda_years,
+                    extract("month", Film.release_date).between(new_start, new_end),
+                )
+            )
+            .limit(limit)
+            .order_by(Film.avg_rating.desc())
         )
         relult = await self.session.execute(smt)
         films = relult.scalars().all()
@@ -383,7 +443,15 @@ class FilmRepository:
         if max_date:
             pravila.append(Film.release_date <= max_date)
         if pravila:
-            smt = smt.where(*pravila)
+            smt = smt.options(
+                selectinload(Film.actors),
+                selectinload(Film.authors),
+                selectinload(Film.coments).selectinload(Coment.user),
+                selectinload(Film.rating_films),
+                selectinload(Film.types_film),
+                selectinload(Film.country),
+                selectinload(Film.reviews).selectinload(Review.user),
+            ).where(*pravila)
         relut = await self.session.execute(smt)
         films = relut.scalars().all()
         return films

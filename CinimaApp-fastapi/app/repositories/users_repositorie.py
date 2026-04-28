@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete, and_, or_
 from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime
 from app.db.model.model_db import User, Coment, RatingFilm, Film, user_film_like
 from app.utils.comon import hath_password, auth_password
 from sqlalchemy.orm import selectinload
@@ -31,6 +32,7 @@ class UserRepository:
                 selectinload(User.coments),
                 selectinload(User.rating_users),
                 selectinload(User.likefilms),
+                selectinload(User.reviews),
             )
             relult = await self.session.execute(smt)
             user = relult.scalars().unique().all()
@@ -47,6 +49,7 @@ class UserRepository:
                     selectinload(User.coments),
                     selectinload(User.rating_users),
                     selectinload(User.likefilms),
+                    selectinload(User.reviews),
                 )
                 .filter(User.user_id == user_id)
             )
@@ -89,6 +92,13 @@ class UserRepository:
             return None
         return user
 
+    async def update_datanow(self, user_id: UUID):
+        user = await self.get_user_by_id(user_id=user_id)
+        user.datetimenow = datetime.today()
+        await self.session.commit()
+        await self.session.refresh(user)
+        return user
+
     async def get_username_password(self, data: dict) -> User | None:
         email: str = data.get("email")
         password: str = data.get("password")
@@ -98,6 +108,7 @@ class UserRepository:
         if not user:
             return None
         if auth_password(password_user=user.password, password_api=password):
+            user = await self.update_datanow(user_id=user.user_id)
             return user
         return None
 

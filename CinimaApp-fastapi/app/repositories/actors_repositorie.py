@@ -21,10 +21,11 @@ class ActorRepository:
             print(e)
             return None
 
-    async def get_actors(self) -> list[Actor] | None:
+    async def get_actors(self, limit: int = 10, page: int = 1) -> list[Actor] | None:
         "Получения списка актеров"
         try:
-            smt = select(Actor)
+            offset = (page - 1) * limit
+            smt = select(Actor).limit(limit).offset(offset)
             relult = await self.session.execute(smt)
             actor = relult.scalars().all()
             return actor

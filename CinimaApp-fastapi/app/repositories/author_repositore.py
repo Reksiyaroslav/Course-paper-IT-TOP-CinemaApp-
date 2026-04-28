@@ -23,10 +23,13 @@ class AuthorRepository:
             print("Error create author " + e)
             return None
 
-    async def get_authors(self) -> list[Author]:
+    async def get_authors(self, limit: int = 10, page: int = 1) -> list[Author]:
         "Получения author"
         try:
-            relult = await self.session.execute(select(Author))
+            offset = (page - 1) * limit
+            relult = await self.session.execute(
+                select(Author).limit(limit).offset(offset)
+            )
             author = relult.scalars().all()
             return author
         except SQLAlchemyError as e:
