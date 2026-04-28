@@ -27,8 +27,12 @@ ui_router = APIRouter(prefix="/frondet", tags=["Визуал"])
 teamlates = Jinja2Templates(directory="app/templates")
 
 
+@ui_router.post("/profile/{env_type_model}/{item_id}/{err}/{type_view}/")
+@ui_router.post("/profile/{env_type_model}/{item_id}/{err}/")
 @ui_router.post("/profile/{env_type_model}/{item_id}/")
+@ui_router.post("/profile/{env_type_model}/{item_id}/{type_view}/")
 @ui_router.get("/profile/{env_type_model}/{item_id}/")
+@ui_router.get("/profile/{env_type_model}/{item_id}/{type_view}/")
 async def view_item(
     request: Request,
     item_id: UUID,
@@ -39,6 +43,8 @@ async def view_item(
     author_service: AuthorService = Depends(get_author_service),
     ratting_service: RatingFilmService = Depends(get_rating_service),
     user=Depends(get_curen_user),
+    err: str = "",
+    type_view: str = "comment",
 ) -> dict:
     like_film_ids = (
         {film.film_id for film in user.likefilms} if user and user.likefilms else set()
@@ -65,6 +71,8 @@ async def view_item(
             "user": user,
             "rating_user": rating_user,
             "like_film_ids": like_film_ids,
+            "err": err,
+            "type_view": type_view,
         },
     )
 
@@ -193,8 +201,10 @@ async def log(request: Request):
     return teamlates.TemplateResponse(name="log.html", context={"request": request})
 
 
-@ui_router.post(path="/main/{type_model}", name="main_item")
-@ui_router.get(path="/main/{type_model}", name="main_item")
+@ui_router.post(path="/main/{type_model}/{pages}/", name="main_item")
+@ui_router.get(path="/main/{type_model}/{pages}/", name="main_item")
+@ui_router.get(path="/main/{type_model}/", name="main_item")
+@ui_router.post(path="/main/{type_model}/", name="main_item")
 async def main_pages(
     request: Request,
     type_model: TypeModel,
@@ -202,43 +212,56 @@ async def main_pages(
     actor_server: ActorService = Depends(dependency=get_actor_service),
     author_service: AuthorService = Depends(dependency=get_author_service),
     user=Depends(get_curen_user),
+    pages: int = 1,
+    limit_film: int = 25,
+    limit_actor_author: int = 10,
 ):
-    actors = None
+    people_list = None
     films = None
+    micro_films = None
     if type_model == TypeModel.Film:
-        films_list = await film_service.get_film_block()
+        films_list = await film_service.get_list_film(page=pages)
+        micro_film_list = await film_service.get_micro_block()
+
         films = films_list.films
-        return teamlates.TemplateResponse(
-            name="main.html",
-            context={"request": request, "films": films, "actors": None, "user": user},
-        )
+        micro_films = micro_film_list.films
     else:
         if type_model == TypeModel.Actor:
-            relult = await actor_server.get_actor_list()
-            actors = relult.actors
+            relult = await actor_server.get_actor_list(page=pages)
+            people_list = relult.actors
         if type_model == TypeModel.Author:
-            relult = await author_service.get_authors()
-            actors = relult.author
-        return teamlates.TemplateResponse(
-            name="main.html",
-            context={"request": request, "actors": actors, "films": None, "user": user},
-        )
-
-
-@ui_router.post("/update_user_role/{err}/")
-@ui_router.get("/update_user_role/")
-async def update_form_role_user(
-    request: Request,
-    user_service: UserService = Depends(get_user_service),
-    user=Depends(get_curen_user),
-    err: str = "",
-):
-    users_relult = await user_service.get_all_user()
-    users = users_relult.user_list
+            relult = await author_service.get_authors(page=pages)
+            people_list = relult.author
     return teamlates.TemplateResponse(
-        "update_role_user.html",
-        context={"request": request, "user": user, "users": users, "err": err},
+        name="main.html",
+        context={
+            "request": request,
+            "people_list": people_list,
+            "micro_films": micro_films,
+            "films": films,
+            "user": user,
+            "pages": pages,
+            "type_model": type_model.value,
+            "limit_film": limit_film,
+            "limit_actor_and_author": limit_actor_author,
+        },
     )
+
+
+# @ui_router.post("/update_user_role/{err}/")
+# @ui_router.get("/update_user_role/")
+# async def update_form_role_user(
+#     request: Request,
+#     user_service: UserService = Depends(get_user_service),
+#     user=Depends(get_curen_user),
+#     err: str = "",
+# ):
+#     users_relult = await user_service.get_all_user()
+#     users = users_relult.user_list
+#     return teamlates.TemplateResponse(
+#         "update_role_user.html",
+#         context={"request": request, "user": user, "users": users, "err": err},
+#     )
 
 
 @ui_router.post(path="/create_model/{type_model}/{err}", name="create_model")
@@ -303,6 +326,7 @@ async def create_model(
 
 
 @ui_router.get(path="/profile_seracht/")
+@ui_router.post("/profile_seracht/")
 async def profile_serach(
     request: Request,
     film_service: FilmService = Depends(get_film_service),
