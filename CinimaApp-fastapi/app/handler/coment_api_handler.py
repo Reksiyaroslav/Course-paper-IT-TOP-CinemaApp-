@@ -100,7 +100,9 @@ async def update_coment(
         if len(description) > 4000:
             raise HTTPException(detail="Максимум 4000 символов", status_code=400)
         data = ComentUpdateRequest(description=description)
-        await coment_sev.update_coment(data=data.dict(), coment_id=coment_id)
+        await coment_sev.update_coment(
+            data=data.dict(), coment_id=coment_id, film_id=film_id
+        )
         url = request.url_for("view_item", item_id=film_id, env_type_model="film")
         return RedirectResponse(url=url)
     except HTTPException as e:
@@ -156,7 +158,7 @@ async def delete_coment(
     coment_sev: ComentService = Depends(get_comment_service),
 ):
     try:
-        coment = await coment_sev.delete_coment(coment_id)
+        coment = await coment_sev.delete_coment(coment_id, film_id=film_id)
         url = request.url_for("view_item", item_id=film_id, env_type_model="film")
         return RedirectResponse(url)
     except HTTPException as e:
