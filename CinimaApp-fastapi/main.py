@@ -2,6 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
+import uvicorn
+
 from app.handler.user_api_handler import user_router
 from app.handler.film_api_handler import film_router
 from app.handler.actor_api_handler import actor_router
@@ -11,10 +13,10 @@ from app.handler.ratingfilm_handler import rating_router
 from app.handler.ui_api_route import ui_router
 from  app.handler.type_film_api_handler import type_film_router
 from app.handler.country_api_handler import country_router
-
+from app.handler.review_api_handler import review_router
 # from app.db.engine import create_tabelS
 # from app.utils.sricpt.py iimport seedn_
-import uvicorn
+
 
 app = FastAPI(debug=True, title="FilmApp")
 # @app.on_event("startup")
@@ -27,6 +29,7 @@ app.add_middleware(
     same_site="lax",
     https_only=False,
 )
+app.include_router(review_router)
 app.include_router(user_router)
 app.include_router(film_router)
 app.include_router(actor_router)
