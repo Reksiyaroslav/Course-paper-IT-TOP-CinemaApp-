@@ -73,8 +73,8 @@ class AuthorService(Base_Service):
             raise HTTPException(status_code=404, detail="Автор не найден")
         return {"message": "Автор успешно удалён"}
 
-    async def get_authors(self):
-        authors = await self.author_repo.get_authors()
+    async def get_authors(self, page: int = 1):
+        authors = await self.author_repo.get_authors(page=page)
         return AuthorlListResponse(author=authors)
 
     async def get_author_by_id(self, author_id):

@@ -1,9 +1,11 @@
 from uuid import UUID
 from fastapi.exceptions import HTTPException
+from app.db.model.model_db import Coment
 from app.service.base_service import Base_Service
 from app.repositories.coment_repositoried import ComentRepository, Type_Rec
 from app.repositories.reco_repo import RecoRepository
-
+from app.repositories.users_repositorie import UserRepository
+from app.repositories.films_repositorie import FilmRepository
 from app.utils.comon import validet_text_coment, len_fields
 
 from app.enums.serach_fileld import SerachFiled
@@ -18,6 +20,8 @@ class ComentService(Base_Service):
         super().__init__(session)
         self.coment_repo: ComentRepository = ComentRepository(self.session)
         self.reco_repo: RecoRepository = RecoRepository(self.session)
+        self.user_repo: UserRepository = UserRepository(self.session)
+        self.film_repo: FilmRepository = FilmRepository(self.session)
 
     async def create_model(
         self,
@@ -26,6 +30,13 @@ class ComentService(Base_Service):
         user_id: UUID,
         name_title_value=None,
     ):
+        user = await self.user_repo.get_user_by_id(user_id=user_id)
+        film = await self.film_repo.get_film_by_id(film_id=film_id)
+        if not user and not film:
+            raise HTTPException(
+                detail="ID Фильма и Пользователя не могут бысть пустыми",
+                status_code=404,
+            )
         filed_des = SerachFiled.Des.value[0]
 
         clean_data = normalize_data(data, TypeModel.Comment.value)
@@ -52,7 +63,12 @@ class ComentService(Base_Service):
             raise HTTPException(status_code=404, detail="Комментарий не найден")
         return ComentResponse.from_orm(comment)
 
-    async def update_coment(self, coment_id, data):
+    async def update_coment(self, coment_id: UUID, film_id: UUID, data: dict):
+        film = await self.film_repo.get_film_by_id(film_id=film_id)
+        if not film:
+            raise HTTPException(
+                detail="ID Фильма  не могут бысть пустыми", status_code=404
+            )
         filed_des = SerachFiled.Des.value[0]
         clean_data = normalize_data(data, TypeModel.Comment.value)
         for key, value in data.items():
@@ -68,13 +84,24 @@ class ComentService(Base_Service):
             raise HTTPException(status_code=404, detail="Комментарий не найден")
         return ComentResponse.from_orm(update_comment)
 
-    async def delete_coment(self, coment_id):
+    async def delete_coment(self, coment_id: UUID, film_id: UUID):
+        film = await self.film_repo.get_film_by_id(film_id=film_id)
+        if not film:
+            raise HTTPException(
+                detail="ID Фильма  не могут бысть пустыми", status_code=404
+            )
         success = await self.coment_repo.delete_coment(coment_id)
         if not success:
             raise HTTPException(status_code=404, detail="Комментарий не найден")
         return {"message": "Комментарий успешно удалён"}
 
     async def update_comet_like_unlike(self, user_id: UUID, coment_id, type_rec: str):
+        user = await self.user_repo.get_user_by_id(user_id=user_id)
+        comment = await self.coment_repo.get_by_id_coments(coment_id=coment_id)
+        if not user and not comment:
+            raise HTTPException(
+                detail="ID Пользователя и Комментарий  не могут бысть пустыми"
+            )
         if type_rec not in (Type_Rec.Like.value, Type_Rec.UnLike.value):
             raise HTTPException(
                 detail="Вы не можете передавть сюда только unlike like больше не чего ",

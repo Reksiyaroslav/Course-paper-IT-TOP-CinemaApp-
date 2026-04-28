@@ -1,3 +1,5 @@
+from datetime import date
+from tkinter import END
 from fastapi.exceptions import HTTPException
 from fastapi import UploadFile
 from uuid import UUID
@@ -14,6 +16,7 @@ from app.scheme.film.model_film import (
     FilmResponse,
     FilmlListBlockResponse,
     FilmBaseList,
+    FilmlListResponse,
 )
 from app.scheme.film.type_film import TypeFilmResponse, ListTypeFilmResponse
 from app.repositories.films_repositorie import FilmRepository
@@ -22,8 +25,13 @@ from app.repositories.ratingfilm_repositore import (
     RatingFilmRepository,
     RatingFilm as rating_model,
 )
-from app.utils.comon import is_name_title, validate_is_data_range, len_fields
-from app.utils.upload_file import uplodat_file, delete_file
+from app.utils.comon import (
+    is_name_title,
+    validate_is_data_range,
+    len_fields,
+    get_current_session,
+)
+from app.utils.upload_file import uplodat_file_image, delete_file
 
 
 class FilmService(Base_Service):
@@ -57,7 +65,7 @@ class FilmService(Base_Service):
                 detail="Фильм с таким названием есть уже существует",
             )
         if image and image.filename:
-            image_file_path = await uplodat_file(image, clean_data.get("title"))
+            image_file_path = await uplodat_file_image(image, clean_data.get("title"))
             clean_data["path_image"] = image_file_path
         else:
             clean_data["path_image"] = "images/cat.jpg"
@@ -129,8 +137,21 @@ class FilmService(Base_Service):
             )
         return FilmResponse.from_orm(film)
 
-    async def get_list_film(self):
-        films = await self.film_repo.get_films()
+    async def get_list_film(self, page: int = 1):
+        films = await self.film_repo.get_films(page=page)
+        return FilmBaseList(films=films)
+
+    async def get_list_month(self, session: str, page: int = 1, limit: int = 25):
+        films = await self.film_repo.get_films_month(
+            page=page, limit=limit, seseon=session
+        )
+        return FilmBaseList(films=films)
+
+    async def get_micro_block(self, limit: int = 10):
+        start_month, end_month = await get_current_session()
+        films = await self.film_repo.get_films_micro_block(
+            strat_month=start_month, end_month=end_month
+        )
         return FilmBaseList(films=films)
 
     async def update_film(self, film_id, data, image: UploadFile):
@@ -165,8 +186,8 @@ class FilmService(Base_Service):
             image_pat = curent_film.path_image
             if image_pat:
                 if image_pat != "images/cat.jpg":
-                    await delete_file(image_pat)
-                image_file_path = await uplodat_file(image, title)
+                    delete_file(image_pat)
+                image_file_path = await uplodat_file_image(image, title)
                 clean_data["path_image"] = image_file_path
 
         update_film = await self.film_repo.update_film(film_id=film_id, data=clean_data)
@@ -178,7 +199,7 @@ class FilmService(Base_Service):
         film_remove = await self.get_film_by_id(film_id)
         image_pat = film_remove.path_image
         if image_pat:
-            await delete_file(image_pat)
+            delete_file(image_pat)
         boolen_reposnes = await self.film_repo.delete_film(film_id)
         if not boolen_reposnes:
             raise HTTPException(status_code=404, detail="Фильм не найден")
@@ -249,8 +270,8 @@ class FilmService(Base_Service):
             raise HTTPException(status_code=404, detail="Фильм не найден")
         return FilmResponse.from_orm(film)
 
-    async def get_film_block(self):
-        films_block = await self.film_repo.get_film_block()
+    async def get_film_block(self, page: int = 1):
+        films_block = await self.film_repo.get_film_block(page=page)
         return FilmlListBlockResponse(films=films_block)
 
     async def get_film_titles(self, titles: str):
@@ -308,7 +329,7 @@ class FilmService(Base_Service):
             min_date=min_date,
             max_date=max_date,
         )
-        return FilmBaseList(films=films)
+        return FilmlListResponse(films=films)
 
     # async def get_list_actor(self, film_id: UUID):
     #     return await self.film_repo.get_list_actor(film_id)

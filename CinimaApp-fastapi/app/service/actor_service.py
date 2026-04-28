@@ -85,8 +85,8 @@ class ActorService(Base_Service):
             raise HTTPException(status_code=404, detail="Актёр не найден")
         return ActorResponse.from_orm(update_actor)
 
-    async def get_actor_list(self):
-        actors = await self.actor_repo.get_actors()
+    async def get_actor_list(self, page: int = 1):
+        actors = await self.actor_repo.get_actors(page=page)
         return ActorListResponse(actors=actors)
 
     async def get_actor_by_id(self, actor_id: UUID):
