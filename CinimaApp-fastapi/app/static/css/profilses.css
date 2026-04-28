@@ -404,3 +404,195 @@ label{
   margin: 0;
   padding: 0;
 }
+.review{
+    flex-direction: column;
+    background-color: rgb(53, 99, 8);
+    color: white;
+    border-radius: 10px;
+    gap: 10px;
+}
+.review .info {
+    flex-direction: column;
+    background-color: rgb(63, 24, 24);
+    color: white;
+    border-radius: 10px;
+    width: 50%;
+    margin-left: 10px;
+}
+ .rating_model {
+    width: 70%;
+    flex-direction: row;
+    padding: 10px 10px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    /* margin-left: 40px;  */
+}
+.create_review{
+    justify-content: center ;
+    align-items: center;
+    flex-direction: column;
+    background-color: #0f2802;
+    color: white;
+    width: 98%;
+    height: 59%;
+    transition: 0.5s;
+    border-radius: 10px;
+     transition: 0.5s; 
+}
+
+.update_delete_form textarea,.create_review textarea{
+ 
+    width: 80%;
+    min-height: 150px;
+    max-height: 450px;
+    padding: 15px;
+    font-size: 15px;
+    border-radius: 10px; 
+}
+ .update_delete_form textarea::placeholder,.create_review textarea::placeholder{
+    
+    color: black;
+    
+    
+}
+ .update_delete_form select,.create_review select{
+    width: 5%;
+    border-radius: 4px;
+}
+.update_delete_form button,.create_review button{
+    width: 40%;
+    border-radius: 4px;
+    background-color: #0a5b13;
+    color: aliceblue;
+    transition: 0.6s;
+     
+}
+.update_delete_form{
+    width: 98%;
+    height: 50%;
+    background-color: #0d2a10;
+    flex-direction: column;
+    border-radius: 10px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;   
+    
+    
+}
+
+.update_delete_form form{
+    width: 80%;
+    margin-bottom: 10px;
+    height: 50%;
+     
+}
+.update_delete_form button:hover,.create_review button:hover{
+    transition: 0.6s;
+    transform: scaleX(-10px);
+    opacity: 0.7;
+}
+.nover{
+    flex-direction: column;
+    color: white;
+    background-color: #c00;
+    border-radius: 30px;
+    width: 40%;
+}
+.mobel{
+    flex-direction: column;
+    color: white;
+    background-color:grey;
+    border-radius: 30px;
+    width: 40%;
+}
+.good{
+    flex-direction: column;
+    color: white;
+
+    background-color:green;
+    border-radius: 30px;
+    width: 40%;
+}
+.good,.mobel,.nover span{
+    font-size: 15px;
+    text-align: center;
+}
+.avg{
+    flex-direction: column;
+    border-radius: 20px;
+    text-align: center;
+   
+    height: 50%;
+    width: 90%;
+    
+    
+}
+.update_user_role{
+    width: 50%;
+    background-color: #0f2802;
+    color: white;
+
+}
+.update_user_role button{
+    width: 60%;
+    background-color: #0f2802;
+    border-radius: 5px;
+    color: aliceblue;
+    
+}
+.update_user_role select{
+    width: 60%;
+    color: black;
+
+    border-radius: 5px;
+    
+}
+.dessi{
+    background-color: rgb(83, 26, 16);
+    color: rgb(166, 129, 157);
+    border-radius: 10px;
+    padding: 10px;
+    line-height: 1.65;
+    overflow-wrap: break-word;
+    border-left: #007275  solid 4px;
+    
+}
+ .avg_grey{
+    background-color: grey;
+    color: white;
+    border-radius: 20px;
+}
+  .avg_red{
+    background-color: #c00;
+    color: aliceblue;
+    border-radius: 20px;
+}
+.avg_green{
+    background-color: green;
+    color: aliceblue;
+    border-radius: 20px;
+}
+.button_view{
+    flex-direction: row;
+    /* width: 40%; */
+    height: 90%;
+    padding: 10px 10px;
+    gap: 10px;
+    height: 50px;
+}
+.button_view button{
+    border-radius: 5px;
+    color: rgb(72, 185, 185);
+    background-color: rgb(12, 92, 61);
+    transition: 0.6s;
+    height: 100%;    
+}
+.button_view button:hover{
+    transition: 0.5s;
+    transform: scaleX(-4px);
+    opacity: 0.6;
+}
+.username{
+    text-align: center;
+}

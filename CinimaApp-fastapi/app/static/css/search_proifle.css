@@ -3,24 +3,32 @@
 }
 .profile_search{
     gap: 100px;
-    height: 80%;
-    width: 70%;
-    background-color: aqua;
+    height: 100%;
+    width: 100%;
+    background-color: rgb(7, 113, 154);
     text-decoration: none;
     flex-direction: column;
     justify-content: center;
     border-radius: 20px;
+    color: rgb(77, 150, 157);
 }
 .film_block{
+    margin-left: 20px;
+    margin-bottom: 10px;
     flex-direction: column;
-    background-color: blue;
+    background-color: rgb(115, 13, 163);
 
     color: white;
     border-radius: 20px;
-    width: 60%;
+    width: 94%;
     flex-wrap: nowrap;
+    padding: 10px 20px;
     
-    
+}
+.film_block .zaner{
+    flex-direction: row;
+    /* justify-content: space-between; */
+
 }
 .film_block a{
   
@@ -32,7 +40,7 @@
 .film_block a:hover{
   
     
-     transition: 0.5s;
+    transition: 0.5s;
     color: aquamarine;
     transform: scaleX(40px);
     
@@ -53,7 +61,7 @@
     
 }
 .form{
-    background-color: brown;
+    background-color: rgb(136, 69, 7);
     color: white;
     border-radius: 20px;
     height: 70%;
@@ -65,32 +73,31 @@
      padding: 10px 15px; 
 }
 .form input,select{
-    background-color: brown;
+   
     
     border-radius: 20px;
-    color: azure;
+    color: black;
     transition: 0.6s;
 }
 .form input:hover,input:focus{
-    background-color: goldenrod;
-    color: azure;
+   
+   
     transition: 0.6s;
 }
 .form select:hover,select:focus{
-    background-color: goldenrod;
-    color: azure;
+    
+    
     transition: 0.6s;
 }
 .form button:hover{
-    background-color: goldenrod;
-    color: azure;
+    
     transition: 0.6s;
 }
 .form button{
-    background-color: brown;
+    background-color: rgb(16, 146, 115);
     color: azure;
     transition: 0.6s;
-    border-radius: 20px;
+    border-radius: 5px;
     height: 50%;
     width: 40%;
 }
