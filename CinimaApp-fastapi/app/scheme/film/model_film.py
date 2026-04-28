@@ -13,6 +13,7 @@ from app.scheme.film.film_base import (
     FilmBaseResponse,
     FilmBaseList,
 )
+from app.scheme.review.model_review import ReviewInfo
 
 
 class FilmCreateRequest(FilmBase):
@@ -34,6 +35,7 @@ class FilmResponse(FilmBaseResponse):
     coments: Optional[List[ComentWithUserResponse]] = []
     rating_films: Optional[List[RatingFilmResponse]] = []
     types_film: Optional[List[TypeFilmResponse]] = []
+    reviews: Optional[List[ReviewInfo]] = []
     country: Optional[CountryShort] = None
     created_at: Optional[datetime.datetime] = None
     update_at: Optional[datetime.datetime] = None

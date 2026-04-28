@@ -11,6 +11,7 @@ from app.scheme.film.model_film import (
     FilmBaseList,
 )
 from app.scheme.user.user_base import UserBase, UserBaseResponse, faker
+from app.scheme.review.model_review import ReviewBaseReponse
 
 
 class UserCreateRequest(UserBase):
@@ -42,9 +43,10 @@ class UserResponse(UserBaseResponse):
     coments: List["ComentResponse"] = []
     ratings: List["RatingFilmResponse"] = []
     likefilms: List["FilmBaseResponse"] = []
+    reviews: List[ReviewBaseReponse] = []
     # friends: List[UserResponseFrends]=[]
     model_config = {"from_attributes": True}
-
+UserBaseResponse.json(include=3,exclude_none=False)
 
 # class UserResponseFrends(BaseModel):
 # friends: List[UserResponse]=[]
