@@ -5,6 +5,7 @@ from app.service.ratingfilms_service import RatingFilmService
 from app.service.film_service import FilmService
 from app.service.user_service import UserService
 from app.service.country_service import CountryService
+from app.service.review_service import ReviewSevice
 from app.utils.comon import SessionDep
 
 
@@ -34,3 +35,7 @@ async def get_rating_service(async_session: SessionDep) -> RatingFilmService:
 
 async def get_country_service(async_session: SessionDep) -> CountryService:
     return CountryService(async_session)
+
+
+async def get_review_service(async_session: SessionDep) -> ReviewSevice:
+    return ReviewSevice(session=async_session)

@@ -25,10 +25,23 @@ Confgi_dict = {
     "type_film": {"min_len": 5, "max_len": 40},
     "country_name": {"min_len": 3, "max_len": 20},
 }
+
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 faker = Faker()
 YEARS_FILMS = 30
 YEARS_ACTOR = 80
+
+
+async def get_current_session():
+    curern_month = date.today().month
+    if curern_month in [12, 1, 2]:
+        return 12, 2
+    if curern_month in [3, 4, 5]:
+        return 3, 5
+    if curern_month in [6, 7, 8]:
+        return 6, 8
+    if curern_month in [9, 10, 11]:
+        return 9, 11
 
 
 async def is_name_title(model, session, name_filed, name_or_title_value) -> bool:
