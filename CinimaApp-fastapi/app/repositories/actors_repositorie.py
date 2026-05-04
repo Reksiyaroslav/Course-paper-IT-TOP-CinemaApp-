@@ -21,7 +21,7 @@ class ActorRepository:
             print(e)
             return None
 
-    async def get_actors(self, limit: int = 10, page: int = 1) -> list[Actor] | None:
+    async def get_actors(self, limit: int = 50, page: int = 1) -> list[Actor] | None:
         "Получения списка актеров"
         try:
             offset = (page - 1) * limit

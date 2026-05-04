@@ -5,6 +5,7 @@ from app.scheme.actor.model_actor import (
     ActorCreateRequest,
     ActorUpdateRequest,
     ActorListResponse,
+    ActorBaseNotPat,
     datetime,
 )
 from app.utils.comon import Depends
@@ -27,35 +28,48 @@ async def create_actor(
     actor_service: ActorService = Depends(get_actor_service),
 ) -> RedirectResponse | HTMLResponse:
     try:
-        len_fistname = len(fistname)
-        len_lastname = len(lastname)
-        len_patronymic = len(patronymic)
-        parse_date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
+        data = None
+        len_fistname = len(fistname.strip())
+        len_lastname = len(lastname.strip())
+        len_patronymic = len(patronymic.strip())
         if not fistname:
             raise HTTPException(detail="Не может быть пустым Имя", status_code=400)
         if not lastname:
             raise HTTPException(
                 detail="Не может быть пустым  Фамилия ", status_code=400
             )
-        if not patronymic:
-            raise HTTPException(
-                detail="Не может быть пустым  Отчества ", status_code=400
-            )
+        if  len_lastname < 3 or len_fistname < 3:
+            raise HTTPException(detail="Минимальная длина 3", status_code=400)
+        if   len_lastname > 50 or len_fistname > 50:
+            raise HTTPException(detail="Максимальная длина 50", status_code=400)
+        parse_date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
         if not parse_date:
             raise HTTPException(
                 detail="Не может быть пустым  Дата рождения ", status_code=400
             )
-        if len_patronymic < 3 or len_lastname < 3 or len_fistname < 3:
-            raise HTTPException(detail="Минимальная длина 3", status_code=400)
-        if len_patronymic > 50 or len_lastname > 50 or len_fistname > 50:
-            raise HTTPException(detail="Максимальная длина 50", status_code=400)
-        data = ActorCreateRequest(
+        if not patronymic:
+            # raise HTTPException(
+            #     detail="Не может быть пустым  Отчества ", status_code=400
+            # )
+            data =ActorBaseNotPat(
             fistname=fistname,
             lastname=lastname,
             birth_date=parse_date,
-            patronymic=patronymic,
             star=star,
-        )
+            )
+       
+        if patronymic:
+            if len_patronymic < 3 :
+                raise HTTPException(detail="Минимальная длина 3", status_code=400)
+            if len_patronymic > 50 :
+                raise HTTPException(detail="Максимальная длина 50", status_code=400)
+            data = ActorCreateRequest(
+                fistname=fistname,
+                lastname=lastname,
+                birth_date=parse_date,
+                patronymic=patronymic,
+                star=star,
+            )
 
         actor = await actor_service.create_actor(data.model_dump())
         if country_id:
@@ -106,26 +120,41 @@ async def update_actor(
     actor_service: ActorService = Depends(get_actor_service),
 ):
     try:
-        len_fistname = len(fistname)
-        len_lastname = len(lastname)
-        len_patronymic = len(patronymic)
-        if not fistname or not lastname or not patronymic:
+        len_fistname = len(fistname.strip())
+        len_lastname = len(lastname.strip())
+        len_patronymic = len(patronymic.strip())
+        data = None
+        if not fistname or not lastname:
             raise HTTPException(
                 detail="Не может быть пустым имя фамилия отчества и дата рождения",
                 status_code=400,
             )
-        if len_patronymic < 3 or len_lastname < 3 or len_fistname < 3:
+        if  len_lastname < 3 or len_fistname < 3:
             raise HTTPException(detail="Минимальная длина 3", status_code=400)
-        if len_patronymic > 50 or len_lastname > 50 or len_fistname > 50:
+        if  len_lastname > 50 or len_fistname > 50:
             raise HTTPException(detail="Максимальная длина 50", status_code=400)
-        data = ActorUpdateRequest(
-            fistname=fistname,
-            lastname=lastname,
-            patronymic=patronymic,
-            birth_date=birth_date,
-            star=star,
-            country_id=country_id,
-        )
+        if not patronymic:
+            data = ActorBaseNotPat(
+                fistname=fistname,
+                lastname=lastname,
+                birth_date=birth_date,
+                star=star,
+            )
+
+        if patronymic:
+            if len_patronymic < 3 :
+                raise HTTPException(detail="Минимальная длина 3", status_code=400)
+            if len_patronymic > 50 :
+                raise HTTPException(detail="Максимальная длина 50", status_code=400)
+            data = ActorUpdateRequest(
+                fistname=fistname,
+                lastname=lastname,
+                patronymic=patronymic,
+                birth_date=birth_date,
+                star=star,
+                country_id=country_id,
+            )
+
         actor = await actor_service.update_actor(actor_id=actor_id, data=data.dict())
         if country_id:
             await actor_service.set_country(actor_id=actor_id, country_id=country_id)

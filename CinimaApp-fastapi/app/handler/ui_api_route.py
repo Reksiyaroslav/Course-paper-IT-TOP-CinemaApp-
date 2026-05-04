@@ -246,7 +246,12 @@ async def main_pages(
             "limit_actor_and_author": limit_actor_author,
         },
     )
-
+@ui_router.get("/session/{session}/{page}/")
+async def session_main(request:Request,session:str="winter",
+                       page:int=1,limit=25,film_service:FilmService=Depends(get_film_service)):
+    films_rellut = await film_service.get_list_month(session=session,page=page,)
+    films = films_rellut.films
+    return teamlates.TemplateResponse(name="main.html",request=request,context={"pages":page,"limit_film":limit,"films":films})
 
 # @ui_router.post("/update_user_role/{err}/")
 # @ui_router.get("/update_user_role/")

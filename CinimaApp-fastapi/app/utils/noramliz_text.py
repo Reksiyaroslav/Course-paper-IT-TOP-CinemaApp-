@@ -11,7 +11,16 @@ def text_strip(text: str):
     if text is None:
         return ""
     return text.strip()
-
+# def text_bio_coment_review(text:str):
+#     if text is None:
+#         return ""
+#     clean_line = []
+#     line_list = text.split("\n")
+#     for line in line_list:
+#         line =line.strip()
+#         if line:
+#             clean_line.append(line)
+#     return "\n".join(clean_line)
 
 def no_change(value: Any) -> Any:
     return value
@@ -43,6 +52,9 @@ NORMAL_CONFING = {
         "country_name": text_strip_lower,
     },
     "comment": {
+        "description": text_strip,
+    },
+    "review": {
         "description": text_strip,
     },
 }

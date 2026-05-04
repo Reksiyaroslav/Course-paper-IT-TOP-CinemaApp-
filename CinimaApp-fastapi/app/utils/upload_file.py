@@ -13,8 +13,8 @@ async def uplodat_file_image(upload_file: UploadFile, film_name: str) -> str:
     # os.chdir("app/static")
     if upload_file and upload_file.filename:
         file_ext = upload_file.filename.split(".")[-1].lower()
-        if file_ext not in ["jpg", "png", "jpeg"]:
-            raise HTTPException(status_code=400, detail="jpg,png,jpeg")
+        if file_ext not in ["jpg", "png", "jpeg","webp"]:
+            raise HTTPException(status_code=400, detail="jpg,png,jpeg,webp")
         image_conetxt = await upload_file.read()
         if len(image_conetxt) > 5 * pow(2, 10) * pow(2, 10):
             raise HTTPException(status_code=400, detail="Размер не более 5MB")
@@ -36,14 +36,15 @@ async def uplodat_file_video(upload_file: UploadFile, film_name: str) -> str:
     # os.chdir("app/static")
     if upload_file and upload_file.filename:
         file_ext = upload_file.filename.split(".")[-1].lower()
-        if file_ext == "mp4":
-            raise HTTPException(status_code=400, detail="mp4")
-        image_conetxt = await upload_file.read()
-        if len(image_conetxt) > 500 * pow(2, 10) * pow(2, 10):
+        print(file_ext)
+        if file_ext != "mp4":
+            raise HTTPException(status_code=400, detail="файл должен быть mp4")
+        video_conetxt = await upload_file.read()
+        if len(video_conetxt) > 500 * pow(2, 10) * pow(2, 10):
             raise HTTPException(status_code=400, detail="Размер не более 500MB")
         file_name = f"{film_name}.{file_ext}"
-        FILE_PATH = PATH_IMAGE / file_name
-        FILE_PATH.write_bytes(image_conetxt)
+        FILE_PATH = PATH_VIDEO / file_name
+        FILE_PATH.write_bytes(video_conetxt)
         # with open(file_path, "wb") as f:
         #     f.write(image_conetxt)
 

@@ -46,7 +46,7 @@ class UserResponse(UserBaseResponse):
     reviews: List[ReviewBaseReponse] = []
     # friends: List[UserResponseFrends]=[]
     model_config = {"from_attributes": True}
-UserBaseResponse.json(include=3,exclude_none=False)
+
 
 # class UserResponseFrends(BaseModel):
 # friends: List[UserResponse]=[]

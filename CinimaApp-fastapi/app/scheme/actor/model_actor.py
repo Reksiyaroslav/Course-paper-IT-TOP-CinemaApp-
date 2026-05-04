@@ -15,8 +15,25 @@ class ActorBase(BaseModel):
         min_length=3, max_length=50, default_factory=faker.first_name
     )
     star: int = Field(ge=1, le=10, default_factory=generator_star)
+class ActorBaseNotPat(BaseModel):
+    fistname: str = Field(min_length=3, max_length=50, default_factory=faker.first_name)
+    lastname: str = Field(min_length=3, max_length=50, default_factory=faker.last_name)
+    birth_date: datetime.date = Field(default_factory=faker.date_of_birth)
+    star: int = Field(ge=1, le=10, default_factory=generator_star)
 
+class ActorBaseNotPatDate(BaseModel):
+    fistname: str = Field(min_length=3, max_length=50, default_factory=faker.first_name)
+    lastname: str = Field(min_length=3, max_length=50, default_factory=faker.last_name)
+   
+    star: int = Field(ge=1, le=10, default_factory=generator_star)
 
+class ActorBaseNotDate(BaseModel):
+    fistname: str = Field(min_length=3, max_length=50, default_factory=faker.first_name)
+    lastname: str = Field(min_length=3, max_length=50, default_factory=faker.last_name)
+    patronymic: str = Field(
+        min_length=3, max_length=50, default_factory=faker.first_name
+    )
+    star: int = Field(ge=1, le=10, default_factory=generator_star)
 class ActorBaseResponse(BaseModel):
     fistname: Optional[str] = None
     lastname: Optional[str] = None
@@ -28,7 +45,13 @@ class ActorBaseResponse(BaseModel):
 class ActorCreateRequest(ActorBase):
     country_id: Optional[uuid.UUID] = None
 
+class ActorCreateRequestNotPat(ActorBaseNotPat):
+    country_id: Optional[uuid.UUID] = None
 
+class ActorCreateRequestNotDate(ActorBaseNotDate):
+    country_id: Optional[uuid.UUID] = None
+class ActorCreateRequestNotDatePat(ActorBaseNotPatDate):
+    country_id: Optional[uuid.UUID] = None
 class ActorUpdateRequest(ActorBase):
     country_id: Optional[uuid.UUID] = None
 

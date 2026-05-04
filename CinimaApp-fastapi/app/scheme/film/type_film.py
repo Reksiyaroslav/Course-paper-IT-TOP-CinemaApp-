@@ -21,6 +21,7 @@ class TypeFilmResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+
 class ListTypeFilmResponse(BaseModel):
     types_film: List[TypeFilmResponse]
     model_config = {"from_attributes": True}

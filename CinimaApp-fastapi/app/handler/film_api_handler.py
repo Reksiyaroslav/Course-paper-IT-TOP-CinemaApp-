@@ -43,6 +43,7 @@ async def create_film(
     description: str = Form(None),
     release_date: str = Form(),
     image: UploadFile = File(None),
+    video:UploadFile = File(None),
     actor_ids: list[UUID] = Form(default=[]),
     author_ids: list[UUID] = Form(default=[]),
     types_id: list[UUID] = Form(default=[]),
@@ -61,9 +62,9 @@ async def create_film(
             raise HTTPException(
                 detail="Не могут быть пуcтыми полями название описание", status_code=400
             )
-        if len(title.strip()) < 10 or len(title.strip()) > 1000:
+        if len(title.strip()) < 5 or len(title.strip()) > 1000:
             raise HTTPException(
-                detail="Минимальное количество  10 и максимальное 1000 количество  сиволов  у название",
+                detail="Минимальное количество  5 и максимальное 1000 количество  сиволов  у название",
                 status_code=400,
             )
         if len(description.strip()) < 10 or len(description.strip()) > 1000:
@@ -74,7 +75,7 @@ async def create_film(
         data: FilmCreateRequest = FilmCreateRequest(
             title=title, description=description, release_date=paring_date
         )
-        message = await film_sevice.create_film(data.model_dump(), image)
+        message = await film_sevice.create_film(data.model_dump(), image,video=video)
         if isinstance(message, FilmResponse):
             if actor_ids:
                 await film_sevice.add_actors_film_model(
@@ -163,6 +164,7 @@ async def update_film(
     description: Optional[str] = Form(None),
     release_date_str: Optional[str] = Form(None),
     image: UploadFile = File(None),
+    video:UploadFile = File(None),
     actor_ids: Optional[list[UUID]] = Form(default=[]),
     author_ids: list[UUID] = Form(default=[]),
     types_id: list[UUID] = Form(default=[]),
@@ -194,7 +196,7 @@ async def update_film(
         data = FilmUpdateRequest(
             description=description, title=title, release_date=release_date
         )
-        await film_service.update_film(film_id, data.model_dump(), image=image)
+        await film_service.update_film(film_id, data.model_dump(), image=image,video=video)
         if actor_ids:
             await film_service.set_actors(film_id=film_id, actor_ids=actor_ids)
         if author_ids:

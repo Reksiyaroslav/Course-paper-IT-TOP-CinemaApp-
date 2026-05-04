@@ -24,11 +24,15 @@ class AuthorService(Base_Service):
         for key, value in data.items():
             len_fields(value, key)
         clean_data: dict = normalize_data(data=data, model_type=TypeModel.Author.value)
-        if not validate_is_data_range(data[filed_date], TypeModel.Author.value):
-            raise HTTPException(
-                detail="Что не так с дадой рождения возможно не находится дипозоне 1945-2025",
-                status_code=400,
-            )
+        sus = clean_data.get(filed_date)
+        if   sus:
+            if not await validate_is_data_range(
+                clean_data.get(filed_date), TypeModel.Actor.value
+            ):
+                raise HTTPException(
+                    detail="Что не так сдадой рождения возможно не находится дипозоне  1945-2026",
+                    status_code=400,
+                )
         elif not await is_fistname_lastname(
             Author, self.author_repo.session, clean_data
         ):
@@ -55,7 +59,7 @@ class AuthorService(Base_Service):
                 status_code=400,
             )
 
-        elif self.author_repo.get_duble_author(
+        elif not  self.author_repo.get_duble_author(
             author_id=author_id, fistname=fistname, lastname=lasname, pat=pat
         ):
             raise HTTPException(detail="Такой автор есть уже ", status_code=409)

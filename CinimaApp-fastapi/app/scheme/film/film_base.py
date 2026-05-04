@@ -6,8 +6,8 @@ from typing import Optional
 
 
 class FilmBase(BaseModel):
-    description: str = Field(min_length=20, max_length=4000)
-    title: str = Field(..., min_length=10, max_length=1000)
+    description: str = Field(min_length=10, max_length=4000)
+    title: str = Field(..., min_length=5, max_length=1000)
     release_date: datetime.date
 
 
@@ -26,6 +26,7 @@ class FilmBaseResponse(BaseModel):
     title: Optional[str] = None
     release_date: Optional[datetime.date] = None
     path_image: Optional[str] = "images/cat.jpg"
+    path_video: Optional[str] = "video/one.mp4"
     avg_rating: float = 0.0
     model_config = {"from_attributes": True}
 

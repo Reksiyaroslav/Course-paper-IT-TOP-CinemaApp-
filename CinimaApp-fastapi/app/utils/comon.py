@@ -20,7 +20,7 @@ Confgi_dict = {
     "fistname": {"min_len": 3, "max_len": 50},
     "lastname": {"min_len": 3, "max_len": 50},
     "patronymic": {"min_len": 3, "max_len": 50},
-    "title": {"min_len": 10, "max_len": 1000},
+    "title": {"min_len": 5, "max_len": 1000},
     "description": {"min_len": 20, "max_len": 4000},
     "type_film": {"min_len": 5, "max_len": 40},
     "country_name": {"min_len": 3, "max_len": 20},

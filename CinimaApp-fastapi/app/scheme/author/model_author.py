@@ -24,11 +24,31 @@ class ScreenWriterBaseResponse(BaseModel):
     bio: Optional[str] = None
     birth_date: Optional[datetime.date] = None
 
+class ScreenWriterBaseNotPatronymic(BaseModel):
+    fistname: Optional[str] = None
+    lastname: Optional[str] = None
+    bio: Optional[str] = None
+    birth_date: Optional[datetime.date] = None
 
+class ScreenWriterBaseNotPatronymicDate(BaseModel):
+    fistname: Optional[str] = None
+    lastname: Optional[str] = None
+    bio: Optional[str] = None
+   
+class ScreenWriterBaseNotDate(BaseModel):
+    fistname: Optional[str] = None
+    lastname: Optional[str] = None
+    bio: Optional[str] = None
+    patronymic: Optional[str] = None
+   
 class AuthorCreateRequest(ScreenWriterBase):
     country_id: Optional[uuid.UUID] = None
-
-
+class AuthorCreateRequestNotPat(ScreenWriterBaseNotPatronymic):
+    country_id: Optional[uuid.UUID] = None
+class AuthorCreateRequestNotPatDate(ScreenWriterBaseNotPatronymicDate):
+    country_id: Optional[uuid.UUID] = None
+class AuthorCreateRequestNotDate(ScreenWriterBaseNotDate):
+    country_id: Optional[uuid.UUID] = None
 class AuthorUpdateRequest(ScreenWriterBase):
     country_id: Optional[uuid.UUID] = None
 

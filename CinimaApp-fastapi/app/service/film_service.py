@@ -31,7 +31,7 @@ from app.utils.comon import (
     len_fields,
     get_current_session,
 )
-from app.utils.upload_file import uplodat_file_image, delete_file
+from app.utils.upload_file import uplodat_file_image, delete_file,uplodat_file_video
 
 
 class FilmService(Base_Service):
@@ -42,7 +42,7 @@ class FilmService(Base_Service):
         self.type_film_repo: TypeFilmReposit = TypeFilmReposit(self.session)
 
     async def create_film(
-        self, data: dict, image: UploadFile, name_title_value=None
+        self, data: dict, image: UploadFile,video:UploadFile, name_title_value=None,
     ) -> FilmResponse:
         for key, value in data.items():
             len_fields(value, key)
@@ -64,11 +64,15 @@ class FilmService(Base_Service):
                 status_code=409,
                 detail="Фильм с таким названием есть уже существует",
             )
+        title =  clean_data.get("title")
         if image and image.filename:
-            image_file_path = await uplodat_file_image(image, clean_data.get("title"))
+            image_file_path = await uplodat_file_image(image, title)
             clean_data["path_image"] = image_file_path
         else:
             clean_data["path_image"] = "images/cat.jpg"
+        if video and video.filename:
+            video_str_path = await uplodat_file_video(video,title)
+            clean_data["path_video"] = video_str_path
         new_film = await self.film_repo.create_film(clean_data)
         if not new_film:
             raise HTTPException(status_code=500, detail="Ошибка при создании фильма")
@@ -105,7 +109,7 @@ class FilmService(Base_Service):
                 detail="Нет типа  с таким id",
                 status_code=404,
             )
-        return TypeFilmResponse.from_orm(type_film)
+        return TypeFilmResponse.model_validate(type_film)
 
     async def update_type_film(self, data, type_film_id):
         for key, value in data.items():
@@ -154,7 +158,7 @@ class FilmService(Base_Service):
         )
         return FilmBaseList(films=films)
 
-    async def update_film(self, film_id, data, image: UploadFile):
+    async def update_film(self, film_id, data, image: UploadFile,video:UploadFile):
         for key, value in data.items():
             len_fields(value, key)
         clean_data: dict = normalize_data(
@@ -184,11 +188,16 @@ class FilmService(Base_Service):
             )
         if image and image.filename:
             image_pat = curent_film.path_image
+            video_path = curent_film.path_video
             if image_pat:
                 if image_pat != "images/cat.jpg":
                     delete_file(image_pat)
                 image_file_path = await uplodat_file_image(image, title)
                 clean_data["path_image"] = image_file_path
+            if video_path:
+                delete_file(video_path)
+                update_video_path = await uplodat_file_video(video_path,title)
+                clean_data["path_video"] = update_video_path
 
         update_film = await self.film_repo.update_film(film_id=film_id, data=clean_data)
         if not update_film:
@@ -198,8 +207,10 @@ class FilmService(Base_Service):
     async def delete_film(self, film_id):
         film_remove = await self.get_film_by_id(film_id)
         image_pat = film_remove.path_image
-        if image_pat:
+        video_path: str = film_remove.path_video
+        if image_pat and video_path:
             delete_file(image_pat)
+            delete_file(video_path)
         boolen_reposnes = await self.film_repo.delete_film(film_id)
         if not boolen_reposnes:
             raise HTTPException(status_code=404, detail="Фильм не найден")

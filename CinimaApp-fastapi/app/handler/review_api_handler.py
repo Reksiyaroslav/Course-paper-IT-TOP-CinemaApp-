@@ -143,7 +143,7 @@ async def delete_review(
 ):
     try:
         sus = await review_service.delete_review(review_id=review_id, film_id=film_id)
-        url = request.url_for("view_item", env_type_model="film", item_id=film_id)
+        url = request.url_for("view_item", env_type_model="film", item_id=film_id, type_view="review")
         return RedirectResponse(url)
     except HTTPException as e:
         url = request.url_for(

@@ -74,7 +74,7 @@ class ActorService(Base_Service):
         pat = clean_data.get("patronymic")
         lasname = clean_data.get("lastname")
         fistname = clean_data.get("fistname")
-        if await self.actor_repo.get_duble_actor(
+        if  await self.actor_repo.get_duble_actor(
             actor_id, fistname=fistname, lastname=lasname, pat=pat
         ):
             raise HTTPException(detail="Такой актёр уже есть ", status_code=400)

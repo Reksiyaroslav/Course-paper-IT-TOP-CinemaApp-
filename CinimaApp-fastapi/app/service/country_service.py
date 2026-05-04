@@ -49,7 +49,7 @@ class CountryService(Base_Service):
 
         clean_data = normalize_data(data=data, model_type=TypeModel.Country.value)
         country_name = clean_data.get("country_name")
-        if await self.country_repo.update_country_not_double(
+        if not await self.country_repo.update_country_not_double(
             country_id=country_id, name_country=country_name
         ):
             raise HTTPException(status_code=408, detail="Найдена страна с таким именем")
