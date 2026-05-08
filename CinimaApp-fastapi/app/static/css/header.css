@@ -8,9 +8,11 @@ header{
     flex-direction: row;
     border-radius: 40px;
     padding: 10px 20px;
-    width: 103%;
+    width: 97%;
     height: 70%;
     background: linear-gradient(90deg, #59819e,#70a1c4);
+    flex-wrap: wrap;
+    
 }
 header a{
     padding: 10px 20px;
@@ -57,11 +59,11 @@ header a{
    height: 70%;
     flex-direction: row;
     align-items: center;
-    margin-left: 20%;
+    margin-left: 40%;
    
 }
 .user_mini_ob h2{
-   font-size: 20px;
+   font-size: 25px;
    
    
 }

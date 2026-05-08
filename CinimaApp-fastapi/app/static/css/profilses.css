@@ -41,7 +41,7 @@
     justify-self: flex-start;
 }
 .film_profile{
-    width: 103%;
+    width: 99%;
     height: auto;
     flex-direction: column;
     gap: 20px;
@@ -124,7 +124,7 @@
 }
 .info p{
     word-break: break-all;
-    
+     white-space: pre-wrap;
 }
 .info a{
     text-decoration: none;
@@ -182,6 +182,7 @@ padding: 20px;
 .coment_block p{
     font-size: 30px;
     text-align: center;
+    white-space: pre-wrap;
     
 }
 .coment_block h3{
@@ -314,11 +315,12 @@ label{
 .profile_actor, .profile_author {
     flex-direction: column;  /* Элементы друг под другом */
     max-width: 97%;
-    width: 100%;  
+    width: 90%;  
     background-color: rgb(10, 72, 139);
     border-radius: 20px;
     padding: 20px;
     gap: 20px; 
+   
     
 }
 
@@ -438,7 +440,7 @@ label{
     height: 59%;
     transition: 0.5s;
     border-radius: 10px;
-     transition: 0.5s; 
+    transition: 0.5s; 
 }
 
 .update_delete_form textarea,.create_review textarea{

@@ -3,7 +3,7 @@
 }
 .info{
     flex-direction: column;
-    width: 105%;
+    width: 99%;
     height: 50%;
     background-color: rgb(66, 167, 167);
     border-radius: 10px;
@@ -12,7 +12,7 @@
     margin-bottom: 20px;
 } 
 .film_bloc {
-    width: 102%;
+    width: 96%;
     /* max-width: 700px; */
     background-color: rgb(42, 165, 181);
     color: black;
@@ -33,7 +33,7 @@
 
 .actor_block ,.author_block{
     flex-direction: column;
-    width: 103%;
+    width: 96%;
     height: 40%;
     background-color: rgb(42, 165, 181);
     color: black;
