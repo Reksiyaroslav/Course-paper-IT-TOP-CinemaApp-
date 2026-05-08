@@ -17,10 +17,10 @@ from app.enums.type_model import TypeModel
 from app.enums.serach_fileld import SerachFiled
 
 Confgi_dict = {
-    "fistname": {"min_len": 3, "max_len": 50},
-    "lastname": {"min_len": 3, "max_len": 50},
-    "patronymic": {"min_len": 3, "max_len": 50},
-    "title": {"min_len": 5, "max_len": 1000},
+    "fistname": {"min_len": 2, "max_len": 50},
+    "lastname": {"min_len": 2, "max_len": 50},
+    "patronymic": {"min_len": 2, "max_len": 50},
+    "title": {"min_len": 3, "max_len": 1000},
     "description": {"min_len": 20, "max_len": 4000},
     "type_film": {"min_len": 5, "max_len": 40},
     "country_name": {"min_len": 3, "max_len": 20},
@@ -29,7 +29,7 @@ Confgi_dict = {
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 faker = Faker()
 YEARS_FILMS = 30
-YEARS_ACTOR = 80
+YEARS_ACTOR = 120
 
 
 async def get_current_session():
