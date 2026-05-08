@@ -214,24 +214,29 @@ async def main_pages(
     user=Depends(get_curen_user),
     pages: int = 1,
     limit_film: int = 25,
-    limit_actor_author: int = 10,
+    limit_actor_author: int = 50,
 ):
     people_list = None
     films = None
     micro_films = None
+    len_corect_film   = False
+    len_corect_actor_and_author = False
     if type_model == TypeModel.Film:
         films_list = await film_service.get_list_film(page=pages)
         micro_film_list = await film_service.get_micro_block()
 
         films = films_list.films
         micro_films = micro_film_list.films
+        len_corect_film = len(films)==limit_film
     else:
         if type_model == TypeModel.Actor:
-            relult = await actor_server.get_actor_list(page=pages)
+            relult = await actor_server.get_actor_list(page=pages,limit=limit_actor_author)
             people_list = relult.actors
         if type_model == TypeModel.Author:
-            relult = await author_service.get_authors(page=pages)
+            relult = await author_service.get_authors(page=pages,limit=limit_actor_author)
             people_list = relult.author
+        len_corect_actor_and_author = len(people_list)==limit_actor_author
+            
     return teamlates.TemplateResponse(
         name="main.html",
         context={
@@ -242,8 +247,8 @@ async def main_pages(
             "user": user,
             "pages": pages,
             "type_model": type_model.value,
-            "limit_film": limit_film,
-            "limit_actor_and_author": limit_actor_author,
+            "len_corect_actor_or_author": len_corect_actor_and_author,
+            "len_corect_film": len_corect_film,
         },
     )
 @ui_router.get("/session/{session}/{page}/")
@@ -280,10 +285,11 @@ async def create_model(
     country_service: CountryService = Depends(get_country_service),
     err: str = "",
     user=Depends(get_curen_user),
+    limit_actor_author:int = 500
 ):
     if type_model == "film":
-        authors_reult = await author_service.get_authors()
-        actors_reult = await actor_service.get_actor_list()
+        authors_reult = await author_service.get_authors(limit=limit_actor_author)
+        actors_reult = await actor_service.get_actor_list(limit=limit_actor_author)
         types_film_reult = await film_service.get_types_film()
         countrys_reult = await country_service.get_countrys()
         authors = authors_reult.author

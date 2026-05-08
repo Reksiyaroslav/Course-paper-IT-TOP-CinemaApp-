@@ -62,7 +62,7 @@ async def create_film(
             raise HTTPException(
                 detail="Не могут быть пуcтыми полями название описание", status_code=400
             )
-        if len(title.strip()) < 5 or len(title.strip()) > 1000:
+        if len(title.strip()) < 3 or len(title.strip()) > 1000:
             raise HTTPException(
                 detail="Минимальное количество  5 и максимальное 1000 количество  сиволов  у название",
                 status_code=400,
@@ -183,7 +183,7 @@ async def update_film(
             raise HTTPException(
                 detail="Не могут быть пуcтыми полями название описание", status_code=400
             )
-        if len(title.strip()) < 10 or len(title.strip()) > 1000:
+        if len(title.strip()) < 3 or len(title.strip()) > 1000:
             raise HTTPException(
                 detail="Минимальное количество  10 и максимальное 1000 количество  сиволов  у название",
                 status_code=400,

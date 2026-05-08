@@ -38,8 +38,8 @@ async def create_actor(
             raise HTTPException(
                 detail="Не может быть пустым  Фамилия ", status_code=400
             )
-        if  len_lastname < 3 or len_fistname < 3:
-            raise HTTPException(detail="Минимальная длина 3", status_code=400)
+        if  len_lastname < 2 or len_fistname < 2:
+            raise HTTPException(detail="Минимальная длина 2", status_code=400)
         if   len_lastname > 50 or len_fistname > 50:
             raise HTTPException(detail="Максимальная длина 50", status_code=400)
         parse_date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
@@ -59,8 +59,8 @@ async def create_actor(
             )
        
         if patronymic:
-            if len_patronymic < 3 :
-                raise HTTPException(detail="Минимальная длина 3", status_code=400)
+            if len_patronymic < 2 :
+                raise HTTPException(detail="Минимальная длина 2", status_code=400)
             if len_patronymic > 50 :
                 raise HTTPException(detail="Максимальная длина 50", status_code=400)
             data = ActorCreateRequest(
@@ -129,8 +129,8 @@ async def update_actor(
                 detail="Не может быть пустым имя фамилия отчества и дата рождения",
                 status_code=400,
             )
-        if  len_lastname < 3 or len_fistname < 3:
-            raise HTTPException(detail="Минимальная длина 3", status_code=400)
+        if  len_lastname < 2 or len_fistname < 2:
+            raise HTTPException(detail="Минимальная длина 2", status_code=400)
         if  len_lastname > 50 or len_fistname > 50:
             raise HTTPException(detail="Максимальная длина 50", status_code=400)
         if not patronymic:
@@ -142,8 +142,8 @@ async def update_actor(
             )
 
         if patronymic:
-            if len_patronymic < 3 :
-                raise HTTPException(detail="Минимальная длина 3", status_code=400)
+            if len_patronymic < 2 :
+                raise HTTPException(detail="Минимальная длина 2", status_code=400)
             if len_patronymic > 50 :
                 raise HTTPException(detail="Максимальная длина 50", status_code=400)
             data = ActorUpdateRequest(

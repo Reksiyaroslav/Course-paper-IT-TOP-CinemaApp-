@@ -46,8 +46,8 @@ async def create_author(
                 detail="Не может быть пустым имя фамилия отчества", status_code=400
             )
         
-        if   len_lastname < 3 or len_fistname < 3:
-            raise HTTPException(detail="Минимальная длина 3", status_code=400)
+        if   len_lastname < 2 or len_fistname < 2:
+            raise HTTPException(detail="Минимальная длина 2", status_code=400)
         if   len_lastname > 50 or len_fistname > 50:
             raise HTTPException(detail="Максимальная длина 50", status_code=400)    
         if not patronymic.strip():
@@ -71,8 +71,8 @@ async def create_author(
                 raise HTTPException(
                     detail="Не может быть пустым отчества", status_code=400
                 )
-            if   len_patronymic < 3:
-                raise HTTPException(detail="Минимальная длина 3", status_code=400)
+            if   len_patronymic < 2:
+                raise HTTPException(detail="Минимальная длина 2", status_code=400)
             if   len_patronymic > 50 :
                 raise HTTPException(detail="Максимальная длина 50", status_code=400)
             if parse_date:
@@ -143,30 +143,64 @@ async def update_author(
     author_service: AuthorService = Depends(get_author_service),
 ):
     try:
-        len_fistname = len(fistname)
-        len_lastname = len(lastname)
-        len_patronymic = len(patronymic)
+        data = None
+        len_fistname = len(fistname.strip())
+        len_lastname = len(lastname.strip())
+        
         parse_date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
         if not parse_date:
             raise HTTPException(
                 detail="Не может быть пустым  Дата рождения ", status_code=400
             )
-        if not fistname or not lastname or not patronymic or not birth_date:
+        if not fistname or not lastname:
             raise HTTPException(
                 detail="Не может быть пустыми имя фамилия отчества дата рождения",
                 status_code=400,
             )
-        if len_patronymic < 3 or len_lastname < 3 or len_fistname < 3:
-            raise HTTPException(detail="Минимальная длина 3", status_code=400)
-        if len_patronymic > 50 or len_lastname > 50 or len_fistname > 50:
+        if  len_lastname < 2 or len_fistname < 2:
+            raise HTTPException(detail="Минимальная длина 2", status_code=400)
+        if   len_lastname > 50 or len_fistname > 50:
             raise HTTPException(detail="Максимальная длина 50", status_code=400)
-        data = AuthorUpdateRequest(
-            fistname=fistname,
-            lastname=lastname,
-            bio=bio,
-            birth_date=parse_date,
-            patronymic=patronymic,
-        )
+        if not patronymic.strip():
+            if not parse_date:
+                data = AuthorCreateRequestNotPatDate(
+                fistname=fistname,
+                lastname=lastname,
+                bio=bio,
+                
+                )
+            else:
+                data = AuthorCreateRequestNotPat(
+                fistname=fistname,
+                lastname=lastname,
+                bio=bio,
+                birth_date=parse_date
+                )
+        if patronymic:
+            len_patronymic = len(patronymic.strip())
+            if not patronymic.strip():
+                raise HTTPException(
+                    detail="Не может быть пустым отчества", status_code=400
+                )
+            if   len_patronymic < 2:
+                raise HTTPException(detail="Минимальная длина 2", status_code=400)
+            if   len_patronymic > 50 :
+                raise HTTPException(detail="Максимальная длина 50", status_code=400)
+            if parse_date:
+                data = AuthorUpdateRequest(
+                    fistname=fistname,
+                    lastname=lastname,
+                    bio=bio,
+                    birth_date=parse_date,
+                    patronymic=patronymic,
+                )
+            else:
+                data = AuthorCreateRequestNotDate(
+                    patronymic=patronymic,
+                    fistname=fistname,
+                    lastname=lastname,
+                    bio=bio,
+                )
         author = await author_service.update_author(author_id, data.dict())
         if country_id:
             await author_service.add_country(author_id=author_id, country_id=country_id)
