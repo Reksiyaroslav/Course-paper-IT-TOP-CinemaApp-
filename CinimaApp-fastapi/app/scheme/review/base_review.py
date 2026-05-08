@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List,Optional
 from uuid import UUID
-
+from datetime import datetime
 
 class ReviewBase(BaseModel):
     description: str
@@ -21,6 +21,8 @@ class ReviewBaseReponse(BaseModel):
     rating_atmosphere: int
     is_reviewer: bool
     avg_rating: int
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     model_config = {"from_attributes": True}
 
 
