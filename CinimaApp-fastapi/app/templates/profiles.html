@@ -97,7 +97,7 @@
 					<option value="{{i}}">{{i}}</option>
 					{%endfor%}	
 				</select>
-				<button type="submit">Создать ретинг</button>
+				<button type="submit">Создать райтинг</button>
 				</div>
 			</form>
 			{%elif rating_user and user.user_id %}
@@ -113,13 +113,13 @@
 					{%endfor%}	
 				</select>
 				
-				<button type="submit">Обновить  ратинг</button>
+				<button type="submit">Обновить  райтинг</button>
 				</div>
 				
 			</form>
 			<form  action="{{url_for("delete_rating",rating_id = rating_user.rating_id,film_id=item.film_id)}}" method="post">
 				<div class="form_corect df">
-				<button type="submit">Удалить ратинг </button>
+				<button type="submit">Удалить райтинг </button>
 				</div>
 			</form>
 			</div>
@@ -131,7 +131,7 @@
 				{%if item.avg_rating>0.0%}
 				<span>{{item.avg_rating}}</span>
 				{%else%}
-				<span>Нет ратинга</span>
+				<span>Нет Райтинг</span>
 				{%endif%}
 				</div>
 				<img src="{{url_for('static',path=item.path_image)}}" alt="">
@@ -161,7 +161,8 @@
 					{%if item.actors %}
 					
 					{%for actor in item.actors%}
-					<a href="{{url_for("view_item",env_type_model='actor',item_id = actor.actor_id)}}" id="actor">{{actor.firstname}} {{actor.lastname}} {{actor.patronymic}}<br></a>
+					<a href="{{url_for("view_item",env_type_model='actor',item_id = actor.actor_id)}}" id="actor">
+						{{actor.fistname.title()}} {{actor.lastname.title()}} {{actor.patronymic}}<br></a>
 					{%endfor%}
 					{%else%}
 					<p>Пока не сказали кастинг </p>
@@ -170,7 +171,7 @@
 					{%if item.authors%}
 					{%for author in item.authors%}
 					<a href="{{url_for("view_item",env_type_model='author',item_id = author.author_id)}}" id="author">
-						{{author.firstname}} {{author.lastname}} {{author.patronymic}}<br>
+						{{author.fistname.title()}} {{author.lastname.title()}} {{author.patronymic}}<br>
 					</a>
 					{%endfor%}
 					{% else%}
@@ -189,10 +190,10 @@
 						{%endif%}
 					</div>
 				</div>
-			{%if item.video_path%}
-			<div class=".video-container">
+			{%if item.path_video%}
+			<div class="video-container">
 				<video id="player" controls >
-					<source src="{{url_for("static" ,path=item.video_path)}}" type="video/mp4">
+					<source src="{{url_for("static" ,path=item.path_video)}}" type="video/mp4">
 				</video>
 			</div>
 			{%else%}
@@ -354,7 +355,7 @@
 						{%else%}
 						<div class="avg_green">
 						{%endif%}	
-						<label for="">Ратинг ренцезий</label>
+						<label for="">Райтинг ренцезий</label>
 						<span>{{review.avg_rating}}/10</span>
 						
 						</div>
@@ -426,7 +427,7 @@
 	<div class="profile_actor df">
 		<div class="info df">
 			<label>ФИО</label>
-			<h1> {{item.lastname }} {{item.firtname}} {{item.patronymic}}</h1>
+			<h1> {{item.lastname.title()}} {{item.fistname.title()}} {{item.patronymic}}</h1>
 			<label>Дата рождение</label>
 			<h2>{{item.birth_date}}</h2>
 			<label>Био</label>
@@ -472,7 +473,7 @@
 		<div class="profile_author df">
 			<div class="info df">
 			<label>ФИО</label>
-			<h1>{{item.lastname }} {{item.firtname}} {{item.patronymic}}</h1>
+			<h1>{{item.lastname.title()}} {{item.fistname.title()}} {{item.patronymic}}</h1>
 			<label>Дата рождение</label>
 			<h2>{{item.birth_date}}</h2>
 			<label>Количество звест</label>	

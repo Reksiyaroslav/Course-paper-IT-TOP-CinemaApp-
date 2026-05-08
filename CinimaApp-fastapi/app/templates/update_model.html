@@ -52,7 +52,8 @@
 			<label>Акторы{Зажмите Ctrl, чтобы выбрать нескольких}</label>
 			<select name="actor_ids" multiple>
             {%for actor  in actors%}
-            <option value="{{actor.actor_id}}" {% if  actor in data.actors %}selected{% endif %}>{{actor.fistname}} {{actor.lastname}}</option>
+            <option value="{{actor.actor_id}}" {% if  actor in data.actors %}selected{% endif %}>
+				{{actor.lastname.title()}} {{actor.fistname.title()}} </option>
             {%endfor%}
             <small>Зажмите Ctrl, чтобы выбрать нескольких</small>
 				</select>
@@ -61,7 +62,8 @@
 			<label>Авторы{Зажмите Ctrl, чтобы выбрать нескольких}</label>
 			<select name="author_ids" multiple>
 				{%for author  in authors%}
-				<option value="{{author.author_id}}" {% if  author in data.authors %}selected{% endif %}>{{author.fistname}} {{author.lastname}}</option>
+				<option value="{{author.author_id}}" {% if  author in data.authors %}selected{% endif %}>
+					{{author.lastname.title()}} {{author.fistname.title()}} </option>
 				{%endfor%}
 				
 			</select>
@@ -87,6 +89,9 @@
 			{%endif%}
 			<label>Фотография для лога</label>
 			<input type="file" name="image" placeholder="Главный банер ">
+			<input type="file" 
+            name="video" 
+            placeholder="Главный банер">
 			<button type="submit">Изменить </button>
 		</form>
         </div>

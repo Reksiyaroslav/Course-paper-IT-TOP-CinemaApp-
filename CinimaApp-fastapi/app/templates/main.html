@@ -47,7 +47,6 @@
 		</div>
 		{% endfor%}
 		{%endif%}
-	
 	{%if films%}
 	{% for film in films %}
 		<div class="bloc_film df ">
@@ -71,29 +70,28 @@
 		{% endfor %}
 	
 	{%endif%}
-	<div class="pages">
-	{%if films and (films| length)==limit_film%}
-		<form action="{{url_for("main_item",pages=pages+1,type_model="film")}}" method="get"></form>
-	{%elif people_list and people_list|length==limit_actor_and_author%}
-		{%if type_model=='actor'%}
-		<form action="{{url_for("main_item",pages=pages+1,type_model="actor")}}" method="get">
-		{%elif type_model=='author'%}
-		<form action="{{url_for("main_item",pages=pages+1,type_model="author")}}">
-		{%endif%}
-		<button type="submit">Ещё {{type_model}} {{pages+1}}</button>
-		</form>
-	{%elif pages>1%}
-		{%if type_model=="film"%}
-		<form action="{{url_for("main_item",pages=pages-1,type_model="film")}}" method="get">
-		{%elif type_model=="actor"%}
-		<form action="{{url_for("main_item",pages=pages-1,type_model="actor")}}" method="get">
-		{%else%}
-		<form action="{{url_for("main_item",pages=pages-1,type_model="actor")}}" method="get">
-		{%endif%}
+	<div class="pages df">
+	
+	{%if pages>1%}
+		<form action="{{url_for("main_item",pages=pages-1,type_model=type_model)}}" method="get">
 		<button type="submit">Назад {{type_model}} {{pages-1}} </button>
 		</form>
+		
 
+	
+	{%endif%}
+	{%if films and len_corect_film%}
+		<form action="{{url_for("main_item",pages=pages+1,type_model=type_model)}}" method="get">
+			<button type="submit">Ещё {{type_model}} {{pages+1}}</button>
+		</form>
+	{%elif people_list and len_corect_actor_or_author%}
+		{%if type_model=='actor' or  type_model =="author"%}
+		<form action="{{url_for("main_item",pages=pages+1,type_model=type_model)}}" method="get">
+			<button type="submit">Ещё {{type_model}} {{pages+1}}</button>
+		</form>
+		{%endif%}
 	</div>
+		
 	{%endif%}
 		{% include"reg_log_modal.html"%}
 	{%if not films and not people_list and not micro_films%}

@@ -14,7 +14,7 @@
         <form action="{{url_for("film_create")}}" method="post" enctype="multipart/form-data">
             <div class="form df">
             <input type="text" 
-            name="title" minlength="10"  
+            name="title" minlength="4"  
             maxlength="1000" 
             value="{{ data.title if data.title else "" }}" 
             placeholder="Название фильма">
@@ -32,13 +32,16 @@
             <input type="file" 
             name="image" 
             placeholder="Главный банер">
+            <input type="file" 
+            name="video" 
+            placeholder="Главный банер">
             {%if actors%}
                 <label>Актёры{Зажмите Ctrl, чтобы выбрать нескольких} </label>
                 <select name="actor_ids" multiple>
                     {%for actor  in actors%}
                     <option 
                     value="{{actor.actor_id}}">
-                    {{actor.fistname}} {{actor.lastname}}
+                       {{actor.lastname.title()}} {{actor.fistname.title()}} 
                 </option>
                     {%endfor%}
                     
@@ -50,7 +53,8 @@
             <label>Аворы {Для выбоа несколько зажмите Ctrl }</label>
             <select name="author_ids" multiple>
                 {%for author  in authors%}
-                <option value="{{author.author_id}}">{{author.fistname}} {{author.lastname}}</option>
+                <option value="{{author.author_id}}">
+                     {{author.lastname.title()}} {{author.fistname.title()}} </option>
                 {%endfor%}
         
             </select>
@@ -61,7 +65,8 @@
             <label>Жанер{Зажмите Ctrl, чтобы выбрать нескольких} </label>
             <select class="normal_select" name="types_id" multiple>
                 {%for type_film  in types_film%}
-                <option value="{{type_film.type_film_id}}">{{type_film.type_film_name.title()}}</option>
+                <option value="{{type_film.type_film_id}}">
+                    {{type_film.type_film_name.title()}}</option>
                 {%endfor%}
                 
             </select>
@@ -72,7 +77,8 @@
             <label>Страна </label>
             <select  class="normal_select" name="country_id">
                 {%for country  in countrys%}
-                <option value="{{country.country_id}}">{{country.country_name.title()}}</option>
+                <option value="{{country.country_id}}">
+                    {{country.country_name.title()}}</option>
                 {%endfor%}
             </select>
             {%else%}
@@ -85,11 +91,11 @@
         <form action="{{url_for("create_actor")}}" method="post" enctype="multipart/form-data">
             <div class="form df">
             <label>Имя Актёра</label>
-            <input type="text" name="fistname" pattern="[A-Za-zA-Яа-яЁё\s]+"  title="Только буквы" minlength="3" maxlength="50" value="{{ data.fistname if data.fistname else "" }}" placeholder="Имя">
+            <input type="text" name="fistname" pattern="[A-Za-zA-Яа-яЁё\s]+"  title="Только буквы" minlength="2" maxlength="50" value="{{ data.fistname if data.fistname else "" }}" placeholder="Имя">
             <label>Фамилия Актёра</label>
-            <input type="text" name="lastname"  pattern="[A-Za-zA-Яа-яЁё\s]+" title="Только буквы" minlength="3" maxlength="50"value="{{ data.lastname if data.lastname  else ""}}" placeholder="Фамилия">
+            <input type="text" name="lastname"  pattern="[A-Za-zA-Яа-яЁё\s]+" title="Только буквы" minlength="2" maxlength="50"value="{{ data.lastname if data.lastname  else ""}}" placeholder="Фамилия">
             <label>Отчества Актёра</label>
-            <input type="text" name="patronymic" pattern="[A-Za-zA-Яа-яЁё\s]+" title="Только буквы" minlength="3" maxlength="50" value="{{ data.patronymic if data.patronymic else "" }}" placeholder="Отечства">
+            <input type="text" name="patronymic" pattern="[A-Za-zA-Яа-яЁё\s]+" title="Только буквы" minlength="2" maxlength="50" value="{{ data.patronymic if data.patronymic else "" }}" placeholder="Отечства">
             <label>Дата рождения Актёра</label>
             <input type="date" name ="birth_date" value="{{data.birth_date.strftime('%Y-%m-%d') if data.birth_date else ""}}" placeholder="Дата рождения">
             <label >Звезды</label>
@@ -112,11 +118,11 @@
         <form action="{{url_for("create_author")}}" method="post" enctype="multipart/form-data">
             <div class="form df">
             <label>Имя Автора</label>
-            <input type="text" name="fistname" pattern="[A-Za-zA-Яа-яЁё\s]+" minlength="3" maxlength="50" title="Только буквы" value="{{ data.fistname if data.fistname else "" }}" placeholder="Имя">
+            <input type="text" name="fistname" pattern="[A-Za-zA-Яа-яЁё\s]+" minlength="2" maxlength="50" title="Только буквы" value="{{ data.fistname if data.fistname else "" }}" placeholder="Имя">
              <label>Фамилия Автора</label>
-            <input type="text" name="lastname" pattern="[A-Za-zA-Яа-яЁё\s]+"  minlength="3" maxlength="50"title="Только буквы" value="{{ data.lastname if data.lastname  else ""}}" placeholder="Фамилия">
+            <input type="text" name="lastname" pattern="[A-Za-zA-Яа-яЁё\s]+"  minlength="2" maxlength="50"title="Только буквы" value="{{ data.lastname if data.lastname  else ""}}" placeholder="Фамилия">
              <label>Отчества Автора</label>
-            <input type="text" name="patronymic" pattern="[A-Za-zA-Яа-яЁё\s]+"  minlength="3" maxlength="50"title="Только буквы" value="{{ data.patronymic if data.patronymic else "" }}" placeholder="Отечства">
+            <input type="text" name="patronymic" pattern="[A-Za-zA-Яа-яЁё\s]+"  minlength="2" maxlength="50"title="Только буквы" value="{{ data.patronymic if data.patronymic else "" }}" placeholder="Отечства">
              <label>Дата рождение Автора</label>
             <input type="date" name ="birth_date" value="{{data.birth_date.strftime('%Y-%m-%d') if data.birth_date else ""}}" placeholder="Дата рождения">
              <label>Биография Автора</label>
