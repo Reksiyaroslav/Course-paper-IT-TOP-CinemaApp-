@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from uuid import UUID
@@ -22,8 +22,8 @@ class RatingFilmUpdateRequest(RatingFilmBase):
 
 class RatingFilmResponse(RatingFilmBaseResponse):
     rating_id: UUID
-    created_at: Optional[datetime.datetime] = None
-    update_at: Optional[datetime.datetime] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     model_config = {"from_attributes": True}
 
 
@@ -31,8 +31,8 @@ class RatingFilmResponseAdmin(RatingFilmBaseResponse):
     rating_id: UUID
     film_id: UUID
     user_id: UUID
-    created_at: Optional[datetime.datetime] = None
-    update_at: Optional[datetime.datetime] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     model_config = {"from_attributes": True}
 
 

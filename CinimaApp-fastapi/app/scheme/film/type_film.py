@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from uuid import UUID
-
+from datetime import datetime
 
 class TypeFilmBase(BaseModel):
     type_film_name: str = Field(min_length=5, max_length=40)
@@ -18,6 +18,8 @@ class TypeFilmUpdateRequest(TypeFilmBase):
 class TypeFilmResponse(BaseModel):
     type_film_id: UUID
     type_film_name: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     model_config = {"from_attributes": True}
 
 

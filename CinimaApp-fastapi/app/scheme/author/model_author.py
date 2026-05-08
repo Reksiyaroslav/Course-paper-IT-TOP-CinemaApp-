@@ -57,7 +57,7 @@ class AuthorResponse(ScreenWriterBaseResponse):
     author_id: uuid.UUID
     birth_date: Optional[datetime.date] = None
     created_at: Optional[datetime.datetime] = None
-    update_at: Optional[datetime.datetime] = None
+    updated_at: Optional[datetime.datetime] = None
     model_config = {"from_attributes": True}
 
 

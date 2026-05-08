@@ -22,7 +22,7 @@ class FilmCreateRequest(FilmBase):
 
 class FilmUpdateRequest(BaseModel):
     description: Optional[str] = Field(min_length=10, max_length=10000)
-    title: Optional[str] = Field(..., min_length=5, max_length=1000)
+    title: Optional[str] = Field(..., min_length=3, max_length=1000)
     release_date: Optional[datetime.date] = None
     actor_ids: List[uuid.UUID] = []
     author_ids: List[uuid.UUID] = []
@@ -38,7 +38,7 @@ class FilmResponse(FilmBaseResponse):
     reviews: Optional[List[ReviewInfo]] = []
     country: Optional[CountryShort] = None
     created_at: Optional[datetime.datetime] = None
-    update_at: Optional[datetime.datetime] = None
+    updated_at: Optional[datetime.datetime] = None
 
 
 class FilmResponseBlocFilm(FilmBaseResponse):
