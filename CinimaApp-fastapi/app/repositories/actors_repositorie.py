@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.model.model_db import Actor, uuid, Country
-from sqlalchemy import select, or_, delete, func, and_
+from sqlalchemy import select, or_, delete, func, and_,desc
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -21,11 +21,11 @@ class ActorRepository:
             print(e)
             return None
 
-    async def get_actors(self, limit: int = 50, page: int = 1) -> list[Actor] | None:
+    async def get_actors(self, limit: int = 300, page: int = 1) -> list[Actor] | None:
         "Получения списка актеров"
         try:
             offset = (page - 1) * limit
-            smt = select(Actor).limit(limit).offset(offset)
+            smt = select(Actor).limit(limit).offset(offset).order_by(desc(Actor.created_at),Actor.lastname)
             relult = await self.session.execute(smt)
             actor = relult.scalars().all()
             return actor

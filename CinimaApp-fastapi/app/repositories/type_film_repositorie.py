@@ -21,7 +21,7 @@ class TypeFilmReposit:
             raise Exception(f"Error crete type_film: {str(e)}")
 
     async def get_types_film(self):
-        smt = select(TypeFilm)
+        smt = select(TypeFilm).order_by(TypeFilm.type_film_name)
         relult = await self.session.execute(smt)
         return relult.scalars().all()
 

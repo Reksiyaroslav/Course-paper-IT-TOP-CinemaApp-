@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.model.model_db import Author, Country
-from sqlalchemy import select, or_, delete, and_, func
+from sqlalchemy import select, or_, delete, and_, func,desc
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
 from uuid import UUID
@@ -23,12 +23,12 @@ class AuthorRepository:
             print("Error create author " + e)
             return None
 
-    async def get_authors(self, limit: int = 10, page: int = 1) -> list[Author]:
+    async def get_authors(self, limit: int = 300, page: int = 1) -> list[Author]:
         "Получения author"
         try:
             offset = (page - 1) * limit
             relult = await self.session.execute(
-                select(Author).limit(limit).offset(offset)
+                select(Author).limit(limit).offset(offset).order_by(desc(Author.created_at))
             )
             author = relult.scalars().all()
             return author
