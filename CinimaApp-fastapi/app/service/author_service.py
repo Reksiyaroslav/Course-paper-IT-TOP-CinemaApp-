@@ -30,7 +30,7 @@ class AuthorService(Base_Service):
                 clean_data.get(filed_date), TypeModel.Actor.value
             ):
                 raise HTTPException(
-                    detail="Что не так сдадой рождения возможно не находится дипозоне  1945-2026",
+                    detail="Что не так сдадой рождения возможно не находится дипозоне  1925-2026",
                     status_code=400,
                 )
         elif not await is_fistname_lastname(
@@ -55,7 +55,7 @@ class AuthorService(Base_Service):
         fistname = clean_data.get("fistname")
         if not validate_is_data_range(data[filed_date], TypeModel.Author.value):
             raise HTTPException(
-                detail="Что не так сдадой рождения возможно не находится дипозоне 1945-2025",
+                detail="Что не так сдадой рождения возможно не находится дипозоне 1925-2025",
                 status_code=400,
             )
 
@@ -77,8 +77,8 @@ class AuthorService(Base_Service):
             raise HTTPException(status_code=404, detail="Автор не найден")
         return {"message": "Автор успешно удалён"}
 
-    async def get_authors(self, page: int = 1):
-        authors = await self.author_repo.get_authors(page=page)
+    async def get_authors(self, page: int = 1,limit:int=50):
+        authors = await self.author_repo.get_authors(page=page,limit=limit)
         return AuthorlListResponse(author=authors)
 
     async def get_author_by_id(self, author_id):

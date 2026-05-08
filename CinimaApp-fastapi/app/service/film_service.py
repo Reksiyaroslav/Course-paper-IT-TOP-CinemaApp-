@@ -188,15 +188,17 @@ class FilmService(Base_Service):
             )
         if image and image.filename:
             image_pat = curent_film.path_image
-            video_path = curent_film.path_video
+            
             if image_pat:
                 if image_pat != "images/cat.jpg":
                     delete_file(image_pat)
                 image_file_path = await uplodat_file_image(image, title)
                 clean_data["path_image"] = image_file_path
+        if video and video.filename:
+            video_path = curent_film.path_video
             if video_path:
                 delete_file(video_path)
-                update_video_path = await uplodat_file_video(video_path,title)
+                update_video_path = await uplodat_file_video(video,title)
                 clean_data["path_video"] = update_video_path
 
         update_film = await self.film_repo.update_film(film_id=film_id, data=clean_data)
