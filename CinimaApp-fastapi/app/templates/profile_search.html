@@ -11,21 +11,27 @@
     <title>Профильный поиск</title>
 </head>
 <body>
+   
     {% include "header.html"%}
+     {%if err%}
+    <div class="err">
+        {{err}}
+    </div>
+    {%endif%}
     <div class="profile_search df">
     <h1>Профильный поиск по {{type_model.title()}}</h1>
     
     <form action="{{url_for("search_proifle")}}" method="post">
         <div class="form df">
-            <input name="min_rating_str" type="number" min="1.0" max="10.0"   placeholder="1.0">
-            <input name="max_rating_str" type="number" min="1.0" max="10.0" placeholder="10.0">
-            <input name="min_date_str"  type="date" placeholder="19.12.2015">
-            <input name="max_date_str"  type="date" placeholder="19.12.2015">
+            <input name="min_rating_str" type="number" min="1.0" max="10.0"   placeholder="1.0" value="{{min_rating_str  or  ""}}">
+            <input name="max_rating_str" type="number" min="1.0" max="10.0" placeholder="10.0" value="{{max_rating_str or  ""}}">
+            <input name="min_date_str"  type="date" placeholder="19.12.2015" value="{{min_date_str or  ""}}">
+            <input name="max_date_str"  type="date" placeholder="19.12.2015" value="{{min_date_str or ""}}">
             {%if countrys %}
             <select name="country_name">
                 <option value="">Выберите страну</option>
                 {%for country in countrys%}
-                <option value="{{country.country_name}}">{{country.country_name.title()}}</option>        
+                <option value="{{country.country_name}}" {% if  country.country_name ==country_name%}selected{% endif %}>{{country.country_name.title()}}</option>        
                 {%endfor%}
 
             </select>
@@ -34,7 +40,7 @@
             <div class="group_check df">
             {%for type_film in types_film%}
                     <label for="">
-                        <input  name="types_film" type="checkbox" value="{{type_film.type_film_name}}">
+                        <input  name="types_film_request" type="checkbox" value="{{type_film.type_film_name}}" {%if type_film in types_film_request%}checked {%endif%}>
                         {{type_film.type_film_name.title()}}</label>
                     {%endfor%}
                 </div>
@@ -68,7 +74,8 @@
     <h1>Пока поиск не сделан </h1>
     </div>
     {%endif%}
-    </div>
+    
+</div>
     {% include"reg_log_modal.html"%}
 	{% include"footer.html"%}
      
