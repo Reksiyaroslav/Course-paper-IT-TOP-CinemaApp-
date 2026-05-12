@@ -7,7 +7,7 @@ from app.scheme.author.model_author import (
     AuthorlListResponse,
     AuthorCreateRequestNotPat,
     AuthorCreateRequestNotPatDate,
-    AuthorCreateRequestNotDate
+    AuthorCreateRequestNotDate,
 )
 from app.utils.comon import Depends
 from app.utils.depencines import (
@@ -39,31 +39,27 @@ async def create_author(
         data = None
         len_fistname = len(fistname)
         len_lastname = len(lastname)
-       
+
         parse_date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
         if not fistname.strip() or not lastname.strip():
             raise HTTPException(
                 detail="Не может быть пустым имя фамилия отчества", status_code=400
             )
-        
-        if   len_lastname < 2 or len_fistname < 2:
+
+        if len_lastname < 2 or len_fistname < 2:
             raise HTTPException(detail="Минимальная длина 2", status_code=400)
-        if   len_lastname > 50 or len_fistname > 50:
-            raise HTTPException(detail="Максимальная длина 50", status_code=400)    
+        if len_lastname > 50 or len_fistname > 50:
+            raise HTTPException(detail="Максимальная длина 50", status_code=400)
         if not patronymic.strip():
             if not parse_date:
                 data = AuthorCreateRequestNotPatDate(
-                fistname=fistname,
-                lastname=lastname,
-                bio=bio,
-                
+                    fistname=fistname,
+                    lastname=lastname,
+                    bio=bio,
                 )
             else:
                 data = AuthorCreateRequestNotPat(
-                fistname=fistname,
-                lastname=lastname,
-                bio=bio,
-                birth_date=parse_date
+                    fistname=fistname, lastname=lastname, bio=bio, birth_date=parse_date
                 )
         if patronymic:
             len_patronymic = len(patronymic)
@@ -71,9 +67,9 @@ async def create_author(
                 raise HTTPException(
                     detail="Не может быть пустым отчества", status_code=400
                 )
-            if   len_patronymic < 2:
+            if len_patronymic < 2:
                 raise HTTPException(detail="Минимальная длина 2", status_code=400)
-            if   len_patronymic > 50 :
+            if len_patronymic > 50:
                 raise HTTPException(detail="Максимальная длина 50", status_code=400)
             if parse_date:
                 data = AuthorCreateRequest(
@@ -146,7 +142,7 @@ async def update_author(
         data = None
         len_fistname = len(fistname.strip())
         len_lastname = len(lastname.strip())
-        
+
         parse_date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
         if not parse_date:
             raise HTTPException(
@@ -157,24 +153,20 @@ async def update_author(
                 detail="Не может быть пустыми имя фамилия отчества дата рождения",
                 status_code=400,
             )
-        if  len_lastname < 2 or len_fistname < 2:
+        if len_lastname < 2 or len_fistname < 2:
             raise HTTPException(detail="Минимальная длина 2", status_code=400)
-        if   len_lastname > 50 or len_fistname > 50:
+        if len_lastname > 50 or len_fistname > 50:
             raise HTTPException(detail="Максимальная длина 50", status_code=400)
         if not patronymic.strip():
             if not parse_date:
                 data = AuthorCreateRequestNotPatDate(
-                fistname=fistname,
-                lastname=lastname,
-                bio=bio,
-                
+                    fistname=fistname,
+                    lastname=lastname,
+                    bio=bio,
                 )
             else:
                 data = AuthorCreateRequestNotPat(
-                fistname=fistname,
-                lastname=lastname,
-                bio=bio,
-                birth_date=parse_date
+                    fistname=fistname, lastname=lastname, bio=bio, birth_date=parse_date
                 )
         if patronymic:
             len_patronymic = len(patronymic.strip())
@@ -182,9 +174,9 @@ async def update_author(
                 raise HTTPException(
                     detail="Не может быть пустым отчества", status_code=400
                 )
-            if   len_patronymic < 2:
+            if len_patronymic < 2:
                 raise HTTPException(detail="Минимальная длина 2", status_code=400)
-            if   len_patronymic > 50 :
+            if len_patronymic > 50:
                 raise HTTPException(detail="Максимальная длина 50", status_code=400)
             if parse_date:
                 data = AuthorUpdateRequest(

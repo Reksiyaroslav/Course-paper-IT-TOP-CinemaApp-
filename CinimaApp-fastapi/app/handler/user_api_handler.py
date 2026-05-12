@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, Form, Request,Response
+from fastapi import APIRouter, HTTPException, Depends, Form, Request, Response
 from fastapi.responses import RedirectResponse, HTMLResponse
 from datetime import datetime
 from uuid import UUID
@@ -11,10 +11,11 @@ from app.scheme.user.model_user import (
 from app.handler.ui_api_route import teamlates
 from app.utils.router_help import get_curen_user, clean_url_redirect
 from app.utils.upload_file import create_json
+
 user_router = APIRouter(prefix="/user", tags=["User"])
 
 
-@user_router.post("/")
+@user_router.post("/create_user/")
 async def create_user(
     reguest: Request,
     username: str = Form(None),
@@ -232,14 +233,18 @@ async def delete_likelilm(
             "view_item", item_id=film_id, env_type_model="film", err=e.detail
         )
         return RedirectResponse(url)
-@user_router.get("/get_info_user/{user_id}/")
-async def user_info(user_id:UUID,user_service: UserService = Depends(get_user_service)):
-    user = await user_service.get_user_by_id(user_id=user_id)
-   
-    data ={ "date_craetee": datetime.today().date().strftime("%d:%m:%Y"),
-          "info": user.model_dump(mode="json")
 
+
+@user_router.get("/get_info_user/{user_id}/")
+async def user_info(
+    user_id: UUID, user_service: UserService = Depends(get_user_service)
+):
+    user = await user_service.get_user_by_id(user_id=user_id)
+
+    data = {
+        "date_craetee": datetime.today().date().strftime("%d:%m:%Y"),
+        "info": user.model_dump(mode="json"),
     }
-    json_buuff =  await create_json(data)
-    filname  = f"user_info{user.username}.json"
+    json_buuff = await create_json(data)
+    filname = f"user_info{user.username}.json"
     return Response(content=json_buuff)

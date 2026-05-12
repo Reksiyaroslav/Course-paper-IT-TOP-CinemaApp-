@@ -219,7 +219,7 @@ async def main_pages(
     people_list = None
     films = None
     micro_films = None
-    len_corect_film   = False
+    len_corect_film = False
     len_corect_actor_and_author = False
     if type_model == TypeModel.Film:
         films_list = await film_service.get_list_film(page=pages)
@@ -227,16 +227,20 @@ async def main_pages(
 
         films = films_list.films
         micro_films = micro_film_list.films
-        len_corect_film = len(films)==limit_film
+        len_corect_film = len(films) == limit_film
     else:
         if type_model == TypeModel.Actor:
-            relult = await actor_server.get_actor_list(page=pages,limit=limit_actor_author)
+            relult = await actor_server.get_actor_list(
+                page=pages, limit=limit_actor_author
+            )
             people_list = relult.actors
         if type_model == TypeModel.Author:
-            relult = await author_service.get_authors(page=pages,limit=limit_actor_author)
+            relult = await author_service.get_authors(
+                page=pages, limit=limit_actor_author
+            )
             people_list = relult.author
-        len_corect_actor_and_author = len(people_list)==limit_actor_author
-            
+        len_corect_actor_and_author = len(people_list) == limit_actor_author
+
     return teamlates.TemplateResponse(
         name="main.html",
         context={
@@ -251,12 +255,28 @@ async def main_pages(
             "len_corect_film": len_corect_film,
         },
     )
+
+
 @ui_router.get("/session/{session}/{page}/")
-async def session_main(request:Request,session:str="winter",
-                       page:int=1,limit=25,film_service:FilmService=Depends(get_film_service)):
-    films_rellut = await film_service.get_list_month(session=session,page=page,)
+async def session_main(
+    request: Request,
+    session: str = "winter",
+    page: int = 1,
+    limit=25,
+    film_service: FilmService = Depends(get_film_service),
+    user=Depends(get_curen_user),
+):
+    films_rellut = await film_service.get_list_month(
+        session=session,
+        page=page,
+    )
     films = films_rellut.films
-    return teamlates.TemplateResponse(name="main.html",request=request,context={"pages":page,"limit_film":limit,"films":films})
+    return teamlates.TemplateResponse(
+        name="main.html",
+        request=request,
+        context={"pages": page, "limit_film": limit, "films": films, "user": user},
+    )
+
 
 # @ui_router.post("/update_user_role/{err}/")
 # @ui_router.get("/update_user_role/")
@@ -285,7 +305,7 @@ async def create_model(
     country_service: CountryService = Depends(get_country_service),
     err: str = "",
     user=Depends(get_curen_user),
-    limit_actor_author:int = 500
+    limit_actor_author: int = 500,
 ):
     if type_model == "film":
         authors_reult = await author_service.get_authors(limit=limit_actor_author)
@@ -342,6 +362,7 @@ async def profile_serach(
     request: Request,
     film_service: FilmService = Depends(get_film_service),
     country_service: CountryService = Depends(get_country_service),
+    user=Depends(get_curen_user),
 ):
     countrys_relult = await country_service.get_countrys()
     countrys = countrys_relult.countrys
@@ -354,6 +375,7 @@ async def profile_serach(
             "countrys": countrys,
             "types_film": types_film,
             "type_model": "фильм",
+            "user": user,
         },
     )
 

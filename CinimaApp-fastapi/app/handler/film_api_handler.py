@@ -9,7 +9,7 @@ from app.utils.depencines import (
     get_country_service,
 )
 from app.handler.ui_api_route import teamlates
-from app.utils.router_help import parse_data_or_none
+from app.utils.router_help import parse_data_or_none, get_curen_user
 from app.scheme.film.model_film import (
     FilmCreateRequest,
     FilmUpdateRequest,
@@ -43,7 +43,7 @@ async def create_film(
     description: str = Form(None),
     release_date: str = Form(),
     image: UploadFile = File(None),
-    video:UploadFile = File(None),
+    video: UploadFile = File(None),
     actor_ids: list[UUID] = Form(default=[]),
     author_ids: list[UUID] = Form(default=[]),
     types_id: list[UUID] = Form(default=[]),
@@ -75,7 +75,7 @@ async def create_film(
         data: FilmCreateRequest = FilmCreateRequest(
             title=title, description=description, release_date=paring_date
         )
-        message = await film_sevice.create_film(data.model_dump(), image,video=video)
+        message = await film_sevice.create_film(data.model_dump(), image, video=video)
         if isinstance(message, FilmResponse):
             if actor_ids:
                 await film_sevice.add_actors_film_model(
@@ -164,7 +164,7 @@ async def update_film(
     description: Optional[str] = Form(None),
     release_date_str: Optional[str] = Form(None),
     image: UploadFile = File(None),
-    video:UploadFile = File(None),
+    video: UploadFile = File(None),
     actor_ids: Optional[list[UUID]] = Form(default=[]),
     author_ids: list[UUID] = Form(default=[]),
     types_id: list[UUID] = Form(default=[]),
@@ -196,7 +196,9 @@ async def update_film(
         data = FilmUpdateRequest(
             description=description, title=title, release_date=release_date
         )
-        await film_service.update_film(film_id, data.model_dump(), image=image,video=video)
+        await film_service.update_film(
+            film_id, data.model_dump(), image=image, video=video
+        )
         if actor_ids:
             await film_service.set_actors(film_id=film_id, actor_ids=actor_ids)
         if author_ids:
@@ -217,16 +219,20 @@ async def update_film(
 
 
 @film_router.post("/seracht_profile/")
+# @film_router.post("/seracht_profile/{page}/{limit}/{min_rating_str}/{max_rating_str}/{country_name}/{min_date_str}/{max_date_str}/{types_film_request}")
 async def search_proifle(
     request: Request,
-    min_rating_str: Optional[str] = Form(""),
-    max_rating_str: Optional[str] = Form(""),
+    min_rating_str: Optional[str] = Form(None),
+    max_rating_str: Optional[str] = Form(None),
     country_name: Optional[str] = Form(default=None),
     min_date_str: Optional[str] = Form(None),
     max_date_str: Optional[str] = Form(None),
-    types_film: Optional[list[str]] = Form(default=None),
+    types_film_request: Optional[list[str]] = Form(default=None),
     film_service: FilmService = Depends(get_film_service),
     country_service: CountryService = Depends(get_country_service),
+    limit=100,
+    page=1,
+    user=Depends(get_curen_user),
 ):
     try:
         films = []
@@ -243,18 +249,29 @@ async def search_proifle(
             min_rating=min_rating,
             max_rating=max_rating,
             country_name=country_name,
-            types_film=types_film,
+            types_film=types_film_request,
             min_date=min_date,
             max_date=max_date,
+            page=page,
+            limit=limit,
         )
         return teamlates.TemplateResponse(
             "profile_search.html",
             context={
                 "request": request,
                 "types_film": types_film_form,
+                "types_film_request": types_film_request,
                 "countrys": countrys,
                 "films": films.films,
                 "type_model": "фильм",
+                "page": page,
+                "limit": limit,
+                "min_rating": min_rating_str,
+                "max_rating": max_rating_str,
+                "country_name": country_name,
+                "min_date": min_date_str,
+                "max_date": max_date_str,
+                "len_correct": len(films.films) == limit,
             },
         )
     except HTTPException as e:
@@ -267,6 +284,13 @@ async def search_proifle(
                 "films": films,
                 "err": e.detail,
                 "type_model": "фильм",
+                "page": page,
+                "limit": limit,
+                "min_rating": min_rating_str,
+                "max_rating": max_rating_str,
+                "country_name": country_name,
+                "min_date": min_date_str,
+                "max_date": max_date_str,
             },
         )
 

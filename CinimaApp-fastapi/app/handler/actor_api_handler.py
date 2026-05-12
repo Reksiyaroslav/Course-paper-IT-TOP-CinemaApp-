@@ -38,9 +38,9 @@ async def create_actor(
             raise HTTPException(
                 detail="Не может быть пустым  Фамилия ", status_code=400
             )
-        if  len_lastname < 2 or len_fistname < 2:
+        if len_lastname < 2 or len_fistname < 2:
             raise HTTPException(detail="Минимальная длина 2", status_code=400)
-        if   len_lastname > 50 or len_fistname > 50:
+        if len_lastname > 50 or len_fistname > 50:
             raise HTTPException(detail="Максимальная длина 50", status_code=400)
         parse_date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
         if not parse_date:
@@ -51,17 +51,17 @@ async def create_actor(
             # raise HTTPException(
             #     detail="Не может быть пустым  Отчества ", status_code=400
             # )
-            data =ActorBaseNotPat(
-            fistname=fistname,
-            lastname=lastname,
-            birth_date=parse_date,
-            star=star,
+            data = ActorBaseNotPat(
+                fistname=fistname,
+                lastname=lastname,
+                birth_date=parse_date,
+                star=star,
             )
-       
+
         if patronymic:
-            if len_patronymic < 2 :
+            if len_patronymic < 2:
                 raise HTTPException(detail="Минимальная длина 2", status_code=400)
-            if len_patronymic > 50 :
+            if len_patronymic > 50:
                 raise HTTPException(detail="Максимальная длина 50", status_code=400)
             data = ActorCreateRequest(
                 fistname=fistname,
@@ -129,9 +129,9 @@ async def update_actor(
                 detail="Не может быть пустым имя фамилия отчества и дата рождения",
                 status_code=400,
             )
-        if  len_lastname < 2 or len_fistname < 2:
+        if len_lastname < 2 or len_fistname < 2:
             raise HTTPException(detail="Минимальная длина 2", status_code=400)
-        if  len_lastname > 50 or len_fistname > 50:
+        if len_lastname > 50 or len_fistname > 50:
             raise HTTPException(detail="Максимальная длина 50", status_code=400)
         if not patronymic:
             data = ActorBaseNotPat(
@@ -142,9 +142,9 @@ async def update_actor(
             )
 
         if patronymic:
-            if len_patronymic < 2 :
+            if len_patronymic < 2:
                 raise HTTPException(detail="Минимальная длина 2", status_code=400)
-            if len_patronymic > 50 :
+            if len_patronymic > 50:
                 raise HTTPException(detail="Максимальная длина 50", status_code=400)
             data = ActorUpdateRequest(
                 fistname=fistname,
