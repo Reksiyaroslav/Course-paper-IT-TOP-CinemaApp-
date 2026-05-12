@@ -240,7 +240,7 @@ class Film(Base):
         "User", secondary=user_film_like, back_populates="likefilms"
     )
     path_image: Mapped[str] = mapped_column(nullable=True)
-    path_video :Mapped[str] = mapped_column(nullable=True)
+    path_video: Mapped[str] = mapped_column(nullable=True)
     types_film: Mapped[list["TypeFilm"]] = relationship(
         "TypeFilm", secondary=film_type_film, back_populates="films"
     )
