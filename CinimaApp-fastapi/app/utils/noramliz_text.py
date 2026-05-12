@@ -11,6 +11,8 @@ def text_strip(text: str):
     if text is None:
         return ""
     return text.strip()
+
+
 # def text_bio_coment_review(text:str):
 #     if text is None:
 #         return ""
@@ -21,6 +23,7 @@ def text_strip(text: str):
 #         if line:
 #             clean_line.append(line)
 #     return "\n".join(clean_line)
+
 
 def no_change(value: Any) -> Any:
     return value

@@ -2,28 +2,32 @@ from fastapi import HTTPException, UploadFile
 from pathlib import Path
 from re import sub
 from json import dumps
+
 PATH_APP = Path("app")
 PATH_STATIC = PATH_APP / "static"
 PATH_IMAGE = PATH_STATIC / "images"
 PATH_VIDEO = PATH_STATIC / "video"
 
+
 def sanitize_filename(name: str) -> str:
     """Удаляет символы, запрещённые в именах файлов (особенно для Windows)"""
-    return sub(r'[<>:"/\\|?*\x00-\x1f]', '_', name).strip()
+    return sub(r'[<>:"/\\|?*\x00-\x1f]', "_", name).strip()
+
+
 async def uplodat_file_image(upload_file: UploadFile, film_name: str) -> str:
     # os.chdir("..")
 
     # os.chdir("app/static")
     if upload_file and upload_file.filename:
         file_ext = upload_file.filename.split(".")[-1].lower()
-        if file_ext not in ["jpg", "png", "jpeg","webp"]:
+        if file_ext not in ["jpg", "png", "jpeg", "webp"]:
             raise HTTPException(status_code=400, detail="jpg,png,jpeg,webp")
         image_conetxt = await upload_file.read()
         if len(image_conetxt) > 5 * pow(2, 10) * pow(2, 10):
             raise HTTPException(status_code=400, detail="Размер не более 5MB")
         safe_film_name = sanitize_filename(film_name)
         file_name = f"{safe_film_name}.{file_ext}"
-       
+
         FILE_PATH = PATH_IMAGE / file_name
         FILE_PATH.write_bytes(image_conetxt)
         # with open(file_path, "wb") as f:
@@ -58,9 +62,10 @@ async def uplodat_file_video(upload_file: UploadFile, film_name: str) -> str:
     # os.chdir("..")
     return f"video/{FILE_PATH.name}"
 
-async def create_json(data:dict):
-   json_buuf =  dumps(data,indent=3,ensure_ascii=False).encode("utf-8")
-   return json_buuf
+
+async def create_json(data: dict):
+    json_buuf = dumps(data, indent=3, ensure_ascii=False).encode("utf-8")
+    return json_buuf
 
 
 def delete_file(name_file: str):
