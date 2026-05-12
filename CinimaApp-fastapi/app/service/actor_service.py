@@ -74,7 +74,7 @@ class ActorService(Base_Service):
         pat = clean_data.get("patronymic")
         lasname = clean_data.get("lastname")
         fistname = clean_data.get("fistname")
-        if  await self.actor_repo.get_duble_actor(
+        if await self.actor_repo.get_duble_actor(
             actor_id, fistname=fistname, lastname=lasname, pat=pat
         ):
             raise HTTPException(detail="Такой актёр уже есть ", status_code=400)
@@ -85,8 +85,8 @@ class ActorService(Base_Service):
             raise HTTPException(status_code=404, detail="Актёр не найден")
         return ActorResponse.from_orm(update_actor)
 
-    async def get_actor_list(self, page: int = 1,limit:int=50):
-        actors = await self.actor_repo.get_actors(page=page,limit=limit)
+    async def get_actor_list(self, page: int = 1, limit: int = 50):
+        actors = await self.actor_repo.get_actors(page=page, limit=limit)
         return ActorListResponse(actors=actors)
 
     async def get_actor_by_id(self, actor_id: UUID):

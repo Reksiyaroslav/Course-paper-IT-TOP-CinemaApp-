@@ -25,7 +25,7 @@ class AuthorService(Base_Service):
             len_fields(value, key)
         clean_data: dict = normalize_data(data=data, model_type=TypeModel.Author.value)
         sus = clean_data.get(filed_date)
-        if   sus:
+        if sus:
             if not await validate_is_data_range(
                 clean_data.get(filed_date), TypeModel.Actor.value
             ):
@@ -59,7 +59,7 @@ class AuthorService(Base_Service):
                 status_code=400,
             )
 
-        elif not  self.author_repo.get_duble_author(
+        elif not self.author_repo.get_duble_author(
             author_id=author_id, fistname=fistname, lastname=lasname, pat=pat
         ):
             raise HTTPException(detail="Такой автор есть уже ", status_code=409)
@@ -77,8 +77,8 @@ class AuthorService(Base_Service):
             raise HTTPException(status_code=404, detail="Автор не найден")
         return {"message": "Автор успешно удалён"}
 
-    async def get_authors(self, page: int = 1,limit:int=50):
-        authors = await self.author_repo.get_authors(page=page,limit=limit)
+    async def get_authors(self, page: int = 1, limit: int = 50):
+        authors = await self.author_repo.get_authors(page=page, limit=limit)
         return AuthorlListResponse(author=authors)
 
     async def get_author_by_id(self, author_id):

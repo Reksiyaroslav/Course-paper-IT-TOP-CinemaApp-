@@ -31,7 +31,7 @@ from app.utils.comon import (
     len_fields,
     get_current_session,
 )
-from app.utils.upload_file import uplodat_file_image, delete_file,uplodat_file_video
+from app.utils.upload_file import uplodat_file_image, delete_file, uplodat_file_video
 
 
 class FilmService(Base_Service):
@@ -42,7 +42,11 @@ class FilmService(Base_Service):
         self.type_film_repo: TypeFilmReposit = TypeFilmReposit(self.session)
 
     async def create_film(
-        self, data: dict, image: UploadFile,video:UploadFile, name_title_value=None,
+        self,
+        data: dict,
+        image: UploadFile,
+        video: UploadFile,
+        name_title_value=None,
     ) -> FilmResponse:
         for key, value in data.items():
             len_fields(value, key)
@@ -64,14 +68,14 @@ class FilmService(Base_Service):
                 status_code=409,
                 detail="Фильм с таким названием есть уже существует",
             )
-        title =  clean_data.get("title")
+        title = clean_data.get("title")
         if image and image.filename:
             image_file_path = await uplodat_file_image(image, title)
             clean_data["path_image"] = image_file_path
         else:
             clean_data["path_image"] = "images/cat.jpg"
         if video and video.filename:
-            video_str_path = await uplodat_file_video(video,title)
+            video_str_path = await uplodat_file_video(video, title)
             clean_data["path_video"] = video_str_path
         new_film = await self.film_repo.create_film(clean_data)
         if not new_film:
@@ -158,7 +162,7 @@ class FilmService(Base_Service):
         )
         return FilmBaseList(films=films)
 
-    async def update_film(self, film_id, data, image: UploadFile,video:UploadFile):
+    async def update_film(self, film_id, data, image: UploadFile, video: UploadFile):
         for key, value in data.items():
             len_fields(value, key)
         clean_data: dict = normalize_data(
@@ -188,7 +192,7 @@ class FilmService(Base_Service):
             )
         if image and image.filename:
             image_pat = curent_film.path_image
-            
+
             if image_pat:
                 if image_pat != "images/cat.jpg":
                     delete_file(image_pat)
@@ -198,7 +202,7 @@ class FilmService(Base_Service):
             video_path = curent_film.path_video
             if video_path:
                 delete_file(video_path)
-                update_video_path = await uplodat_file_video(video,title)
+                update_video_path = await uplodat_file_video(video, title)
                 clean_data["path_video"] = update_video_path
 
         update_film = await self.film_repo.update_film(film_id=film_id, data=clean_data)
@@ -321,6 +325,8 @@ class FilmService(Base_Service):
         types_film: list[str] = None,
         min_date=None,
         max_date=None,
+        page: int = 1,
+        limit: int = 10,
     ):
         if (
             min_rating == 0.0
@@ -334,6 +340,10 @@ class FilmService(Base_Service):
             if not films:
                 raise HTTPException(status_code=400, detail="База пустая")
             return films
+        if min_rating > max_rating and (min_rating != 0.0 and max_rating != 0.0):
+            raise HTTPException(
+                status_code=400, detail="Минемальны не может быть больше максимального"
+            )
         films = await self.film_repo.get_film_ratings_date_country_type_film(
             min_rating=min_rating,
             max_rating=max_rating,
@@ -341,6 +351,8 @@ class FilmService(Base_Service):
             type_film=types_film,
             min_date=min_date,
             max_date=max_date,
+            page=page,
+            limit=limit,
         )
         return FilmlListResponse(films=films)
 
