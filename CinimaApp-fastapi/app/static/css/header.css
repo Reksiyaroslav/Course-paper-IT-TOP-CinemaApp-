@@ -8,7 +8,7 @@ header{
     flex-direction: row;
     border-radius: 40px;
     padding: 10px 20px;
-    width: 97%;
+    width: 100%;
     height: 70%;
     background: linear-gradient(90deg, #59819e,#70a1c4);
     flex-wrap: wrap;
@@ -70,7 +70,7 @@ header a{
 .user_mini_ob button{
     /* min-height: 6cap; */
     /* min-width: 70px; */
-    width: 120%;
+    width: 100%;
     height: 30px;
     border-radius: 5px;
     background: #59819e;

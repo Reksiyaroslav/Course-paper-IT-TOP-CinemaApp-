@@ -9,7 +9,7 @@ body{
     border-radius: 20px;
     background: #40627a;
     flex-wrap: nowrap;
-    width: 96%;
+    width: 100%;
    
    
 }
@@ -22,7 +22,7 @@ body{
     margin-right: 5px;
     margin-left: 11px;
     border-radius:20px ;
-    width: 95%;
+    width: 100%;
     
 }
 .mini_bloc_film img{
@@ -43,7 +43,7 @@ body{
     background: #7cb5dd;
     margin: 20px 10px;
     gap: 30px;
-    width: 70%;
+    width: 100%;
     height: 20%;
     max-height: 350px;
     }
@@ -58,7 +58,7 @@ body{
 }
 .actor_block
 {
-    width: 94%;
+    width: 100%;
     height: 60%;
     flex-direction: column;
     border-radius: 20px;

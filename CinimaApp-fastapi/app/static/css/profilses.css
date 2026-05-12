@@ -3,7 +3,7 @@
 }
 .profile_user{
     flex-direction: column;
-    background: #038612;
+    background: #1f699e;
     border-radius: 20px  ;
     color: white;
     padding: 20px 20px;
@@ -21,7 +21,7 @@
     color: aqua;
 }
 .film_block {
-    background-color: #0f2802;
+    background-color: #09293f;;
     flex-direction: column;
     margin-bottom: 20px;
     justify-content: space-between;
@@ -46,7 +46,7 @@
     flex-direction: column;
     gap: 20px;
     border-radius: 20px;
-    background: #007275;
+    background: #0f3957;;
     /* max-width: 1000px;  */
 }
 .film_profile .card_film{
@@ -74,7 +74,7 @@
     height: 50%;
     min-height: 50%;
     color: aqua;
-    background-color: rgb(2, 49, 22);
+    background-color: #082235;;
     margin-top: 10px;
     border-radius: 5px;
     transition: 0.6s;
@@ -88,16 +88,19 @@
 .rating_form{
     flex-direction: column;
     width: 30%;
-    background-color: #51c513;
+    background-color: #1e4a6a;;
     border-radius: 20px;
     align-items: center;
 }
+.rating_form h2{
+    color: white;
+}
 .rating_form select{
     border-radius: 20px;
-    background-color: #0a5b13;
+    background-color: #fcfffe;
     min-height: 30px;
     min-width: 50px;
-    color: white;
+    color: rgb(0, 0, 0);    
 
 }
 .form_corect{
@@ -161,7 +164,7 @@ padding: 20px;
 }
 .coment_block{
 
- background-color: #0a5b13;
+ background-color: #326d97;
  border-radius: 20px;
  margin: 20px;
  flex-direction: column;
@@ -213,7 +216,7 @@ padding: 20px;
     max-width: 100px;
     max-height: 300px;
     border-radius: 5px;
-    background-color: #0a5b13;
+    background-color: #1b425e;
     width: 20%;
     height: 20%;
     transition: 0.5s;
@@ -222,7 +225,7 @@ padding: 20px;
     min-width: 400px;
     min-height: 200px;
     border-radius: 20px;
-    background-color: #038612;
+    background-color: #3e84b6;
     flex-direction: column;
     flex: 2;
     align-items: center;
@@ -232,7 +235,7 @@ padding: 20px;
     min-height: 100px; */
     flex-direction: column;
     align-items: center;
-    background: #51c513;
+    background: #3476a8;
     border-radius:20px ;
     flex: 2;
     justify-content: center;
@@ -240,7 +243,7 @@ padding: 20px;
 
 .coment_delete_update textarea{
     color: azure;
-    background: #0f2802;
+    background: #0c436d;;
     max-width: 200px;
     max-height: 200px;  
     min-width: 250px;
@@ -253,9 +256,10 @@ padding: 20px;
     min-height: 50px;
 
     border-radius: 5px;
-    background-color: #038612;
+    background-color: #0e3957;
     transition: 0.8s;
-    
+    color: white;
+    margin-bottom: 10px;
 }
 .coment_delete_update form {
     display: flex;
@@ -291,7 +295,7 @@ label{
 .coment_form  button{
     min-width: 200px;
     min-height: 30px;
-    background: forestgreen;
+    background: #0c436d;
     color: white;
     border-radius: 5px;
     /* height: 30px;
@@ -408,14 +412,14 @@ label{
 }
 .review{
     flex-direction: column;
-    background-color: rgb(53, 99, 8);
+    background-color: #3e84b6;
     color: white;
     border-radius: 10px;
     gap: 10px;
 }
 .review .info {
     flex-direction: column;
-    background-color: rgb(63, 24, 24);
+    background-color: #0f2a3d;
     color: white;
     border-radius: 10px;
     width: 50%;
@@ -434,8 +438,8 @@ label{
     justify-content: center ;
     align-items: center;
     flex-direction: column;
-    background-color: #0f2802;
-    color: white;
+    background-color: #3e84b6;
+    color: black;
     width: 98%;
     height: 59%;
     transition: 0.5s;
@@ -450,30 +454,34 @@ label{
     max-height: 450px;
     padding: 15px;
     font-size: 15px;
-    border-radius: 10px; 
+    border-radius: 10px;
+    background-color: #082235; 
+    color: white;
 }
  .update_delete_form textarea::placeholder,.create_review textarea::placeholder{
     
-    color: black;
+    color: white;
     
     
 }
  .update_delete_form select,.create_review select{
     width: 5%;
     border-radius: 4px;
+    background-color: #05375d;;
+    color: white;
 }
 .update_delete_form button,.create_review button{
     width: 40%;
     border-radius: 4px;
-    background-color: #0a5b13;
-    color: aliceblue;
+    background-color: #062c48;
+    color: white;
     transition: 0.6s;
      
 }
 .update_delete_form{
     width: 98%;
     height: 50%;
-    background-color: #0d2a10;
+    background-color: #215f8e;
     flex-direction: column;
     border-radius: 10px;
     text-align: center;
@@ -551,7 +559,7 @@ label{
     
 }
 .dessi{
-    background-color: rgb(83, 26, 16);
+    background-color: #1b3c53(83, 26, 16);
     color: rgb(166, 129, 157);
     border-radius: 10px;
     padding: 10px;

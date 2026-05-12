@@ -5,17 +5,18 @@
     flex-direction: column;
     width: 99%;
     height: 50%;
-    background-color: rgb(66, 167, 167);
+    background-color: rgb(24, 88, 88);
     border-radius: 10px;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
+    color: white;
 } 
 .film_bloc {
     width: 96%;
     /* max-width: 700px; */
-    background-color: rgb(42, 165, 181);
-    color: black;
+    background-color: rgb(16, 78, 86);
+    color: white;
     border-radius: 20px;
     padding: 20px;
     margin-bottom: 20px;
@@ -35,8 +36,8 @@
     flex-direction: column;
     width: 96%;
     height: 40%;
-    background-color: rgb(42, 165, 181);
-    color: black;
+    background-color: rgb(22, 83, 91);
+    color:  white;;
     border-radius: 20px;
     padding: 20px;
     margin-bottom: 20px;
@@ -45,7 +46,7 @@
 }
 .text_box {
     flex-direction: column;
-    background-color: rgb(66, 121, 203);
+    background-color: rgb(35, 98, 194);
     color: black;
     border-radius: 5px;
     width: 70%;
