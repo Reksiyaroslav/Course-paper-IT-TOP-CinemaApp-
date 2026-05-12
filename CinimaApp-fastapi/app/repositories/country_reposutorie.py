@@ -27,14 +27,14 @@ class CountryRepossitoried:
         smt = select(Country).order_by(Country.country_name)
         relult = await self.session.execute(smt)
         return relult.scalars().all()
-        
+
     async def get_country_by_id(self, country_id: UUID):
         return await self.session.get(Country, country_id)
 
     async def update_country(self, country_id: UUID, data: dict):
         try:
             country = await self.get_country_by_id(country_id=country_id)
-            
+
             for key, value in data.items():
                 setattr(country, key, value)
             await self.session.commit()

@@ -425,8 +425,11 @@ class FilmRepository:
         type_film: list[str] = None,
         min_date: date = None,
         max_date: date = None,
+        limit=10,
+        page=1,
     ):
         "Для поиска фильмов по коретным требованием"
+        offest = (page - 1) * limit
         smt = select(Film)
         pravila: list = []
         if min_rating is not None and min_rating > 0.0:
@@ -443,15 +446,21 @@ class FilmRepository:
         if max_date:
             pravila.append(Film.release_date <= max_date)
         if pravila:
-            smt = smt.options(
-                selectinload(Film.actors),
-                selectinload(Film.authors),
-                selectinload(Film.coments).selectinload(Coment.user),
-                selectinload(Film.rating_films),
-                selectinload(Film.types_film),
-                selectinload(Film.country),
-                selectinload(Film.reviews).selectinload(Review.user),
-            ).where(*pravila)
+            smt = (
+                smt.options(
+                    selectinload(Film.actors),
+                    selectinload(Film.authors),
+                    selectinload(Film.coments).selectinload(Coment.user),
+                    selectinload(Film.rating_films),
+                    selectinload(Film.types_film),
+                    selectinload(Film.country),
+                    selectinload(Film.reviews).selectinload(Review.user),
+                )
+                .where(*pravila)
+                .limit(limit)
+                .offset(offest)
+                .order_by(Film.title)
+            )
         relut = await self.session.execute(smt)
         films = relut.scalars().all()
         return films
