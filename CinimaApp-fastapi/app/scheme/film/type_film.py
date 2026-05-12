@@ -3,6 +3,7 @@ from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
 
+
 class TypeFilmBase(BaseModel):
     type_film_name: str = Field(min_length=5, max_length=40)
 
@@ -21,7 +22,6 @@ class TypeFilmResponse(BaseModel):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     model_config = {"from_attributes": True}
-
 
 
 class ListTypeFilmResponse(BaseModel):
