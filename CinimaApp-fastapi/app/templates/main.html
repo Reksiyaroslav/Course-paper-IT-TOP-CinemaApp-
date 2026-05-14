@@ -76,10 +76,13 @@
 		<form action="{{url_for("main_item",pages=pages-1,type_model=type_model)}}" method="get">
 		<button type="submit">Назад {{type_model}} {{pages-1}} </button>
 		</form>
-		
-
+	{%elif session and pages>1%}	
+		<form action="{{url_for("session_main",session=seions,page= pages-1)}}" method="get">
+		<button type="submit">Назад  {{pages-1}} </button>
+		</form>
 	
 	{%endif%}
+	
 	{%if films and len_corect_film%}
 		<form action="{{url_for("main_item",pages=pages+1,type_model=type_model)}}" method="get">
 			<button type="submit">Ещё {{type_model}} {{pages+1}}</button>
@@ -91,6 +94,11 @@
 		</form>
 		{%endif%}
 	</div>
+	{%elif session and len_corect_film%}
+	<form action="{{url_for("session_main",session=seions,page= pages+1)}}" method="get">
+		<button type="submit">Ещё {{pages+1}}</button>
+	</form>
+	
 		
 	{%endif%}
 		{% include"reg_log_modal.html"%}

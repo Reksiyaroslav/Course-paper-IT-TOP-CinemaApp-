@@ -11,13 +11,7 @@
         <h1>
            Film_App
         </h1>
-        <div class ="seracht_film df">
-            <form action="{{url_for("serach_items")}}" method="post">
-                <input  minlength="3" maxlength="100"   name="search_text" placeholder="Поиск что вам нужно" value="{{search_text if search_text else ""}}">
-                <button type="submit">Поиск</button>
-            </form>
-        </div>
-        <div class="action_list_a">
+        
             <li>
                 <a href="{{url_for('main_item',type_model="film")}}">
                     Фильмы
@@ -30,6 +24,15 @@
                 </a>
                  <a href="{{url_for("show_type_film_country")}}">Типы фильма и страны</a>
             </li> 
+        
+        <div class ="seracht_film df">
+            <form action="{{url_for("serach_items")}}" method="post">
+                <input  minlength="3" maxlength="100"   name="search_text" placeholder="Поиск что вам нужно" value="{{search_text if search_text else ""}}">
+                <button type="submit">Поиск</button>
+            </form>
+        </div>
+        <div class="action_list_a">
+            
                 {%if user%}
                 <div class="user_mini_ob df">
                     <h2>{{user.username}}</h2>
@@ -57,16 +60,18 @@
                 <!-- {{url_for("log")}} -->
                 </li>
                 {%endif%}
-                <li>
-                    <a href="{{url_for("session_main",session="summer",page=1)}}">Лето</a>
-                    <a href="{{url_for("session_main",session="winter",page=1)}}">Зима</a>
-                    <a href="{{url_for("session_main",session="spring",page=1)}}">Вестна</a>
-                    <a href="{{url_for("session_main",session="autumn",page=1)}}">Осень</a>
-                </li>
-                
+               
                
             
         </div>
     </header>
+    <div class="session_list df">
+        <li><a href="{{url_for("session_main",session="summer",page=1)}}">Лето</a></li>
+        <li><a href="{{url_for("session_main",session="winter",page=1)}}">Зима</a></li>
+        <li><a href="{{url_for("session_main",session="spring",page=1)}}">Вестна</a></li>
+        <li><a href="{{url_for("session_main",session="autumn",page=1)}}">Осень</a></li>
+        
+                
+    </div>
 </body>
 </html>
