@@ -271,10 +271,11 @@ async def session_main(
         page=page,
     )
     films = films_rellut.films
+    len_coccect = len(films) ==limit 
     return teamlates.TemplateResponse(
         name="main.html",
         request=request,
-        context={"pages": page, "limit_film": limit, "films": films, "user": user},
+        context={"pages": page, "films": films, "user": user,"len_correct_film":len_coccect,"session":session},
     )
 
 
