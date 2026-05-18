@@ -1,6 +1,9 @@
 .df{
     display: flex;
 }
+body{
+    background-color: #2b5d80;
+}
 .profile_search{
     gap: 100px;
     height: 100%;

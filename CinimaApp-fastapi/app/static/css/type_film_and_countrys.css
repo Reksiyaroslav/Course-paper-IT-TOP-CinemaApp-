@@ -1,6 +1,9 @@
 .df{
     display: flex;
 }
+body{
+    background-color: #16517f;
+}
 .info_block{
     flex-direction: column;
     background-color: rgb(13, 151, 151);

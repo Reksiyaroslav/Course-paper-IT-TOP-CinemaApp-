@@ -47,6 +47,7 @@ header a{
     text-align: center;
     background: #4283b1;
     transition: 0.5s;
+    margin-top: 2px;
 }
 .seracht_film button:hover{
    opacity: 0.7;
@@ -97,4 +98,33 @@ header li{
 .action_list_a{
     flex-direction: column;
     
+}
+.session_list {
+    justify-self: center;
+    flex-direction: row;
+    background-color: #0d304a;
+    color: white;
+    border-radius: 5PX;
+    width: 80%;
+    height: 70%;
+    justify-content: space-around;
+    align-items: center;
+   margin: 10px 10px;
+}
+.session_list a{
+   font-size: 20px;
+   transition: 0.04s;
+    color: white;
+    text-decoration: none;
+}
+.session_list li {
+    list-style: none;
+    padding: 10px 10px;
+    text-align: center;
+    
+}
+.session_list a:hover{
+    transition: 0.7s;
+    font-size: 25px;
+    color: #095c1b;
 }

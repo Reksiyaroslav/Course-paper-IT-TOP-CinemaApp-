@@ -1,6 +1,9 @@
 .df{
     display: flex;
 }
+body{
+    background-color: #315e7d;
+}
 .profile_user{
     flex-direction: column;
     background: #1f699e;
