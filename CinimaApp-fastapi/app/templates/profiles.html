@@ -230,7 +230,11 @@
 					,coment_id=coment.coment_id,
 					film_id=item.film_id,
 					user_id = user.user_id, type_rec = "like")}}" method="post">
-						<button>💖</button>
+						<button>
+							<div class="icon">
+								<img  src="{{url_for("static",path="heart.svg")}}">
+							</div>
+						</button>
 					</form>
 					</div>
 					{%endif%}
@@ -243,7 +247,11 @@
 					,coment_id=coment.coment_id,
 					film_id=item.film_id,
 					user_id = user.user_id, type_rec = "unlike")}}" method="post">
-						<button>💩</button>
+						<button>
+							<div class="icon">
+								<img  src="{{url_for("static",path="demon.svg")}}">
+							</div>
+						</button>
 					</form>
 				</div>
 			
