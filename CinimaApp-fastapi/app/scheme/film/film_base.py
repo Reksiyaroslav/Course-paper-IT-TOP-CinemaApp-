@@ -7,7 +7,7 @@ from typing import Optional
 
 class FilmBase(BaseModel):
     description: str = Field(min_length=10, max_length=4000)
-    title: str = Field(..., min_length=4, max_length=1000)
+    title: str = Field(..., min_length=3, max_length=1000)
     release_date: datetime.date
 
 
