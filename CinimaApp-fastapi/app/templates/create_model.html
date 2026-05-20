@@ -14,7 +14,7 @@
         <form action="{{url_for("film_create")}}" method="post" enctype="multipart/form-data">
             <div class="form df">
             <input type="text" 
-            name="title" minlength="4"  
+            name="title" minlength="3"  
             maxlength="1000" 
             value="{{ data.title if data.title else "" }}" 
             placeholder="Название фильма">
