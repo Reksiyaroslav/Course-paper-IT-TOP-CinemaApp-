@@ -104,7 +104,7 @@
 
 			
 			<div class="rating_form df">
-				<h2>Ваш ратинг:{{rating_user.rating}}/10</h2>
+				<h2>Ваш райтинг:{{rating_user.rating}}/10</h2>
 			<form  action="{{url_for("update_rating_user_id",film_id=item.film_id,user_id=user.user_id)}}" method="post">
 				<div class="form_corect df">
 				<select name="rating">
@@ -211,7 +211,7 @@
 				<div class="coment_form df">
 				<textarea name="description" id="" minlength="20" maxlength="4000" placeholder="Текст кометария"></textarea>
 				
-				<button type="submit">Создать новый комент</button>
+				<button type="submit">Создать новый коммент</button>
 				</div>
 			</form>
 		
@@ -262,7 +262,7 @@
 					<form action="{{url_for("update_coment",coment_id=coment.coment_id,film_id=item.film_id)}}" method="post">
 							<textarea name="description" id="" minlength="20" maxlength="4000" placeholder="Текст кометария"></textarea>
 							<br>
-							<button type="submit">Обновить коментарий</button>
+							<button type="submit">Обновить комментарий</button>
 					</form>
 					
 					<form action="{{url_for("delete_coment",coment_id=coment.coment_id,film_id=item.film_id)}}" method="post">
@@ -363,7 +363,7 @@
 						{%else%}
 						<div class="avg_green">
 						{%endif%}	
-						<label for="">Райтинг ренцезий</label>
+						<label for="">Райтинг ренцензий</label>
 						<span>{{review.avg_rating}}/10</span>
 						
 						</div>
@@ -484,12 +484,12 @@
 			<h1>{{item.lastname.title()}} {{item.fistname.title()}} {{item.patronymic}}</h1>
 			<label>Дата рождение</label>
 			<h2>{{item.birth_date}}</h2>
-			<label>Количество звест</label>	
+			<label>Количество звезд</label>	
 			{%if item.star%}
 
 				<p>{{item.star}}</p>
 				{%else%}
-				<p>Актера нет звест</p>
+				<p>Актера нет звезд</p>
 				{%endif%}
 				{%if item.country%}
 			<label>Страна </label>

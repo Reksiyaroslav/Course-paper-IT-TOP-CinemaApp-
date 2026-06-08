@@ -13,7 +13,7 @@
     {%include "header.html"%}
     <div class="info df">
         <div class="info_block df">
-            <H1>Типы фильмаов</H1>
+            <H1>Типы фильмов</H1>
             {%if not types_film%}
             <h2>Нет типаов фильма</h2>
             {%else%}
@@ -51,8 +51,8 @@
     {%endif%}
 
     {%if  type_action== "list" and user and (user.role_user=="admin" or user.role_user=="author")%}
-    <div class="varibal_form">
-        <form action="{{url_for("manager_type_film")}}" method="post">
+    
+        <form  class="varibal_form df" action="{{url_for("manager_type_film")}}" method="post">
         <select  name="type_film_id" required>
             <option value="" disabled selected>-- Выберите --</option>
         {%for type_film in types_film%}
@@ -64,9 +64,9 @@
         <button type="submit" name = "action_type" value="delete" onclick="return confirm('Вы уверены')">
             Удалить тип фильма</button>
         </form>
-        </div>
-        <div class="varibal_form">
-        <form action="{{url_for("manager_country")}}" method="post">
+       
+        
+        <form  class="varibal_form df"  action="{{url_for("manager_country")}}" method="post">
         <select name="country_id" required>
         <option value="" disabled selected>-- Выберите --</option>
         {%for country in countrys%}
@@ -77,7 +77,7 @@
         <button  name = "action_type" value="update" type="submit" type="submit" >Обновить страну</button>
         <button  name = "action_type" value="delete" type="submit" >Удалить страну </button>
         </form>
-        </div>
+        
     {%elif type_action =="create"%}
         {%if type_model=="type_film"%}
         <form action="{{url_for("create_film_type")}}" method="post">

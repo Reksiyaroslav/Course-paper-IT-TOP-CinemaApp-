@@ -70,9 +70,16 @@
 		{% endfor %}
 	
 	{%endif%}
+	{%if type_model =="film"%}
+	<h4 class="count_film">Количество фильмов и начало{{(pages-1)*limit_film}}/{{count_film}}</h4>
+	{%elif type_model=="actor"%}
+	<h4 class="count_film">Количество актёров и начало{{(pages-1)*limit_people}}/{{count_actor_or_author}}</h4>
+	{%elif type_model=="author"%}
+	<h4 class="count_film">Количество авторов и начало{{(pages-1)*limit_people}}/{{count_actor_or_author}}</h4>
+	{%endif%}
 	<div class="pages df">
 	
-	{%if pages>1%}
+	<!-- {%if pages>1%}
 		<form action="{{url_for("main_item",pages=pages-1,type_model=type_model)}}" method="get">
 		<button type="submit">Назад {{type_model}} {{pages-1}} </button>
 		</form>
@@ -81,9 +88,31 @@
 		<button type="submit">Назад  {{pages-1}} </button>
 		</form>
 	
+	{%endif%} -->
+	{%if type_model=="film"%}
+		{%if session%}
+		{%for i in range(1,page_count_film+1)%}
+		<form action="{{url_for("session_main",page=i,session=session)}}" method="get">
+			<button type="submit">{{i}}</button>
+		</form>
+		{%endfor%}
+		{%else%}
+		{%for i in range(1,page_count_film+1)%}
+		<form action="{{url_for("main_item",pages=i,type_model=type_model)}}" method="get">
+			<button type="submit">{{i}}</button>
+		</form>
+		{%endfor%}
+		{%endif%}
+		
 	{%endif%}
-	
-	{%if films and len_corect_film%}
+	{%if type_model=="actor"or type_model=="author"%}
+		{%for i in range(1,page_count_actor_author+1)%}
+			<form action="{{url_for("main_item",pages=i,type_model=type_model)}}" method="get">
+				<button type="submit">{{i}}</button>
+			</form>
+			{%endfor%}
+	{%endif%}
+	<!-- {%if films and len_corect_film%}
 		<form action="{{url_for("main_item",pages=pages+1,type_model=type_model)}}" method="get">
 			<button type="submit">Ещё {{type_model}} {{pages+1}}</button>
 		</form>
@@ -93,14 +122,14 @@
 			<button type="submit">Ещё {{type_model}} {{pages+1}}</button>
 		</form>
 		{%endif%}
-	</div>
-	{%elif session and len_corect_film%}
+	</div> -->
+	<!-- {%elif session and len_corect_film%}
 	<form action="{{url_for("session_main",session=seions,page= pages+1)}}" method="get">
 		<button type="submit">Ещё {{pages+1}}</button>
 	</form>
 	
 		
-	{%endif%}
+	{%endif%} -->
 		{% include"reg_log_modal.html"%}
 	{%if not films and not people_list and not micro_films%}
 	<h1>Сдесь пока не чего нет </h1>	
