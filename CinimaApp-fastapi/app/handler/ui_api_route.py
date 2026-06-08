@@ -2,7 +2,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi import Request, APIRouter, Depends, Form
 from typing import Optional
 from uuid import UUID
-from urllib.parse import urlencode
+from math import ceil
 from app.utils.depencines import (
     get_actor_service,
     get_film_service,
@@ -21,7 +21,11 @@ from app.enums.type_model import TypeModel
 from app.utils.router_help import get_curen_user
 from app.scheme.country.model_country import CountryBaseResponse
 from app.scheme.film.type_film import TypeFilmResponse
-
+from app.utils.limit import (
+    limit_actor_and_author_update_create_film,
+    limit_people,
+    limit_film,
+    limit_micro_film)
 
 ui_router = APIRouter(prefix="/frondet", tags=["Визуал"])
 teamlates = Jinja2Templates(directory="app/templates")
@@ -137,8 +141,8 @@ async def update_model(
     }
     data = await service[env_type_model](item_id)
     if env_type_model == TypeModel.Film:
-        authors_reult = await author_service.get_authors()
-        actors_reult = await actor_service.get_actor_list()
+        authors_reult = await author_service.get_authors(limit_actor_and_author_update_create_film)
+        actors_reult = await actor_service.get_actor_list(limit=limit_actor_and_author_update_create_film)
         types_film_reult = await film_service.get_types_film()
         countrys_reult = await country_service.get_countrys()
         authors = authors_reult.author
@@ -213,34 +217,42 @@ async def main_pages(
     author_service: AuthorService = Depends(dependency=get_author_service),
     user=Depends(get_curen_user),
     pages: int = 1,
-    limit_film: int = 25,
-    limit_actor_author: int = 50,
+    limit_actor_author: int = limit_people,
 ):
     people_list = None
     films = None
     micro_films = None
     len_corect_film = False
     len_corect_actor_and_author = False
+    count_film = None
+    count_actor_or_author=None
+    page_count_film = 0
+    page_count_actor_author = 0
     if type_model == TypeModel.Film:
         films_list = await film_service.get_list_film(page=pages)
-        micro_film_list = await film_service.get_micro_block()
+        micro_film_list = await film_service.get_micro_block(limit=limit_micro_film)
 
         films = films_list.films
         micro_films = micro_film_list.films
         len_corect_film = len(films) == limit_film
+        count_film = await film_service.get_count_films()
+        page_count_film = ceil(count_film/limit_film)
+        # print(page_count_film)
     else:
         if type_model == TypeModel.Actor:
             relult = await actor_server.get_actor_list(
                 page=pages, limit=limit_actor_author
             )
+            count_actor_or_author = await actor_server.get_count_actors()
             people_list = relult.actors
         if type_model == TypeModel.Author:
             relult = await author_service.get_authors(
                 page=pages, limit=limit_actor_author
             )
+            count_actor_or_author = await author_service.get_count_authors()
             people_list = relult.author
         len_corect_actor_and_author = len(people_list) == limit_actor_author
-
+        page_count_actor_author = ceil(count_actor_or_author/limit_actor_author)
     return teamlates.TemplateResponse(
         name="main.html",
         context={
@@ -251,8 +263,14 @@ async def main_pages(
             "user": user,
             "pages": pages,
             "type_model": type_model.value,
+            "limit_film":limit_film,
             "len_corect_actor_or_author": len_corect_actor_and_author,
             "len_corect_film": len_corect_film,
+            "count_film":count_film,
+            "count_actor_or_author":count_actor_or_author,
+            "page_count_film":page_count_film,
+            "page_count_actor_author":page_count_actor_author,
+            "limit_people":limit_actor_author
         },
     )
 
@@ -262,7 +280,6 @@ async def session_main(
     request: Request,
     session: str = "winter",
     page: int = 1,
-    limit=25,
     film_service: FilmService = Depends(get_film_service),
     user=Depends(get_curen_user),
 ):
@@ -271,7 +288,9 @@ async def session_main(
         page=page,
     )
     films = films_rellut.films
-    len_coccect = len(films) == limit
+    count_session_films = await film_service.get_count_session_film(session=session)
+    page_sesion_count = ceil(count_session_films/limit_film)
+    len_coccect = len(films) == limit_micro_film
     return teamlates.TemplateResponse(
         name="main.html",
         request=request,
@@ -279,7 +298,11 @@ async def session_main(
             "pages": page,
             "films": films,
             "user": user,
+            "type_model": "film",
+            "limit_film":limit_film,
             "len_correct_film": len_coccect,
+            "count_film":count_session_films,
+            "page_count_film":page_sesion_count,
             "session": session,
         },
     )

@@ -6,6 +6,8 @@ from app.scheme.actor.model_actor import (
     ActorUpdateRequest,
     ActorListResponse,
     ActorBaseNotPat,
+    ActorCreateRequestNotDatePat,
+    ActorCreateRequestNotDate,
     datetime,
 )
 from app.utils.comon import Depends
@@ -43,33 +45,42 @@ async def create_actor(
         if len_lastname > 50 or len_fistname > 50:
             raise HTTPException(detail="Максимальная длина 50", status_code=400)
         parse_date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
-        if not parse_date:
-            raise HTTPException(
-                detail="Не может быть пустым  Дата рождения ", status_code=400
-            )
         if not patronymic:
             # raise HTTPException(
             #     detail="Не может быть пустым  Отчества ", status_code=400
             # )
-            data = ActorBaseNotPat(
-                fistname=fistname,
-                lastname=lastname,
-                birth_date=parse_date,
-                star=star,
-            )
+            if parse_date:
+                data = ActorBaseNotPat(
+                    fistname=fistname,
+                    lastname=lastname,
+                    birth_date=parse_date,
+                    star=star,
+                )
+            else:
+                data = ActorCreateRequestNotDatePat( fistname=fistname,
+                    lastname=lastname,
+                    star=star,)
+
+
 
         if patronymic:
             if len_patronymic < 2:
                 raise HTTPException(detail="Минимальная длина 2", status_code=400)
             if len_patronymic > 50:
                 raise HTTPException(detail="Максимальная длина 50", status_code=400)
-            data = ActorCreateRequest(
-                fistname=fistname,
-                lastname=lastname,
-                birth_date=parse_date,
-                patronymic=patronymic,
-                star=star,
-            )
+            if parse_date:
+                data = ActorCreateRequest(
+                    fistname=fistname,
+                    lastname=lastname,
+                    birth_date=parse_date,
+                    patronymic=patronymic,
+                    star=star,
+                )
+            elif not parse_date:
+                data = ActorCreateRequestNotDate(fistname=fistname,
+                    lastname=lastname,
+                    patronymic=patronymic,
+                    star=star,)
 
         actor = await actor_service.create_actor(data.model_dump())
         if country_id:
