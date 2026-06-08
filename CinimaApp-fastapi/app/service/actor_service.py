@@ -10,7 +10,7 @@ from app.utils.comon import (
     len_fields,
 )
 from ..db.model.model_db import Actor
-from app.repositories.actors_repositorie import ActorRepository
+from app.repositories.actors_repositorie import ActorRepository,limit_people
 from app.utils.noramliz_text import normalize_data, text_strip_lower
 from app.scheme.actor.model_actor import (
     ActorListResponse,
@@ -25,31 +25,34 @@ class ActorService(Base_Service):
         self.actor_repo = ActorRepository(self.session)
 
     async def create_actor(self, data: dict, name_title_value=None):
-        print(data)
-        filed_data = SerachFiled.Date.value[1]
-        filed_rating = SerachFiled.Rating.value[0]
-        for key, value in data.items():
-            len_fields(value, key)
-        clean_data: dict = normalize_data(data=data, model_type=TypeModel.Actor.value)
-        print(clean_data)
-        if not await validate_is_data_range(
-            clean_data.get(filed_data), TypeModel.Actor.value
-        ):
-            raise HTTPException(
-                detail="Что не так сдадой рождения возможно не находится дипозоне  1925-2026",
-                status_code=400,
-            )
-        elif not await validet_star_rating(data, filed_rating):
-            raise HTTPException(
-                detail="Что не так с оценкой возможно не находится в дипозоне 1 от 10",
-                status_code=400,
-            )
-        elif not await is_fistname_lastname(Actor, self.actor_repo.session, clean_data):
-            raise HTTPException(detail="Такой актёр уже есть ", status_code=400)
-        new_actor = await self.actor_repo.create_actor(clean_data)
-        if not new_actor:
-            raise HTTPException(status_code=500, detail="Ошибка при создании актёра")
-        return ActorResponse.from_orm(new_actor)
+        try:
+            filed_data = SerachFiled.Date.value[1]
+            filed_rating = SerachFiled.Rating.value[0]
+            for key, value in data.items():
+                len_fields(value, key)
+            clean_data: dict = normalize_data(data=data, model_type=TypeModel.Actor.value)
+            sus = clean_data.get(filed_data)
+            if sus:
+                if not await validate_is_data_range(
+                    clean_data.get(filed_data), TypeModel.Actor.value
+                ):
+                    raise HTTPException(
+                        detail="Что не так сдадой рождения возможно не находится дипозоне  1925-2026",
+                        status_code=400,
+                    )
+            elif not await validet_star_rating(data, filed_rating):
+                raise HTTPException(
+                    detail="Что не так с оценкой возможно не находится в дипозоне 1 от 10",
+                    status_code=400,
+                )
+            elif not await is_fistname_lastname(Actor, self.actor_repo.session, clean_data):
+                raise HTTPException(detail="Такой актёр уже есть ", status_code=400)
+            new_actor = await self.actor_repo.create_actor(clean_data)
+            if not new_actor:
+                raise HTTPException(status_code=500, detail="Ошибка при создании актёра")
+            return ActorResponse.from_orm(new_actor)
+        except Exception as e:
+            raise ValueError(f"{clean_data}")
 
     async def update_actor(self, actor_id: UUID, data):
         filed_data = SerachFiled.Date.value[1]
@@ -85,7 +88,7 @@ class ActorService(Base_Service):
             raise HTTPException(status_code=404, detail="Актёр не найден")
         return ActorResponse.from_orm(update_actor)
 
-    async def get_actor_list(self, page: int = 1, limit: int = 50):
+    async def get_actor_list(self, page: int = 1, limit: int = limit_people):
         actors = await self.actor_repo.get_actors(page=page, limit=limit)
         return ActorListResponse(actors=actors)
 
@@ -94,7 +97,9 @@ class ActorService(Base_Service):
         if not actor:
             raise HTTPException(status_code=404, detail="Актёр не найден")
         return Actor_FullResponse.from_orm(actor)
-
+    async def get_count_actors(self):
+        count_actors = await self.actor_repo.get_count_actors()
+        return count_actors
     async def add_country(self, country_id: UUID, actor_id: UUID):
         actor = await self.actor_repo.add_country(
             actor_id=actor_id, country_id=country_id

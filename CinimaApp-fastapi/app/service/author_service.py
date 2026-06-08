@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from uuid import UUID
 from app.utils.comon import is_fistname_lastname, validate_is_data_range, len_fields
 from ..db.model.model_db import Author
-from app.repositories.author_repositore import AuthorRepository
+from app.repositories.author_repositore import AuthorRepository,limit_people
 from app.enums.serach_fileld import SerachFiled
 from app.enums.type_model import TypeModel
 from app.utils.noramliz_text import normalize_data, text_strip_lower
@@ -44,6 +44,7 @@ class AuthorService(Base_Service):
                 detail="Ошибка при создании автора",
             )
         return AuthorResponse.from_orm(new_author)
+        
 
     async def update_author(self, author_id, data):
         filed_date = SerachFiled.Date.value[1]
@@ -77,10 +78,12 @@ class AuthorService(Base_Service):
             raise HTTPException(status_code=404, detail="Автор не найден")
         return {"message": "Автор успешно удалён"}
 
-    async def get_authors(self, page: int = 1, limit: int = 50):
+    async def get_authors(self, page=1,limit=limit_people):
         authors = await self.author_repo.get_authors(page=page, limit=limit)
         return AuthorlListResponse(author=authors)
-
+    async def get_count_authors(self):
+        count_authors =await self.author_repo.get_count_authors()
+        return count_authors
     async def get_author_by_id(self, author_id):
         author = await self.author_repo.get_author_by_id(author_id)
         if not author:

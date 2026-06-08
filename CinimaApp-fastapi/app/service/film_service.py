@@ -19,7 +19,7 @@ from app.scheme.film.model_film import (
     FilmlListResponse,
 )
 from app.scheme.film.type_film import TypeFilmResponse, ListTypeFilmResponse
-from app.repositories.films_repositorie import FilmRepository
+from app.repositories.films_repositorie import FilmRepository, limit_film,limit_micro_film
 from app.repositories.type_film_repositorie import TypeFilmReposit
 from app.repositories.ratingfilm_repositore import (
     RatingFilmRepository,
@@ -149,19 +149,21 @@ class FilmService(Base_Service):
         films = await self.film_repo.get_films(page=page)
         return FilmBaseList(films=films)
 
-    async def get_list_month(self, session: str, page: int = 1, limit: int = 25):
+    async def get_list_month(self, session: str, page: int = 1, limit: int = limit_film):
         films = await self.film_repo.get_films_month(
             page=page, limit=limit, seseon=session
         )
         return FilmBaseList(films=films)
 
-    async def get_micro_block(self, limit: int = 10):
+    async def get_micro_block(self, limit: int = limit_micro_film):
         start_month, end_month = await get_current_session()
         films = await self.film_repo.get_films_micro_block(
             strat_month=start_month, end_month=end_month
         )
         return FilmBaseList(films=films)
-
+    async def get_count_session_film(self,session:str = "winter"):
+        count = await self.film_repo.get_count_session_film(sesion=session)
+        return count if count  is not None else 0 
     async def update_film(self, film_id, data, image: UploadFile, video: UploadFile):
         for key, value in data.items():
             len_fields(value, key)
@@ -355,7 +357,9 @@ class FilmService(Base_Service):
             limit=limit,
         )
         return FilmlListResponse(films=films)
-
+    async def get_count_films(self):
+       count_film= await self.film_repo.get_count_film()
+       return count_film
     # async def get_list_actor(self, film_id: UUID):
     #     return await self.film_repo.get_list_actor(film_id)
 
