@@ -3,7 +3,6 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 import uvicorn
-
 from app.handler.user_api_handler import user_router
 from app.handler.film_api_handler import film_router
 from app.handler.actor_api_handler import actor_router
