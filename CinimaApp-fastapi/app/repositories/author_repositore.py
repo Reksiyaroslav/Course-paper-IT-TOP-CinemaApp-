@@ -4,7 +4,7 @@ from sqlalchemy import select, or_, delete, and_, func, desc
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
 from uuid import UUID
-
+from app.utils.limit import limit_people
 
 class AuthorRepository:
     def __init__(self, session: AsyncSession):
@@ -23,7 +23,7 @@ class AuthorRepository:
             print("Error create author " + e)
             return None
 
-    async def get_authors(self, limit: int = 300, page: int = 1) -> list[Author]:
+    async def get_authors(self, limit: int = limit_people, page: int = 1) -> list[Author]:
         "Получения author"
         try:
             offset = (page - 1) * limit
@@ -95,6 +95,11 @@ class AuthorRepository:
         await self.session.refresh(author)
         return author
 
+    async def get_count_authors(self):
+        smt = select(Author)
+        relult = await self.session.execute(smt)
+        authors = relult.scalars().all()
+        return len(authors)
     async def delete_author(self, author_id) -> bool:
         "Удаления author"
         try:

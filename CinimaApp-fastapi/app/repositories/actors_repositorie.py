@@ -3,7 +3,7 @@ from app.db.model.model_db import Actor, uuid, Country
 from sqlalchemy import select, or_, delete, func, and_, desc
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
-
+from app.utils.limit import limit_people
 
 class ActorRepository:
     def __init__(self, session: AsyncSession):
@@ -21,7 +21,7 @@ class ActorRepository:
             print(e)
             return None
 
-    async def get_actors(self, limit: int = 300, page: int = 1) -> list[Actor] | None:
+    async def get_actors(self, limit: int = limit_people, page: int = 1) -> list[Actor] | None:
         "Получения списка актеров"
         try:
             offset = (page - 1) * limit
@@ -104,6 +104,11 @@ class ActorRepository:
         await self.session.refresh(actor)
         return actor
 
+    async def get_count_actors(self):
+        smt = select(Actor)
+        relult = await self.session.execute(smt)
+        actors = relult.scalars().all()
+        return len(actors)
     async def get_duble_actor(
         self, actor_id: uuid.UUID, fistname: str, lastname: str, pat: str
     ):

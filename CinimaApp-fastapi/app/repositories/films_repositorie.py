@@ -20,7 +20,7 @@ from app.db.model.model_db import (
     author_cinema,
 )
 from app.utils.dict import SESON_FILM
-
+from app.utils.limit import limit_film,limit_micro_film
 
 class FilmRepository:
     def __init__(self, session: AsyncSession):
@@ -81,7 +81,7 @@ class FilmRepository:
             await self.session.rollback()
             return False
 
-    async def get_films(self, limit: int = 25, page: int = 1) -> List[Film]:
+    async def get_films(self, limit: int = limit_film, page: int = 1) -> List[Film]:
         smt_count = select(func.count()).select_from(Film)
         total_film = (await self.session.execute(smt_count)).scalar()
         # total_pages = (total_film+limit-1)//limit if total_film > 0 else 0
@@ -98,14 +98,14 @@ class FilmRepository:
             )
             .limit(limit)
             .offset(offset)
-            .order_by(Film.film_id)
+            .order_by(Film.title)
         )
         relult = await self.session.execute(smt)
         films = relult.scalars().all()
         return films
 
     async def get_films_month(
-        self, page: int = 1, limit: int = 25, seseon: str = "winter"
+        self, page: int = 1, limit: int = limit_film, seseon: str = "winter"
     ):
         if seseon not in SESON_FILM:
             return None
@@ -121,9 +121,23 @@ class FilmRepository:
         relult = await self.session.execute(smt)
         films = relult.scalars().all()
         return films
-
+    async def get_count_session_film(self,sesion:str="winter")->int|None:
+        if sesion not in SESON_FILM:
+            return None
+        number_session_mothcs = SESON_FILM[sesion]
+        smt = select(Film).where(and_(
+            Film.release_date!=None,
+            (extract("month",Film.release_date)).in_(number_session_mothcs)
+            )
+        )
+        relult = await self.session.execute(smt)
+        films = relult.scalars().all()
+        if films:
+            len_count_session = len(films)
+            return len_count_session
+        return 0
     async def get_films_micro_block(
-        self, limit=10, strat_month: int = 12, end_month: int = 2
+        self, limit=limit_micro_film, strat_month: int = 12, end_month: int = 2
     ):
         toda_years = date.today().year
         new_start = 0
@@ -416,7 +430,12 @@ class FilmRepository:
         if not films:
             return None
         return films
-
+    async def get_count_film(self):
+        smt = select(Film)
+        relult = await self.session.execute(smt)
+        films = relult.scalars().all()
+        count_film = len(films)
+        return count_film
     async def get_film_ratings_date_country_type_film(
         self,
         min_rating: float = None,
