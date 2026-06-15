@@ -10,25 +10,27 @@ from app.scheme.country.country_base import CountryShort
 class ActorBase(BaseModel):
     fistname: str = Field(min_length=3, max_length=50, default_factory=faker.first_name)
     lastname: str = Field(min_length=3, max_length=50, default_factory=faker.last_name)
-    birth_date: datetime.date = Field(default_factory=faker.date_of_birth)
+    birth_date: datetime.date|None = Field(default_factory=faker.date_of_birth)
     patronymic: str = Field(
         min_length=3, max_length=50, default_factory=faker.first_name
     )
     star: int = Field(ge=1, le=10, default_factory=generator_star)
+    deadthdate:datetime.date |None = None
 
 
 class ActorBaseNotPat(BaseModel):
     fistname: str = Field(min_length=2, max_length=50, default_factory=faker.first_name)
     lastname: str = Field(min_length=2, max_length=50, default_factory=faker.last_name)
-    birth_date: datetime.date = Field(default_factory=faker.date_of_birth)
+    birth_date: datetime.date  |None= Field(default_factory=faker.date_of_birth)
     star: int = Field(ge=1, le=10, default_factory=generator_star)
-
+    deadthdate:datetime.date |None = None
 
 class ActorBaseNotPatDate(BaseModel):
     fistname: str = Field(min_length=2, max_length=50, default_factory=faker.first_name)
     lastname: str = Field(min_length=2, max_length=50, default_factory=faker.last_name)
 
     star: int = Field(ge=1, le=10, default_factory=generator_star)
+    deadthdate:datetime.date |None = None
 
 
 class ActorBaseNotDate(BaseModel):
@@ -38,6 +40,7 @@ class ActorBaseNotDate(BaseModel):
         min_length=2, max_length=50, default_factory=faker.first_name
     )
     star: int = Field(ge=1, le=10, default_factory=generator_star)
+    deadthdate:datetime.date |None = None
 
 
 class ActorBaseResponse(BaseModel):
@@ -46,6 +49,8 @@ class ActorBaseResponse(BaseModel):
     patronymic: Optional[str] = None
     star: Optional[int] = None
     birth_date: Optional[datetime.date] = None
+    path_image:Optional[str] = "images/cat.jpg"
+    deadthdate:Optional[datetime.date] =None
 
 
 class ActorCreateRequest(ActorBase):

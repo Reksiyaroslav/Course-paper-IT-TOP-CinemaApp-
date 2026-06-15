@@ -14,6 +14,7 @@ class CountryBaseResponse(BaseModel):
 
 
 class CountryShort(BaseModel):
+    country_id:Optional [UUID] =None
     country_name: Optional[str] = None
     model_config = {"from_attributes": True}
 

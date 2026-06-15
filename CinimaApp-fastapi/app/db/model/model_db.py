@@ -168,6 +168,8 @@ class Author(Base):
     country_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("countrys.country_id", ondelete="SET NULL"), nullable=True
     )
+    path_image:Mapped[str] =mapped_column(nullable=True)
+    deadthdate:Mapped[datetime.date] = mapped_column(nullable=True)
     country: Mapped["Country"] = relationship("Country", back_populates="authors")
 
 
@@ -205,6 +207,8 @@ class Actor(Base):
     country_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("countrys.country_id", ondelete="SET NULL"), nullable=True
     )
+    path_image:Mapped[str] =mapped_column(nullable=True)
+    deadthdate:Mapped[datetime.date] = mapped_column(nullable=True)
     country: Mapped["Country"] = relationship("Country", back_populates="actors")
 
 

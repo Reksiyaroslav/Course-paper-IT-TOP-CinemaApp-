@@ -141,7 +141,7 @@ async def update_model(
     }
     data = await service[env_type_model](item_id)
     if env_type_model == TypeModel.Film:
-        authors_reult = await author_service.get_authors(limit_actor_and_author_update_create_film)
+        authors_reult = await author_service.get_authors(limit=limit_actor_and_author_update_create_film)
         actors_reult = await actor_service.get_actor_list(limit=limit_actor_and_author_update_create_film)
         types_film_reult = await film_service.get_types_film()
         countrys_reult = await country_service.get_countrys()

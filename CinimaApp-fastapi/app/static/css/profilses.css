@@ -619,3 +619,16 @@ label{
     width: 100%;
     height: 100%;
 }
+.image_actor_author
+{
+    width: 80%;
+    height: 60%;
+}
+.image_actor_author img{
+      width: 40%;
+    height: 50%;
+    border: 10px solid #007275;
+}
+.info_and_img{
+    flex-direction: row;
+}

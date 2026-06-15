@@ -72,6 +72,18 @@ body{
     transition: 0.7s;
     font-size: 15px;
 }
+.image_actor
+{
+    width: 80%;
+    height: 70%;
+   
+}
+.image_actor img
+{
+    width: 20%;
+    height: 30%;
+    border: 10px solid #1a2d3b;
+}
 .actor_block a:hover{
     color: brown;
     font-size: 20px;

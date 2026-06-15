@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request, Form
+from fastapi import APIRouter, HTTPException, Request, Form,UploadFile,File
 from fastapi.responses import RedirectResponse
 from datetime import date
 from app.scheme.author.model_author import (
@@ -32,6 +32,8 @@ async def create_author(
     birth_date: str = Form(None),
     patronymic: str = Form(None),
     country_id: UUID = Form(default=None),
+    deadthdate:str = Form(None),
+    image:UploadFile=File(None),
     author_service: AuthorService = Depends(get_author_service),
     country_service: CountryService = Depends(get_country_service),
 ):
@@ -39,7 +41,7 @@ async def create_author(
         data = None
         len_fistname = len(fistname)
         len_lastname = len(lastname)
-
+        dead_date_parse =parse_data_or_none(deadthdate)
         parse_date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
         if not fistname.strip() or not lastname.strip():
             raise HTTPException(
@@ -56,10 +58,15 @@ async def create_author(
                     fistname=fistname,
                     lastname=lastname,
                     bio=bio,
+                    deadthdate=dead_date_parse
                 )
             else:
                 data = AuthorCreateRequestNotPat(
-                    fistname=fistname, lastname=lastname, bio=bio, birth_date=parse_date
+                    fistname=fistname, 
+                    lastname=lastname, 
+                    bio=bio, 
+                    birth_date=parse_date,
+                    deadthdate=dead_date_parse
                 )
         if patronymic:
             len_patronymic = len(patronymic)
@@ -78,6 +85,7 @@ async def create_author(
                     bio=bio,
                     birth_date=parse_date,
                     patronymic=patronymic,
+                    deadthdate=dead_date_parse
                 )
             else:
                 data = AuthorCreateRequestNotDate(
@@ -85,9 +93,10 @@ async def create_author(
                     lastname=lastname,
                     bio=bio,
                     patronymic=patronymic,
+                    deadthdate=dead_date_parse
                 )
 
-        author = await author_service.create_author(data.model_dump())
+        author = await author_service.create_author(data.model_dump(),image=image)
         if country_id:
             await author_service.add_country(
                 author_id=author.author_id, country_id=country_id
@@ -134,6 +143,8 @@ async def update_author(
     lastname=Form(None),
     bio: str = Form(None),
     birth_date: str = Form(None),
+    deadthdate:str = Form(None),
+    image:UploadFile=File(None),
     patronymic: str = Form(None),
     country_id: UUID = Form(default=None),
     author_service: AuthorService = Depends(get_author_service),
@@ -142,12 +153,9 @@ async def update_author(
         data = None
         len_fistname = len(fistname.strip())
         len_lastname = len(lastname.strip())
-
+        deade_date = parse_data_or_none(deadthdate) 
         parse_date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
-        if not parse_date:
-            raise HTTPException(
-                detail="Не может быть пустым  Дата рождения ", status_code=400
-            )
+      
         if not fistname or not lastname:
             raise HTTPException(
                 detail="Не может быть пустыми имя фамилия отчества дата рождения",
@@ -163,10 +171,14 @@ async def update_author(
                     fistname=fistname,
                     lastname=lastname,
                     bio=bio,
+                    deadthdate=deade_date
                 )
             else:
                 data = AuthorCreateRequestNotPat(
-                    fistname=fistname, lastname=lastname, bio=bio, birth_date=parse_date
+                    fistname=fistname, lastname=lastname, 
+                    bio=bio, 
+                    birth_date=parse_date,
+                    deadthdate=deade_date
                 )
         if patronymic:
             len_patronymic = len(patronymic.strip())
@@ -185,6 +197,7 @@ async def update_author(
                     bio=bio,
                     birth_date=parse_date,
                     patronymic=patronymic,
+                    deadthdate=deade_date
                 )
             else:
                 data = AuthorCreateRequestNotDate(
@@ -192,8 +205,9 @@ async def update_author(
                     fistname=fistname,
                     lastname=lastname,
                     bio=bio,
+                    deadthdate=deade_date
                 )
-        author = await author_service.update_author(author_id, data.dict())
+        author = await author_service.update_author(author_id, data.model_dump(),image=image)
         if country_id:
             await author_service.add_country(author_id=author_id, country_id=country_id)
         url = request.url_for("view_item", env_type_model="author", item_id=author_id)

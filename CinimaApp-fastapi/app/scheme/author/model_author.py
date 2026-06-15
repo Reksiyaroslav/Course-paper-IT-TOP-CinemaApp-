@@ -15,6 +15,7 @@ class ScreenWriterBase(BaseModel):
         min_length=3, max_length=50, default_factory=faker.first_name
     )
     bio: str = Field(default_factory=generatao_bio)
+    deadthdate:datetime.date|None =None
 
 
 class ScreenWriterBaseResponse(BaseModel):
@@ -23,6 +24,8 @@ class ScreenWriterBaseResponse(BaseModel):
     patronymic: Optional[str] = None
     bio: Optional[str] = None
     birth_date: Optional[datetime.date] = None
+    path_image:Optional[str] = "images/cat.jpg"
+    deadthdate:Optional[datetime.date] =None
 
 
 class ScreenWriterBaseNotPatronymic(BaseModel):
@@ -30,12 +33,14 @@ class ScreenWriterBaseNotPatronymic(BaseModel):
     lastname: Optional[str] = None
     bio: Optional[str] = None
     birth_date: Optional[datetime.date] = None
+    deadthdate:datetime.date|None =None
 
 
 class ScreenWriterBaseNotPatronymicDate(BaseModel):
     fistname: Optional[str] = None
     lastname: Optional[str] = None
     bio: Optional[str] = None
+    deadthdate:datetime.date|None =None
 
 
 class ScreenWriterBaseNotDate(BaseModel):
@@ -43,6 +48,7 @@ class ScreenWriterBaseNotDate(BaseModel):
     lastname: Optional[str] = None
     bio: Optional[str] = None
     patronymic: Optional[str] = None
+    deadthdate:datetime.date|None =None
 
 
 class AuthorCreateRequest(ScreenWriterBase):
@@ -80,6 +86,7 @@ class Author_FullResponse(ScreenWriterBaseResponse):
     update_at: Optional[datetime.datetime] = None
     films_authored: List[Optional[FilmShort]] = []
     country: Optional[CountryShort] = None
+    country_id:Optional[uuid.UUID] = None
     model_config = {"from_attributes": True}
 
 

@@ -1,4 +1,5 @@
 from fastapi.exceptions import HTTPException
+from fastapi import UploadFile
 from uuid import UUID
 from app.service.base_service import Base_Service
 from app.enums.serach_fileld import SerachFiled
@@ -9,6 +10,7 @@ from app.utils.comon import (
     validate_is_data_range,
     len_fields,
 )
+from app.utils.upload_file import delete_file,uplodat_file_image_film_and_peplo
 from ..db.model.model_db import Actor
 from app.repositories.actors_repositorie import ActorRepository,limit_people
 from app.utils.noramliz_text import normalize_data, text_strip_lower
@@ -24,8 +26,7 @@ class ActorService(Base_Service):
         super().__init__(session)
         self.actor_repo = ActorRepository(self.session)
 
-    async def create_actor(self, data: dict, name_title_value=None):
-        try:
+    async def create_actor(self, data: dict, image:UploadFile,name_title_value=None):
             filed_data = SerachFiled.Date.value[1]
             filed_rating = SerachFiled.Rating.value[0]
             for key, value in data.items():
@@ -47,14 +48,21 @@ class ActorService(Base_Service):
                 )
             elif not await is_fistname_lastname(Actor, self.actor_repo.session, clean_data):
                 raise HTTPException(detail="Такой актёр уже есть ", status_code=400)
+            if image and image.filename:
+                fistname:str = clean_data.get("fistname")
+                lastname:str  = clean_data.get("lastname")
+                fi = f"{lastname}_{fistname}"
+                file_name = await uplodat_file_image_film_and_peplo(image,fi,type_model="peoples")
+                clean_data["path_image"] = file_name
+            else:
+                clean_data["path_image"] ="images/cat.jpg"
             new_actor = await self.actor_repo.create_actor(clean_data)
             if not new_actor:
                 raise HTTPException(status_code=500, detail="Ошибка при создании актёра")
             return ActorResponse.from_orm(new_actor)
-        except Exception as e:
-            raise ValueError(f"{clean_data}")
+        
 
-    async def update_actor(self, actor_id: UUID, data):
+    async def update_actor(self, actor_id: UUID, data:dict,image:UploadFile):
         filed_data = SerachFiled.Date.value[1]
         filed_rating = SerachFiled.Rating.value[0]
         for key, value in data.items():
@@ -74,13 +82,22 @@ class ActorService(Base_Service):
                     detail="Что не так с оценкой возможно не находится в дипозоне 1 от 7",
                     status_code=402,
                 )
-        pat = clean_data.get("patronymic")
-        lasname = clean_data.get("lastname")
-        fistname = clean_data.get("fistname")
+        
+        current_actpr= await self.get_actor_by_id(actor_id=actor_id)
+        pat = current_actpr.patronymic
+        lasname = current_actpr.lastname
+        fistname = current_actpr.fistname
         if await self.actor_repo.get_duble_actor(
             actor_id, fistname=fistname, lastname=lasname, pat=pat
         ):
             raise HTTPException(detail="Такой актёр уже есть ", status_code=400)
+        if image and image.filename:
+                image_path = current_actpr.path_image
+               
+                delete_file(image_path)  
+                fi = f"{lasname}_{fistname}"
+                file_name = await uplodat_file_image_film_and_peplo(image,fi,type_model="peoples")
+                clean_data["path_image"] = file_name
         update_actor = await self.actor_repo.update_actor(
             data=clean_data, actor_id=actor_id
         )
@@ -117,6 +134,10 @@ class ActorService(Base_Service):
         return ActorResponse.from_orm(actor)
 
     async def delete_actor(self, actor_id):
+        current_actpr= await self.get_actor_by_id(actor_id=actor_id)
+        image_pat = current_actpr.path_image
+        if image_pat:
+            delete_file(image_pat)
         success = await self.actor_repo.delete_actor(actor_id)
         if not success:
             raise HTTPException(status_code=404, detail="Актёр не найден")

@@ -102,6 +102,7 @@ class ActorRepository:
         actor.country_id = country.country_id
         await self.session.commit()
         await self.session.refresh(actor)
+        
         return actor
 
     async def get_count_actors(self):

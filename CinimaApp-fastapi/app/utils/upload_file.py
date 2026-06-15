@@ -7,14 +7,14 @@ PATH_APP = Path("app")
 PATH_STATIC = PATH_APP / "static"
 PATH_IMAGE = PATH_STATIC / "images"
 PATH_VIDEO = PATH_STATIC / "video"
-
-
+PATH_IMAGE_FILM = PATH_IMAGE / "films"
+PATH_IMAGE_People = PATH_IMAGE / "peoples"
 def sanitize_filename(name: str) -> str:
     """Удаляет символы, запрещённые в именах файлов (особенно для Windows)"""
     return sub(r'[<>:"/\\|?*\x00-\x1f]', "_", name).strip()
 
 
-async def uplodat_file_image(upload_file: UploadFile, film_name: str) -> str:
+async def uplodat_file_image_film_and_peplo(upload_file: UploadFile, film_name: str,type_model:str="films") -> str:
     # os.chdir("..")
 
     # os.chdir("app/static")
@@ -27,16 +27,19 @@ async def uplodat_file_image(upload_file: UploadFile, film_name: str) -> str:
             raise HTTPException(status_code=400, detail="Размер не более 5MB")
         safe_film_name = sanitize_filename(film_name)
         file_name = f"{safe_film_name}.{file_ext}"
-
-        FILE_PATH = PATH_IMAGE / file_name
-        FILE_PATH.write_bytes(image_conetxt)
+        if type_model=="films":
+            FILE_PATH = PATH_IMAGE_FILM / file_name
+            FILE_PATH.write_bytes(image_conetxt)
+        else:
+            FILE_PATH = PATH_IMAGE_People / file_name
+            FILE_PATH.write_bytes(image_conetxt)
         # with open(file_path, "wb") as f:
         #     f.write(image_conetxt)
 
     # os.chdir("..")
     # os.chdir("..")
 
-    return f"images/{file_name}"
+    return f"images/{type_model}/{file_name}"
 
 
 async def uplodat_file_video(upload_file: UploadFile, film_name: str) -> str:
@@ -69,7 +72,7 @@ async def create_json(data: dict):
 
 
 def delete_file(name_file: str):
-    if name_file == "images/cat.jpg":
+    if name_file == "images/cat.jpg" or  name_file is None:
         return
     full_path = PATH_STATIC / name_file
     if full_path.exists():

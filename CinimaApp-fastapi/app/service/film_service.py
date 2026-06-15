@@ -31,7 +31,7 @@ from app.utils.comon import (
     len_fields,
     get_current_session,
 )
-from app.utils.upload_file import uplodat_file_image, delete_file, uplodat_file_video
+from app.utils.upload_file import uplodat_file_image_film_and_peplo, delete_file, uplodat_file_video
 
 
 class FilmService(Base_Service):
@@ -70,7 +70,7 @@ class FilmService(Base_Service):
             )
         title = clean_data.get("title")
         if image and image.filename:
-            image_file_path = await uplodat_file_image(image, title)
+            image_file_path = await uplodat_file_image_film_and_peplo(image, title,"films")
             clean_data["path_image"] = image_file_path
         else:
             clean_data["path_image"] = "images/cat.jpg"
@@ -198,7 +198,7 @@ class FilmService(Base_Service):
             if image_pat:
                 if image_pat != "images/cat.jpg":
                     delete_file(image_pat)
-                image_file_path = await uplodat_file_image(image, title)
+                image_file_path = await uplodat_file_image_film_and_peplo(upload_file=image, film_name=title,type_model="films")
                 clean_data["path_image"] = image_file_path
         if video and video.filename:
             video_path = curent_film.path_video

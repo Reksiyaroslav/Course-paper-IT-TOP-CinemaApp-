@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status,UploadFile
 from uuid import UUID
 from app.utils.comon import is_fistname_lastname, validate_is_data_range, len_fields
 from ..db.model.model_db import Author
@@ -7,6 +7,7 @@ from app.enums.serach_fileld import SerachFiled
 from app.enums.type_model import TypeModel
 from app.utils.noramliz_text import normalize_data, text_strip_lower
 from app.service.base_service import Base_Service
+from app.utils.upload_file import uplodat_file_image_film_and_peplo,delete_file
 from app.scheme.author.model_author import (
     AuthorResponse,
     AuthorlListResponse,
@@ -19,7 +20,7 @@ class AuthorService(Base_Service):
         super().__init__(session)
         self.author_repo = AuthorRepository(self.session)
 
-    async def create_author(self, data, name_title_value=None):
+    async def create_author(self, data,image:UploadFile, name_title_value=None,):
         filed_date = SerachFiled.Date.value[1]
         for key, value in data.items():
             len_fields(value, key)
@@ -37,6 +38,14 @@ class AuthorService(Base_Service):
             Author, self.author_repo.session, clean_data
         ):
             raise HTTPException(detail="Такой  автор существует", status_code=400)
+        if image and image.filename:
+            lasname = clean_data.get("lastname")
+            fistname = clean_data.get("fistname")
+            fi = f"{lasname} {fistname}"
+            file_name = await uplodat_file_image_film_and_peplo(image,fi,type_model="peoples")
+            clean_data['path_image'] = file_name
+        else:
+            clean_data['path_image'] = "images/cat.jpg"
         new_author = await self.author_repo.create_author(clean_data)
         if not new_author:
             raise HTTPException(
@@ -46,24 +55,33 @@ class AuthorService(Base_Service):
         return AuthorResponse.from_orm(new_author)
         
 
-    async def update_author(self, author_id, data):
+    async def update_author(self, author_id, data,image):
         filed_date = SerachFiled.Date.value[1]
         for key, value in data.items():
             len_fields(value, key)
         clean_data: dict = normalize_data(data=data, model_type=TypeModel.Author.value)
-        pat = clean_data.get("patronymic")
-        lasname = clean_data.get("lastname")
-        fistname = clean_data.get("fistname")
-        if not validate_is_data_range(data[filed_date], TypeModel.Author.value):
-            raise HTTPException(
-                detail="Что не так сдадой рождения возможно не находится дипозоне 1925-2025",
-                status_code=400,
-            )
+        author = await self.get_author_by_id(author_id)
+        pat = author.patronymic
+        current_author_path_image = author.path_image
+        lasname = author.lastname
+        fistname = author.fistname
+        sus = clean_data.get(filed_date)
+        if sus:
+            if not validate_is_data_range(data[filed_date], TypeModel.Author.value):
+                raise HTTPException(
+                    detail="Что не так сдадой рождения возможно не находится дипозоне 1925-2025",
+                    status_code=400,
+                )
 
         elif not self.author_repo.get_duble_author(
             author_id=author_id, fistname=fistname, lastname=lasname, pat=pat
         ):
             raise HTTPException(detail="Такой автор есть уже ", status_code=409)
+        if image and image.filename:
+                delete_file(current_author_path_image)
+                fi = f"{lasname} {fistname}"
+                file_name = await uplodat_file_image_film_and_peplo(image,fi,type_model="peoples")
+                clean_data['path_image'] = file_name
         update_author = await self.author_repo.update_author(clean_data, author_id)
         if not update_author:
             raise HTTPException(
@@ -72,6 +90,10 @@ class AuthorService(Base_Service):
         return AuthorResponse.from_orm(update_author)
 
     async def delete_author(self, author_id):
+        author =await self.get_author_by_id(author_id)
+        image_pat = author.path_image
+        if image_pat:
+                delete_file(image_pat)
         success = await self.author_repo.delete_author(author_id)
         print(success)
         if not success:

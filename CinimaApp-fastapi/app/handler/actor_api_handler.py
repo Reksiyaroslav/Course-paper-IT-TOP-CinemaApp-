@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Form, Request, HTTPException
+from logging import Logger
+
+from fastapi import APIRouter, Form, Request, HTTPException,UploadFile,File
 from fastapi.responses import RedirectResponse, HTMLResponse
 from typing import Optional
 from app.scheme.actor.model_actor import (
@@ -13,8 +15,9 @@ from app.scheme.actor.model_actor import (
 from app.utils.comon import Depends
 from app.utils.router_help import parse_data_or_none
 from app.utils.depencines import ActorService, get_actor_service
+from app.utils.loggin import get_login
 from uuid import UUID
-
+log: Logger = get_login(__name__)
 actor_router = APIRouter(prefix="/actor", tags=["Actor"])
 
 
@@ -26,6 +29,8 @@ async def create_actor(
     birth_date: str = Form(None),
     patronymic: str = Form(None),
     star: int = Form(1),
+    deadthdate:str = Form(None),
+    image:UploadFile=File(None),
     country_id: UUID = Form(default=None),
     actor_service: ActorService = Depends(get_actor_service),
 ) -> RedirectResponse | HTMLResponse:
@@ -44,7 +49,8 @@ async def create_actor(
             raise HTTPException(detail="Минимальная длина 2", status_code=400)
         if len_lastname > 50 or len_fistname > 50:
             raise HTTPException(detail="Максимальная длина 50", status_code=400)
-        parse_date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
+        parse_date: None | datetime.date = parse_data_or_none(date_str=birth_date, field_name="birth_date")
+        parse_date_death: None | datetime.date = parse_data_or_none(date_str=deadthdate)
         if not patronymic:
             # raise HTTPException(
             #     detail="Не может быть пустым  Отчества ", status_code=400
@@ -55,11 +61,13 @@ async def create_actor(
                     lastname=lastname,
                     birth_date=parse_date,
                     star=star,
+                    deadthdate=parse_date_death
                 )
             else:
                 data = ActorCreateRequestNotDatePat( fistname=fistname,
                     lastname=lastname,
-                    star=star,)
+                    star=star,
+                    deadthdate=parse_date_death)
 
 
 
@@ -75,18 +83,21 @@ async def create_actor(
                     birth_date=parse_date,
                     patronymic=patronymic,
                     star=star,
+                    deadthdate=parse_date_death
                 )
             elif not parse_date:
                 data = ActorCreateRequestNotDate(fistname=fistname,
                     lastname=lastname,
                     patronymic=patronymic,
-                    star=star,)
+                    star=star,
+                    deadthdate=parse_date_death)
 
-        actor = await actor_service.create_actor(data.model_dump())
+        actor = await actor_service.create_actor(data.model_dump(),image=image)
         if country_id:
             await actor_service.add_country(
                 actor_id=actor.actor_id, country_id=country_id
             )
+        log.debug(f" Дата которое у нас есть {parse_date}")
         url = request.url_for("main_item", type_model="actor")
         return RedirectResponse(url)
     except HTTPException as e:
@@ -124,10 +135,12 @@ async def update_actor(
     actor_id: UUID,
     fistname: str = Form(None),
     lastname: str = Form(None),
-    birth_date: datetime.date = Form(None),
+    birth_date:str= Form(None),
     patronymic: str = Form(None),
     star: int = Form(1),
     country_id: UUID = Form(default=None),
+    deadthdate:str = Form(None),
+    image:UploadFile=File(None),
     actor_service: ActorService = Depends(get_actor_service),
 ):
     try:
@@ -135,6 +148,8 @@ async def update_actor(
         len_lastname = len(lastname.strip())
         len_patronymic = len(patronymic.strip())
         data = None
+        dead = parse_data_or_none(deadthdate)
+        parse_date = parse_data_or_none(birth_date)
         if not fistname or not lastname:
             raise HTTPException(
                 detail="Не может быть пустым имя фамилия отчества и дата рождения",
@@ -148,8 +163,9 @@ async def update_actor(
             data = ActorBaseNotPat(
                 fistname=fistname,
                 lastname=lastname,
-                birth_date=birth_date,
+                birth_date=parse_date,
                 star=star,
+                deadthdate=dead
             )
 
         if patronymic:
@@ -161,12 +177,13 @@ async def update_actor(
                 fistname=fistname,
                 lastname=lastname,
                 patronymic=patronymic,
-                birth_date=birth_date,
+                birth_date=parse_date,
                 star=star,
                 country_id=country_id,
+                deadthdate=dead
             )
 
-        actor = await actor_service.update_actor(actor_id=actor_id, data=data.dict())
+        actor = await actor_service.update_actor(actor_id=actor_id, data=data.model_dump(),image=image)
         if country_id:
             await actor_service.set_country(actor_id=actor_id, country_id=country_id)
         url = reguest.url_for("view_item", env_type_model="actor", item_id=actor_id)
