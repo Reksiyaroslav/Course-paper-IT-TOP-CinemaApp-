@@ -49,7 +49,7 @@
 				<input type="date" placeholder="Измените дату релиза " name="release_date_str" value="{{data.release_date if data.release_date else "" }}">
 			</div>
 			{%if actors%}
-			<label>Акторы{Зажмите Ctrl, чтобы выбрать нескольких}</label>
+			<label>Актёры{Зажмите Ctrl, чтобы выбрать нескольких}</label>
 			<select name="actor_ids" multiple>
             {%for actor  in actors%}
             <option value="{{actor.actor_id}}" {% if  actor in data.actors %}selected{% endif %}>
@@ -58,7 +58,8 @@
             <small>Зажмите Ctrl, чтобы выбрать нескольких</small>
 				</select>
 			{%endif%}
-			{%if authors %}
+		
+			{%if authors%}
 			<label>Авторы{Зажмите Ctrl, чтобы выбрать нескольких}</label>
 			<select name="author_ids" multiple>
 				{%for author  in authors%}
@@ -82,9 +83,9 @@
 			<select name="country_id" >
 				<option value=""  disabled>Создан фильм</option>
 				{%for country  in countrys%}
-				<option value="{{country.country_id}}" {% if  country.country_id in data.country.country_id %}selected{% endif %}>{{country.country_name.title()}}</option>
+				<option value="{{country.country_id}}" {% if  country.country_id == data.country.country_id %}selected{% endif %}>{{country.country_name.title()}}</option>
 				{%endfor%}
-				<small>Зажмите Ctrl, чтобы выбрать нескольких</small>
+				
 			</select>
 			{%endif%}
 			<label>Фотография для лога</label>
@@ -97,7 +98,7 @@
         </div>
         {%elif type_model == "actor"%}
         <div class="form_actor form df">
-             <form action="{{url_for("update_actor",actor_id = model_id)}}" method="post">
+             <form action="{{url_for("update_actor",actor_id = model_id)}}" method="post" enctype="multipart/form-data">
 			<label>Имя</label>
 			<div class="input_box">
 				<input type="text"  name = "fistname"placeholder="Имя актера"  minlength="3" maxlength="50"value="{{data.fistname if data.fistname else ""}}">
@@ -112,29 +113,37 @@
 				<input type="text" placeholder="Ввдедите очества" name="patronymic"   pattern="[A-Za-zA-Яа-яЁё\s]+" minlength="3" maxlength="50" title="Только буквы"value="{{data.patronymic if data.patronymic else ""}}">
 			</div>
 			<label>Количества звезд</label>
-			 <div class="input_box">
-				<input type="number" placeholder="Ввдедите количестов звёст" name="star"value="{{data.start if data.start else ""}}">
+			<div class="input_box">
+				<input type="number" placeholder="Ввдедите количестов звёст" name="star"value="{{data.star if data.star else ""}}">
 			</div>
 			<label>Дата рождения</label>
 			<div class="input_box">
-				<input type="date" placeholder="Ввдедите год рождения" name="birth_date"value="{{data.birth_date if data.birth_date else ""}}">
+				<input type="date" placeholder="Ввдедите  год рождения" name="birth_date"value="{{data.birth_date if data.birth_date else ""}}">
 			</div>
+			<label>Дата смерти</label>
+			<input type="date" placeholder="Ввдедите год смерти" name="deadthdate"value="{{data.deadthdate if data.deadthdate else ""}}">
 			{%if countrys %}
 			<label>Страна</label>
 			<select name="country_id">
 				<option value="" disabled>Вы берете где автор</option>
 				{%for country  in countrys%}
-				<option value="{{country.country_id}}" {%if  country.country_id in data.country.country_id %}selected{% endif %}>{{country.country_name.title()}}</option>
-				{%endfor%}
+				<option value="{{country.country_id}}" 
+					{%if  country.country_id == data.country.country_id  %}selected{% endif %}>
+					{{country.country_name|title}}
+				</option>
+			{%endfor%}
 				
 			</select>
 			{%endif%}
+			<label>Фото актёра</label>
+			<input type="file" name="image" placeholder="Главный банер ">
+			
 			<button type="submit">Изменить </button>
 		</form>
         </div>
        {%elif type_model == "author"%}
         <div class="form_author form df">
-            <form action="{{url_for("update_author",author_id = model_id)}}" method="post">
+            <form action="{{url_for("update_author",author_id = model_id)}}" method="post" enctype="multipart/form-data">
 			<label>Имя</label>
 				<div class="input_box">
 				<input type="text"  name = "fistname"  pattern="[A-Za-zA-Яа-яЁё\s]+" minlength="3" maxlength="50" title="Только буквы"placeholder="Имя автора" value="{{data.fistname if data.fistname else ""}}"> 
@@ -153,7 +162,9 @@
 			<div class="input_box">
 				<input type="date" placeholder="Ввдедите год рождения" name="birth_date"value="{{data.birth_date if data.birth_date else ""}}">
 
-			</div>
+			</div>	
+			<label>Дата смерти</label>
+			<input type="date" placeholder="Ввдедите год смерти" name="deadthdate"value="{{data.deadthdate if data.deadthdate else ""}}">			
 			<label>BIO</label>
             <div class="input_box">
 				<textarea placeholder="Введите био автора" name="bio">{{data.bio if data.bio else ""}}</textarea>
@@ -161,15 +172,23 @@
 			</div>
 			{%if countrys %}
 			<label>Страна</label>
+			<h2> {{data.country}}</h2>
             <select name="country_id">
 				<option value="" disabled>Вы берете где автор</option>
 				{%for country  in countrys%}
-				<option value="{{country.country_id}}"{%if  country.country_id in data.country.country_id %}selected{% endif %}>{{country.country_name.title()}}</option>
+				
+				<option value="{{country.country_id}}"{% if  country.country_id == data.country.country_id %}selected{% endif %}>{{country.country_name|title}}
+					
+				</option>
 				{%endfor%}
 				
 			</select>
 			{%endif%}
+			<label for="image">Фото автора</label>
+			<input type="file" id="image" name="image" placeholder="Главный банер ">
+			<input type="tel" pattern="^(8|\+7\d{10})" title="Номер телофно такой +79307122192 89307122192">
 			<button type="submit">Изменить </button>
+			
 		</form>
 		{%endif%}
 	{%else%}

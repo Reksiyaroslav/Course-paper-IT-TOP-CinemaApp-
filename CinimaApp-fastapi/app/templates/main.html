@@ -35,6 +35,11 @@
 	{%if people_list%}
 	{% for people in people_list %}	
 		<div class="actor_block">
+			<div class="image_actor">
+				{%if people.path_image%}
+				<img src="{{url_for("static",path=people.path_image)}}">
+				{%endif%}
+			</div>
 			<div class="actor_block_text">
 				<h1>{{people.lastname.title()}} {{people.fistname.title()}}</h1>
 				{%if people.star%}
@@ -71,11 +76,11 @@
 	
 	{%endif%}
 	{%if type_model =="film"%}
-	<h4 class="count_film">Количество фильмов и начало{{(pages-1)*limit_film}}/{{count_film}}</h4>
+	<h4 class="count_film">Количество фильмов и начало{{(pages-1)*limit_film}}-{{pages*limit_film if pages*limit_film < count_film else count_film}}/{{count_film}}</h4>
 	{%elif type_model=="actor"%}
-	<h4 class="count_film">Количество актёров и начало{{(pages-1)*limit_people}}/{{count_actor_or_author}}</h4>
+	<h4 class="count_film">Количество актёров и начало{{(pages-1)*limit_people}}-{{pages*limit_people if pages*limit_people< count_actor_or_author else count_actor_or_author  }}/{{count_actor_or_author}}</h4>
 	{%elif type_model=="author"%}
-	<h4 class="count_film">Количество авторов и начало{{(pages-1)*limit_people}}/{{count_actor_or_author}}</h4>
+	<h4 class="count_film">Количество авторов и начало{{(pages-1)*limit_people}}-{{pages*limit_people if pages*limit_people< count_actor_or_author else count_actor_or_author  }}/{{count_actor_or_author}}</h4>
 	{%endif%}
 	<div class="pages df">
 	
@@ -89,6 +94,9 @@
 		</form>
 	
 	{%endif%} -->
+	<form action="{{url_for("hello")}}" method="post">
+		<button type="submit">Назми</button>
+	</form>
 	{%if type_model=="film"%}
 		{%if session%}
 		{%for i in range(1,page_count_film+1)%}

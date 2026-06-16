@@ -100,7 +100,8 @@
             <input type="date" name ="birth_date" value="{{data.birth_date.strftime('%Y-%m-%d') if data.birth_date else ""}}" placeholder="Дата рождения">
             <label >Звезды</label>
             <input type="number" name="star" value="{{ data.star if data.star else "" }}" placeholder="Сколько звёст">
-            <!-- <input type="file" name="image" placeholder="Главный банер "> -->
+            <label>Фото актёра</label>
+            <input type="file" name="image" placeholder="Главный банер ">
             <label>Страна где родился</label>
             {%if countrys %}
             <select class="normal_select" name="country_id">
@@ -127,9 +128,10 @@
             <input type="date" name ="birth_date" value="{{data.birth_date.strftime('%Y-%m-%d') if data.birth_date else ""}}" placeholder="Дата рождения">
              <label>Биография Автора</label>
             <textarea name="bio"   placeholder="Сколько звёст"> {{ data.bio if data.bio else "" }}</textarea>
-            <!-- <input type="file" name="image" placeholder="Главный банер "> -->
+            <label>Фото автора</label>
+            <input type="file" name="image" placeholder="Главный банер ">
         {%if countrys %}
-            <label>Страна где живёт </label>
+            <label>Страна где родился</label>
             <select class="normal_select" name="country_id">
                 {%for country  in countrys%}
                 <option value="{{country.country_id}}">{{country.country_name.title()}}</option>
