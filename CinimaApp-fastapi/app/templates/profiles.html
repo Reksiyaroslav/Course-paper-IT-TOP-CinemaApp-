@@ -407,7 +407,7 @@
 								<button type="submit"> Обновить </button> 
 							</form>
 							<form action="{{url_for("delete_review",film_id=item_id,review_id=review.review_id)}}" method="post">
-								<button type="submit">Удаления</button>
+								<button onclick=" return confirm (`Удаление рецензий пользовател {{review.review_id}}`)" type="submit">Удаления</button>
 							</form>
 						</div>
 						{%endif%}
@@ -433,25 +433,41 @@
 		{% elif item.bio %}
 			
 	<div class="profile_actor df">
-		<div class="info df">
-			<label>ФИО</label>
-			<h1> {{item.lastname.title()}} {{item.fistname.title()}} {{item.patronymic}}</h1>
-			<label>Дата рождение</label>
-			<h2>{{item.birth_date}}</h2>
-			<label>Био</label>
-				{%if item.bio%}
-				<p>{{item.bio}}</p>
-				{%else%}
-				<p>Автор не стал сообшать историю о себе</p>
+		<div class="info_and_img df">
+			<div class="image_actor_author">
+				{%if item.path_image %}
+				<img src="{{url_for("static",path=item.path_image)}}">
 				{%endif%}
-			<label for="">Страна</label>
-			{%if item.country%}
-			<h1>{{item.country.country_name.title()}}</h1>
-			{%else%}
-		
-			<h2>Нет где родился</h2>
-			{%endif%}
-		
+				</div>
+			<div class="info df">
+				
+				<label>ФИО</label>
+				<h1> {{item.lastname.title()}} {{item.fistname.title()}} {{item.patronymic}}</h1>
+				<label>Дата рождение</label>
+				{%if item.birth_date%}
+				<h2>{{item.birth_date}}</h2>
+				{%else%}
+				<h2>Он/Она инкогнит</h2>
+				{%endif%}
+				{%if item.deadthdate %}
+				<label >Дата смерти</label>
+				<h2>{{item.deadthdate}}</h2>
+				{%endif%}
+				<label>Био</label>
+					{%if item.bio%}
+					<p>{{item.bio}}</p>
+					{%else%}
+					<p>Автор не стал сообшать историю о себе</p>
+					{%endif%}
+				<label for="">Страна</label>
+				{%if item.country%}
+				<h1>{{item.country.country_name.title()}}</h1>
+				{%else%}
+			
+				<h2>Нет где родился</h2>
+				{%endif%}
+			
+			</div>
 		</div>
 		<div class="film_card df">
 			
@@ -479,26 +495,40 @@
 			{%endif%}
 			{% else %}
 		<div class="profile_author df">
-			<div class="info df">
-			<label>ФИО</label>
-			<h1>{{item.lastname.title()}} {{item.fistname.title()}} {{item.patronymic}}</h1>
-			<label>Дата рождение</label>
-			<h2>{{item.birth_date}}</h2>
-			<label>Количество звезд</label>	
-			{%if item.star%}
+			<div class="info_and_img df">
+				<div class="image_actor_author">
+					{%if item.path_image %}
+					<img src="{{url_for("static",path=item.path_image)}}">
+					{%endif%}
+				</div>
+				<div class="info df">
+					<label>ФИО</label>
+					<h1>{{item.lastname.title()}} {{item.fistname.title()}} {{item.patronymic}}</h1>
+					<label>Дата рождение</label>
+					{%if item.birth_date%}
+					<h2>{{item.birth_date}}</h2>
+					{%else%}
+					<h2>Он/Она инкогнит</h2>
+					{%endif%}
+					{%if item.deadthdate %}
+					<label >Дата смерти</label>
+					<h2>{{item.deadthdate}}</h2>
+					{%endif%}
+					<label>Количество звезд</label>	
+					{%if item.star%}
 
-				<p>{{item.star}}</p>
-				{%else%}
-				<p>Актера нет звезд</p>
-				{%endif%}
-				{%if item.country%}
-			<label>Страна </label>
-			<h1>{{item.country.country_name.title()}}</h1>
-			{%else%}
-			<h2>Нет где родился</h2>
-			{%endif%}
+						<p>{{item.star}}</p>
+						{%else%}
+						<p>Актера нет звезд</p>
+						{%endif%}
+						{%if item.country%}
+					<label>Страна </label>
+					<h1>{{item.country.country_name.title()}}</h1>
+					{%else%}
+					<h2>Нет где родился</h2>
+					{%endif%}
+				</div>
 			</div>
-		
 			<div class="film_card df">
 				{%if item.films_acted%}
 				{%for film in item.films_acted%}
@@ -510,14 +540,14 @@
 				<h2>Нет работ у него</h2>
 				{%endif%}
 			</div>
-		
+		</div>
 		<div class="update_delete button df">
 			{%if user and (user.role_user=="admin" or user.role_user=="author" )%}
 			<form action="{{url_for("update_model",env_type_model="actor",item_id=item_id )}}" method="get">
 			<button type="submit">Изменить</button>
 			</form>
 			<form action="{{url_for("delete_actor",actor_id=item_id)}}" method="post">
-				<button type="submit">Удалить</button>
+				<button type="submit" onclick="return  confirm(`хотите удалить`)">Удалить</button>
 			</form>
 		</div>
 		
