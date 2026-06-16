@@ -6,3 +6,7 @@ __pycache__
 .idea
 .vs
 .vscode
+*.jpg
+*.png
+*.webp
+*.mp4
