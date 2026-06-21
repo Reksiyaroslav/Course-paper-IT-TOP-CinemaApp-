@@ -39,11 +39,15 @@
             {%if types_film %}
             <div class="group_check df">
             {%for type_film in types_film%}
-                    <label for="">
-                        <input  name="types_film_request" type="checkbox" value="{{type_film.type_film_name}}" {%if type_film in types_film_request%}checked {%endif%}>
+                    
+            <label for="">
+               
+                        <input  name="types_film_request" type="checkbox" value="{{type_film.type_film_name}}" {%if types_film_request and (type_film   in types_film_request) %}checked {%endif%}>
                         {{type_film.type_film_name.title()}}</label>
-                    {%endfor%}
+                     {%endfor%}
                 </div>
+                
+                
             {%endif%}
 
             <button type="submit">Начать поиск</button>
@@ -55,7 +59,7 @@
     {%for film in films%}
         <span>{{film.avg_rating}}</span>
         
-        <h2>{{film.title}} / {{film.release_date}}/</h2>
+        <h2>{{film.title}} / {{film.release_date.strftime("%d:%m:%Y")}}/</h2>
         <div class="zaner df">
             {%if film.types_film%}
             {%for type_film in film.types_film%}

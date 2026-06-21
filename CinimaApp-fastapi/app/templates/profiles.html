@@ -91,7 +91,7 @@
 			{%if user and not rating_user  %}
 			<form  action="{{url_for("create_rating",film_id=item.film_id,user_id=user.user_id)}}" method="post">
 				<div class="rating_form df">
-					<h2>Создание ратинга</h2>
+					<h2>Создание райтинга</h2>
 				<select name="rating" >
 					{%for i in range(1,11)%}
 					<option value="{{i}}">{{i}}</option>
@@ -141,7 +141,7 @@
 					<label>Описание</label>
 					<p id = "description">{{item.description}}</p>
 					<label for="">Дата релиза</label>
-					<data>{{item.release_date}}</data>
+					<data>{{item.release_date.strftime("%d:%m:%Y")}}</data>
 					<label>Страна произвоства</label>
 					{%if item.country%}
 					<h2>{{item.country.country_name.title()}}</h2>
@@ -445,13 +445,13 @@
 				<h1> {{item.lastname.title()}} {{item.fistname.title()}} {{item.patronymic}}</h1>
 				<label>Дата рождение</label>
 				{%if item.birth_date%}
-				<h2>{{item.birth_date}}</h2>
+				<h2>{{item.birth_date.strftime("%d:%m:%Y")}}</h2>
 				{%else%}
 				<h2>Он/Она инкогнит</h2>
 				{%endif%}
 				{%if item.deadthdate %}
 				<label >Дата смерти</label>
-				<h2>{{item.deadthdate}}</h2>
+				<h2>{{item.deadthdate.strftime("%d:%m:%Y")}}</h2>
 				{%endif%}
 				<label>Био</label>
 					{%if item.bio%}
@@ -506,13 +506,13 @@
 					<h1>{{item.lastname.title()}} {{item.fistname.title()}} {{item.patronymic}}</h1>
 					<label>Дата рождение</label>
 					{%if item.birth_date%}
-					<h2>{{item.birth_date}}</h2>
+					<h2>{{item.birth_date.strftime("%d:%m:%Y")}}</h2>
 					{%else%}
 					<h2>Он/Она инкогнит</h2>
 					{%endif%}
 					{%if item.deadthdate %}
 					<label >Дата смерти</label>
-					<h2>{{item.deadthdate}}</h2>
+					<h2>{{item.deadthdate.strftime("%d:%m:%Y")}}</h2>
 					{%endif%}
 					<label>Количество звезд</label>	
 					{%if item.star%}

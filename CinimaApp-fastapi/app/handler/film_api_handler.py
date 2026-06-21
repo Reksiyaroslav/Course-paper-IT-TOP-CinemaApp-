@@ -272,6 +272,7 @@ async def search_proifle(
                 "min_date": min_date_str,
                 "max_date": max_date_str,
                 "len_correct": len(films.films) == limit,
+                "user":user
             },
         )
     except HTTPException as e:
@@ -291,6 +292,7 @@ async def search_proifle(
                 "country_name": country_name,
                 "min_date": min_date_str,
                 "max_date": max_date_str,
+                "user":user
             },
         )
 

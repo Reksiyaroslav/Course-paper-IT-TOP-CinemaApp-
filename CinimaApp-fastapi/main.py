@@ -9,7 +9,7 @@ from app.handler.actor_api_handler import actor_router
 from app.handler.author_api_handler import author_router
 from app.handler.coment_api_handler import coment_router
 from app.handler.ratingfilm_handler import rating_router
-from app.handler.ui_api_route import ui_router
+from app.handler.ui_api_route import ui_router,teamlates
 from  app.handler.type_film_api_handler import type_film_router
 from app.handler.country_api_handler import country_router
 from app.handler.review_api_handler import review_router
@@ -52,7 +52,14 @@ def logout(request: Request):
     request.session.clear()
     url = request.url_for("main_item",type_model="film")
     return RedirectResponse(url)
-
+@app.post("/Hello/" ,name="hello")
+def hello(request:Request):
+    url = request.url_for("model",hello="hello")
+    return RedirectResponse(url,status_code=303)
+@app.get("/model/{hello}/", name="model")
+# @app.post("/model/{hello}/", name="model")
+def clena(request:Request,hello:str=""):
+    return teamlates.TemplateResponse(request=request,name="404.html",context={"hello":hello})
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=90)

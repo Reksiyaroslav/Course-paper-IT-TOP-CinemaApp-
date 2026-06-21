@@ -47,11 +47,12 @@ class FilmResponseBlocFilm(FilmBaseResponse):
 
 class FilmlListResponse(BaseModel):
     films: List[FilmResponse]
+    model_config = {"from_attributes":True}
 
 
 class FilmlListBlockResponse(BaseModel):
     films: List[FilmResponseBlocFilm]
-
+    model_config = {"from_attributes":True}
 
 class AddActorFilsmResponse(BaseModel):
     actor_ids: List[uuid.UUID]

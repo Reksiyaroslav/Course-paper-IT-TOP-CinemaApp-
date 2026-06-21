@@ -50,7 +50,7 @@
             <h2>Нет сдесь актёров</h2>
             {%endif%}
             {%if authors %}
-            <label>Аворы {Для выбоа несколько зажмите Ctrl }</label>
+            <label>Авторы {Для выбоа несколько зажмите Ctrl }</label>
             <select name="author_ids" multiple>
                 {%for author  in authors%}
                 <option value="{{author.author_id}}">
@@ -62,7 +62,7 @@
             <h4>Нет авторов</h4>
             {%endif%}
             {%if types_film %}
-            <label>Жанер{Зажмите Ctrl, чтобы выбрать нескольких} </label>
+            <label>Жанеры{Зажмите Ctrl, чтобы выбрать нескольких} </label>
             <select class="normal_select" name="types_id" multiple>
                 {%for type_film  in types_film%}
                 <option value="{{type_film.type_film_id}}">

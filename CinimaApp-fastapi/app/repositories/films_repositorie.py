@@ -91,7 +91,8 @@ class FilmRepository:
             .options(
                 selectinload(Film.actors),
                 selectinload(Film.authors),
-                selectinload(Film.coments),
+                selectinload(Film.coments).selectinload(Coment.user),
+                selectinload(Film.country),
                 selectinload(Film.rating_films),
                 selectinload(Film.types_film),
                 selectinload(Film.reviews).selectinload(Review.user),

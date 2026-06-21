@@ -29,3 +29,5 @@ async def create_tabel():
     async with enigine.begin() as conn:
         # await conn.run_sync(Base.metadata.drop_all) для удаление
         await conn.run_sync(Base.metadata.create_all)
+def init_db():
+    Base.metadata.create_all()

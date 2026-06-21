@@ -11,6 +11,7 @@ def get_login(name:str) -> Logger:
     return log
 Pet_type = ["cat","dog"]
 str = "cat"
+date_today:date = date.today()
 
 print(str in Pet_type)
 str_number = "+7 (930) 71-22-192"

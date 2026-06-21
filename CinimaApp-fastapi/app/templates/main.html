@@ -38,6 +38,8 @@
 			<div class="image_actor">
 				{%if people.path_image%}
 				<img src="{{url_for("static",path=people.path_image)}}">
+				{%else%}
+				<img src="{{url_for("static",path="images/cat.jpg")}}">
 				{%endif%}
 			</div>
 			<div class="actor_block_text">
@@ -94,9 +96,6 @@
 		</form>
 	
 	{%endif%} -->
-	<form action="{{url_for("hello")}}" method="post">
-		<button type="submit">Назми</button>
-	</form>
 	{%if type_model=="film"%}
 		{%if session%}
 		{%for i in range(1,page_count_film+1)%}

@@ -147,7 +147,7 @@ class FilmService(Base_Service):
 
     async def get_list_film(self, page: int = 1):
         films = await self.film_repo.get_films(page=page)
-        return FilmBaseList(films=films)
+        return FilmlListResponse(films=films)
 
     async def get_list_month(self, session: str, page: int = 1, limit: int = limit_film):
         films = await self.film_repo.get_films_month(
